@@ -1,3 +1,6 @@
+// Anmol Saini
+// Project 1: Simulating Dice Rolls
+
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
@@ -13,18 +16,15 @@ int main() {
     cout << "Simulating " << numRolls << " rolls..." << endl;
     cout << "Results:" << endl;
  
-    // ---------------------------------------------------------------------------
     // creates an int array of length 11 to hold all the results of the dice rolls
     // initializes each value in the array to 0
     int rolls[ROLL_COMBINATIONS];
     for (int i = 0; i < ROLL_COMBINATIONS; i++) {
         rolls[i] = 0;
     }
-    // ---------------------------------------------------------------------------
 
     srand(time(NULL)); // seeds the random number generator with the time
 
-    // ----------------------------------------------------
     // performs dice rolls and records results in the array
     for (int i = 0; i < numRolls; i++) {
         int firstToss = (rand() % 6) + 1;
@@ -32,12 +32,9 @@ int main() {
         int rollResult = firstToss + secondToss;
         rolls[rollResult-2]++;
     }
-    // ----------------------------------------------------
 
-    // ---------------------------------------------------------------
     // displays all results
     for (int i = 0; i < ROLL_COMBINATIONS; i++) {
         cout << i+2 << " was rolled " << rolls[i] << " times" << endl;
     }
-    // ---------------------------------------------------------------
 }
