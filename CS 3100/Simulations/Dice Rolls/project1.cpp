@@ -10,6 +10,7 @@
 #include <time.h>
 
 #define ROLL_COMBINATIONS 11 // 11 possible outcomes when 2 dice are rolled
+
 using namespace std;
 
 int main() {
