@@ -1,5 +1,9 @@
 // Anmol Saini
 // Project 1: Simulating Dice Rolls
+/* This program rolls 2 dice a specified number of times and adds the 2 tosses
+    together to determine the overall result of the roll. At the end, these results
+    are displayed to the user.
+*/
 
 #include <iostream>
 #include <stdlib.h>
