@@ -18,4 +18,19 @@ public:
 
     // print
     void print(ostream&);
+
+    // attack
+    void attack(Character);
+
+    // inflict damage
+    void damage(int);
+
+    // return current health
+    int getHealth();
+
+    // return name
+    string getName();
+
+    // return role
+    string getRole();
 };
