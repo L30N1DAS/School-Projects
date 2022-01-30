@@ -16,11 +16,11 @@ public:
     // Constructor
     Character(string, string, int, int, int, int);
 
-    // print
+    // print character stats
     void print(ostream&);
 
-    // attack
-    void attack(Character);
+    // attack other character
+    void attack(Character&, ostream&);
 
     // inflict damage
     void damage(int);

@@ -42,4 +42,6 @@ int main() {
     for (int i = 0; i < ROLL_COMBINATIONS; i++) {
         cout << i+2 << " was rolled " << rolls[i] << " times" << endl;
     }
+
+    system("pause");
 }
