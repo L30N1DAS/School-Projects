@@ -123,3 +123,12 @@ int Character::getHealth() {
 string Character::getName() {
     return name;
 }
+
+//--------------------------------------
+// getRole: returns the character's role
+//      Returns: the character's role
+//      Parameters: none
+//--------------------------------------
+string Character::getRole() {
+    return role;
+}

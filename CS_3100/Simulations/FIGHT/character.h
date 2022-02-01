@@ -5,6 +5,7 @@ using namespace std;
 
 class Character {
 private:
+    // Fields (more information in character.cpp)
     string name;
     string role;
     int hitPoints;

@@ -109,10 +109,3 @@ int main() {
 
     system("pause");
 }
-
-
-// where to seed random/include time.h
-// should characters be created in method, instead of main?
-//      how would this work, since references are currently being used?
-// is the infinite loop ok? handout said not to use them
-// should methods not used be implemented (getRole)?
