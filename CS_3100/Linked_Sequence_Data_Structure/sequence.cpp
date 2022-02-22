@@ -8,9 +8,9 @@ Sequence::Sequence( size_type sz )
     tail = NULL;
 
     if (sz > 0) {
-        head = tail = new SequenceNode(0);
+        head = tail = new SequenceNode(0); // delete 0
         for (int i = 0; i < sz - 1; i++) {
-            SequenceNode* tmp = new SequenceNode(i+1);
+            SequenceNode* tmp = new SequenceNode(i+1); // delete i+1
             tmp->prev = tail;
             tail->next = tmp;
             tail = tmp;
@@ -87,11 +87,18 @@ Sequence::value_type& Sequence::operator[]( size_type position )
 
 void Sequence::push_back( const value_type& value )
 {
-    SequenceNode* current = tail;
-    tail->next = new SequenceNode(value);
-    tail = tail->next;
-    tail->prev = current;
-    numElts++;
+    if (head == NULL) {
+        head = new SequenceNode(value);
+        tail = head;
+    }
+
+    else {
+        SequenceNode* current = tail;
+        tail->next = new SequenceNode(value);
+        tail = tail->next;
+        tail->prev = current;
+        numElts++;
+    }
 }
 
 void Sequence::pop_back()
@@ -159,12 +166,24 @@ void Sequence::insert( size_type position, value_type value )
 
 const Sequence::value_type& Sequence::front() const
 {
-    return head->elt;
+    if (head == NULL) {
+        throw exception();
+    }
+
+    else {
+        return head->elt;
+    }
 }
 
 const Sequence::value_type& Sequence::back() const
 {
-    return tail->elt;
+    if (tail == NULL) {
+        throw exception();
+    }
+    
+    else {
+        return tail->elt;
+    }
 }
 
 bool Sequence::empty() const
@@ -253,8 +272,29 @@ void Sequence::erase( size_type position, size_type count )
         }
     }
 
+    else if (count == size() - position) {
+        SequenceNode* tmp = killNode;
+        tail = killNode->prev;
+        tail->next = NULL;
+        while (killNode != NULL) {
+            tmp = killNode->next;
+            delete killNode;
+            numElts--;
+            killNode = tmp;
+        }
+    }
+
     else {
-        
+        SequenceNode* aliveNode = killNode->prev;
+        SequenceNode* tmp;
+        for (int i = 0; i < count; i++) {
+            tmp = killNode->next;
+            tmp->prev = aliveNode;
+            aliveNode->next = tmp;
+            delete killNode;
+            numElts--;
+            killNode = tmp;
+        }
     }
 }
 
