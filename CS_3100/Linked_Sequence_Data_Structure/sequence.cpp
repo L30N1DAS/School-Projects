@@ -96,11 +96,22 @@ void Sequence::push_back( const value_type& value )
 
 void Sequence::pop_back()
 {
-    //throw exception if empty list
-    tail = tail->prev;
-    delete tail->next;
-    tail->next = NULL;
-    numElts--;
+    if (size() == 0) {
+        throw exception();
+    }
+
+    if (size() == 1) {
+        delete tail;
+        head = NULL;
+        tail = NULL;
+    }
+
+    if (size() > 1) {
+        tail = tail->prev;
+        delete tail->next;
+        tail->next = NULL;
+        numElts--;
+    }
 }
 
 void Sequence::insert( size_type position, value_type value )
