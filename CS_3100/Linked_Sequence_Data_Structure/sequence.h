@@ -112,6 +112,7 @@ public:
 
 	void clear();									// clears the sequence returning it to the empty state
 	void erase( size_type p, size_type n = 1 );	// deletes n number items starting a index position p
+	//void Sequence::killNode( SequenceNode& );
 
 	void print(ostream&) const;
 

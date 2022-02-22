@@ -104,6 +104,7 @@ void Sequence::pop_back()
         delete tail;
         head = NULL;
         tail = NULL;
+        numElts--;
     }
 
     if (size() > 1) {
@@ -116,24 +117,31 @@ void Sequence::pop_back()
 
 void Sequence::insert( size_type position, value_type value )
 {
-    if (head == NULL && tail == NULL) {
-        head = new SequenceNode(value);
-        tail = head;
+    if (position < 0 || position > size()) {
+        throw exception();
     }
 
-    if (position == 0) {
+    else if (head == NULL && tail == NULL) {
+        head = new SequenceNode(value);
+        tail = head;
+        numElts++;
+    }
+
+    else if (position == 0) {
         SequenceNode* newNode = new SequenceNode(value);
         newNode->next = head;
         head->prev = newNode;
         head = newNode;
+        numElts++;
     }
 
-    if (position == size()) {
+    else if (position == size()) {
         SequenceNode* newNode = new SequenceNode(value);
         newNode->prev = tail;
         tail->next = newNode;
         tail = newNode;
-    }
+        numElts++;
+    } 
 
     else {
         SequenceNode* current = head;
@@ -145,8 +153,8 @@ void Sequence::insert( size_type position, value_type value )
         newNode->prev = current->prev;
         current->prev->next = newNode;
         current->prev = newNode;
+        numElts++;
     }
-    numElts++;
 }
 
 const Sequence::value_type& Sequence::front() const
@@ -198,32 +206,61 @@ void Sequence::clear()
 
 void Sequence::erase( size_type position, size_type count )
 {
+    if (position < 0 || position > size()) {
+        throw exception();
+    }
+    
+    else if (count > size() - position) {
+        throw exception();
+    }
+
     SequenceNode* killNode = head;
     for (int i = 0; i < position; i++) {
         killNode = killNode->next;
     }
 
     if (killNode == head && killNode == tail) {
-        delete killNode;
-        head = NULL;
-        tail = NULL;
-    }
-
-    if (killNode == head) {
-        SequenceNode* aliveNode;
-        for (int i = 0; i < count; i++) {
-            aliveNode = killNode->next;
-            aliveNode->prev = NULL;
-            head = aliveNode;
+        if (count != 0) {
+            delete killNode;
+            numElts--;
+            head = NULL;
+            tail = NULL;
         }
     }
 
-    if (killNode == tail) {
-        tail = killNode->prev;
-        delete killNode;
+    else if (killNode == head && count == size()) {
+        clear();
+    }
+
+    else if (killNode == head) {
+        SequenceNode* aliveNode;
+        for (int i = 0; i < count; i++) {
+            aliveNode = killNode->next;
+            aliveNode->prev = NULL; // this doesn't exist when at last item
+            head = aliveNode;
+            delete killNode;
+            numElts--;
+            killNode = aliveNode;
+        }
+    }
+
+    else if (killNode == tail) {
+        if (count != 0) {
+            tail = killNode->prev;
+            tail->next = NULL;
+            delete killNode;
+            numElts--;
+        }
+    }
+
+    else {
+        
     }
 }
 
+// void Sequence::killNode( SequenceNode& node ) {
+
+// }
 
 ostream& operator<<( ostream& os, Sequence& s )
 {

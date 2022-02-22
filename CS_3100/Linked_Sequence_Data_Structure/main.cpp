@@ -43,5 +43,15 @@ int main() {
     seq2.pop_back();
     cout << seq2 << endl;
     seq2.pop_back();
-    cout << seq2 << endl;
+    cout << seq2 << endl << endl << endl;
+
+    // seq.insert(5, 8);
+    // cout << seq << endl;
+
+    Sequence seq3(5);
+    cout << seq3 << endl;
+    // seq3.erase(4, 2);
+    seq3.erase(0, 5); // issues with cuz aliveNode doesn't exit for last iteration
+    cout << seq3 << endl;
+
 }
