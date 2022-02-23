@@ -111,10 +111,9 @@ public:
 	size_type size() const;
 
 	void clear();									// clears the sequence returning it to the empty state
-	void erase( size_type p, size_type n = 1 );	// deletes n number items starting a index position p
-	//void Sequence::killNode( SequenceNode& );
+	void erase( size_type p, size_type n = 1 );		// deletes n number items starting a index position p
 
-	void print(ostream&) const;
+	void print(ostream&) const;						// used by the operator<< function to print a sequence
 
 // YOU CAN MODIFY the following private declarations as needed to implement your sequence class
 private:

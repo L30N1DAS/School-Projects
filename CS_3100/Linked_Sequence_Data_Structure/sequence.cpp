@@ -1,6 +1,18 @@
-#include "Sequence.h"
+//-----------------------------------------------------------------
+// Name: Anmol Saini
+// Project 3: Linked Sequence Data Structure
+//      This file contains the functions implemented for sequences.
+//-----------------------------------------------------------------
+
+#include "sequence.h"
 #include <exception>
 
+//-------------------------------------------
+// Sequence: Constructor for the sequence
+//      Returns: none
+//      Parameters:
+//      sz (size_type) - size of the sequence
+//-------------------------------------------
 Sequence::Sequence( size_type sz )
 {
     numElts = sz;
@@ -8,9 +20,9 @@ Sequence::Sequence( size_type sz )
     tail = NULL;
 
     if (sz > 0) {
-        head = tail = new SequenceNode(0); // delete 0
+        head = tail = new SequenceNode();
         for (int i = 0; i < sz - 1; i++) {
-            SequenceNode* tmp = new SequenceNode(i+1); // delete i+1
+            SequenceNode* tmp = new SequenceNode();
             tmp->prev = tail;
             tail->next = tmp;
             tail = tmp;
@@ -18,6 +30,12 @@ Sequence::Sequence( size_type sz )
     }
 }
 
+//-----------------------------------------------------------------------------------
+// Sequence: Copy Constructor for the sequence
+//      Returns: none
+//      Parameters:
+//          s (Sequence&) - the sequence off of which the new sequence is being based
+//-----------------------------------------------------------------------------------
 Sequence::Sequence( const Sequence& s )
 {
     numElts = s.numElts;
@@ -41,6 +59,11 @@ Sequence::Sequence( const Sequence& s )
     }  
 }
 
+//---------------------------------------
+// ~Sequence: Destructor for the sequence
+//      Returns: none
+//      Parameters: none
+//---------------------------------------
 Sequence::~Sequence()
 {
     if (head != NULL) {
@@ -54,6 +77,12 @@ Sequence::~Sequence()
     }
 }
 
+//-------------------------------------------------------------------------------------------
+// operator=: sets a sequence equal to a provided sequence
+//      Returns: a reference to the sequence that is being set equal to the provided sequence
+//      Parameters: 
+//          s (Sequence&) - the sequence to which another sequence is being set equal
+//-------------------------------------------------------------------------------------------
 Sequence& Sequence::operator=( const Sequence& s )
 {
     clear();
@@ -76,6 +105,12 @@ Sequence& Sequence::operator=( const Sequence& s )
     return(*this);
 }
 
+//---------------------------------------------------------------
+// operator[]: allows access to a particular item in the sequence
+//      Returns: the desired item
+//      Parameters:
+//          position (size_type) - the index of the desired item
+//---------------------------------------------------------------
 Sequence::value_type& Sequence::operator[]( size_type position )
 {
     SequenceNode* current = head;
@@ -85,6 +120,12 @@ Sequence::value_type& Sequence::operator[]( size_type position )
     return current->elt;
 }
 
+//-----------------------------------------------------------------
+// push_back: adds a new item to the end of the sequence
+//      Returns: none
+//      Parameters:
+//          value (value_type&) - the value of the item to be added
+//-----------------------------------------------------------------
 void Sequence::push_back( const value_type& value )
 {
     if (head == NULL) {
@@ -101,6 +142,11 @@ void Sequence::push_back( const value_type& value )
     }
 }
 
+//------------------------------------------------------
+// pop_back: removes the item at the end of the sequence
+//      Returns: none
+//      Parameters: none
+//------------------------------------------------------
 void Sequence::pop_back()
 {
     if (size() == 0) {
@@ -122,6 +168,13 @@ void Sequence::pop_back()
     }
 }
 
+//----------------------------------------------------------------------------------------
+// insert: adds a new item at the specified location of the sequence
+//      Returns: none
+//      Parameters:
+//          position (size_type) - the index of the location where the item is to be added
+//          value (value_type) - the value of the item to be added
+//----------------------------------------------------------------------------------------
 void Sequence::insert( size_type position, value_type value )
 {
     if (position < 0 || position > size()) {
@@ -164,6 +217,11 @@ void Sequence::insert( size_type position, value_type value )
     }
 }
 
+//-----------------------------------------------------
+// front: returns the item at the front of the sequence
+//      Returns: the item at the front of the sequence
+//      Parameters: none
+//-----------------------------------------------------
 const Sequence::value_type& Sequence::front() const
 {
     if (head == NULL) {
@@ -175,17 +233,27 @@ const Sequence::value_type& Sequence::front() const
     }
 }
 
+//---------------------------------------------------
+// back: returns the item at the back of the sequence
+//      Returns: the item at the back of the sequence
+//      Parameters: none
+//---------------------------------------------------
 const Sequence::value_type& Sequence::back() const
 {
     if (tail == NULL) {
         throw exception();
     }
-    
+
     else {
         return tail->elt;
     }
 }
 
+//-------------------------------------------
+// empty: determines if the sequence is empty
+//      Returns: none
+//      Parameters: none
+//-------------------------------------------
 bool Sequence::empty() const
 {
     if (head == NULL) {
@@ -196,19 +264,21 @@ bool Sequence::empty() const
     }
 }
 
+//--------------------------------------------------
+// size: returns the size of the sequence
+//      Returns: the number of items in the sequence
+//      Parameters: none
+//--------------------------------------------------
 Sequence::size_type Sequence::size() const
 {
     return numElts;
-
-    // int count = 0;
-    // SequenceNode* current = head;
-    // while (current != NULL) {
-    //     count++;
-    //     current = current->next;
-    // }
-    // return count;
 }
 
+//---------------------------------------------------------
+// clear: empties the sequence by removing all of the items
+//      Returns: none
+//      Parameters: none
+//---------------------------------------------------------
 void Sequence::clear()
 {
     SequenceNode* current = head;
@@ -223,6 +293,13 @@ void Sequence::clear()
     numElts = 0;
 }
 
+//-------------------------------------------------------------------------------------------
+// erase: removes the specified number of sequential items starting at the specified location
+//      Returns: none
+//      Parameters:
+//          position (size_type) - the index of the first item to be removed
+//          count (size_type) - the number of items to be removed
+//-------------------------------------------------------------------------------------------
 void Sequence::erase( size_type position, size_type count )
 {
     if (position < 0 || position > size()) {
@@ -255,7 +332,7 @@ void Sequence::erase( size_type position, size_type count )
         SequenceNode* aliveNode;
         for (int i = 0; i < count; i++) {
             aliveNode = killNode->next;
-            aliveNode->prev = NULL; // this doesn't exist when at last item
+            aliveNode->prev = NULL;
             head = aliveNode;
             delete killNode;
             numElts--;
@@ -298,16 +375,25 @@ void Sequence::erase( size_type position, size_type count )
     }
 }
 
-// void Sequence::killNode( SequenceNode& node ) {
-
-// }
-
+//-------------------------------------------------------------------
+// operator<<: prints out the sequence (uses the print function)
+//      Returns: the output stream
+//      Parameters:
+//          os (ostream&) - the output stream
+//          s (Sequence&) - a reference to the sequence being printed
+//-------------------------------------------------------------------
 ostream& operator<<( ostream& os, Sequence& s )
 {
     s.print(os);
     return os;
 }
 
+//-----------------------------------------------------------------
+// print: prints out the sequence (used by the operator<< function)
+//      Returns: none
+//      Parameters:
+//          os (ostream&) - the output stream
+//-----------------------------------------------------------------
 void Sequence::print(ostream& os) const {
     SequenceNode* current = head;
     while (current != NULL) {
