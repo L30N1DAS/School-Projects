@@ -50,9 +50,13 @@
 
 //     Sequence seq3(5);
 //     cout << seq3 << endl;
-//     seq3.erase(1, 3);
-//     // seq3.erase(2, 5); // issues with cuz aliveNode doesn't exit for last iteration
+//     //seq3.erase(5, 1);
+//     //seq3.insert(5, 30);
+//     seq3.erase(1, 0); // issues with cuz aliveNode doesn't exit for last iteration
 //     //seq3[2] = 100;
-//     cout << seq3 << endl;
+//     cout << seq3 << endl << endl << endl;
+
+//     // seq3[-1] = 20;
+//     // cout << seq3 << endl;
 
 // }
