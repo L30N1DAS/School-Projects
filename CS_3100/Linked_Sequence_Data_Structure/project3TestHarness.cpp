@@ -26,8 +26,8 @@
 #define __COPY_CONSTRUCTOR
 #define __MEMORY_LEAK_TEST
 
-#define NUM_MEM_TESTS 1000
-#define MEM_TEST_SIZE 10
+#define NUM_MEM_TESTS 10000
+#define MEM_TEST_SIZE 1000
 
 #ifdef __GRADING
 #include <fstream>
@@ -593,12 +593,15 @@ int main()
 		OUTSTREAM << "------------------------" << endl;
 #ifdef __MEMORY_LEAK_TEST
 		cout << "Pre-memory leak test..." << endl;
-		system("pause");
+		// system("pause");
+        string s;
+        cin >> s;
 		for (int i = 0; i < NUM_MEM_TESTS; i++) {
 			memoryLeakTest();
 		}
 		cout << "Post-memory leak test..." << endl;
-		system("pause");
+		// system("pause");
+        cin >> s;
 
 		OUTSTREAM << "No memory leak found" << endl;
 		OUTSTREAM << "*** Error:  memory leak found" << endl << endl;
