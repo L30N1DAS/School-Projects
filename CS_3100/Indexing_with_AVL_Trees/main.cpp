@@ -1,6 +1,8 @@
 #include "AVLTree.h"
 #include <iostream>
 #include <string>
+// #include <vector>
+// #include <stdlib.h>
 
 using namespace std;
 
@@ -10,7 +12,7 @@ int main() {
     tree.insert(100, "one hundred");
     cout << tree << endl << endl;
 
-    tree.insert(50, "seventy-five");
+    tree.insert(50, "fifty");
     cout << tree << endl << endl;
 
     tree.insert(150, "one hundred fifty");
@@ -36,8 +38,11 @@ int main() {
     cout << tree.insert(50, "one hundred") << endl;
     cout << tree.getHeight() << endl << endl;
 
-    //cout << tree.find(125, "one") << endl;
-    //cout << tree << endl;
+    string testOr = "one";
+    string &test = testOr;
+
+    cout << tree.find(126, test) << endl;
+    cout << tree << endl;
 
     AVLTree tree3;
     tree3.insert(1000, "one thousand");
@@ -58,4 +63,39 @@ int main() {
 
     cout << tree << endl;
     cout << tree3 << endl << endl;
+
+    
+    vector<string> vec = tree.findRange(0, 14);
+    // vector<int>::iterator it;
+    // for (it = vec.begin(); it != vec.end(); it++) {
+    //     cout << *it << endl;
+    // }
+    //vector<string> vec = tree.findRange(30, 200);//all of it
+	// for (vector<string>::iterator it = vec.begin(); it != vec.end(); ++it) {	
+	// 	cout << *it << endl;
+	// }
+    cout << "vec.size() = " << vec.size() << endl;
+    for (int i = 0; i < vec.size(); i++) {
+        cout << vec[i] << endl;
+    }
+
+    cout << tree3.getHeight() << endl << endl;
+
+
+    AVLTree tree4;
+    tree4.insert(3, "three");
+    tree4.insert(2, "two");
+    tree4.insert(1, "one");
+    cout << tree4 << endl << endl;
+    cout << tree4.getHeight() << endl;
+
+    //cout << tree4.getLeftHeight() << endl;
+
+    AVLTree tree5;
+    tree5.insert(3, "three");
+    cout << tree5 << endl;
+    tree5.insert(1, "one");
+    cout << tree5 << endl;
+    tree5.insert(2, "two");
+    cout << tree5 << endl;
 }

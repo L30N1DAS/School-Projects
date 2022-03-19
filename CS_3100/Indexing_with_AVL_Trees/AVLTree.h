@@ -39,10 +39,10 @@ private:
 	public:
         int key;
         string value;
+        int leftHeight;
+        int rightHeight;
 		AVLTreeNode* left;
 		AVLTreeNode* right;
-		int leftHeight;
-        int rightHeight;
         AVLTreeNode* parent;
 
 		AVLTreeNode() {
@@ -51,13 +51,13 @@ private:
             parent = nullptr;
 		}
 
-		AVLTreeNode(int thiskey, string thisvalue, int thisleftHeight, int thisrightHeight) {
+		AVLTreeNode(int thiskey, string thisvalue, int thisleftH, int thisrightH) {
 			left = nullptr;
 			right = nullptr;
 			key = thiskey;
             value = thisvalue;
-            leftHeight = thisleftHeight;
-            rightHeight = thisrightHeight;
+            leftHeight = thisleftH;
+            rightHeight = thisrightH;
             parent = nullptr;
 		}
 
@@ -76,15 +76,35 @@ private:
 
     bool insertHelper(int, string, AVLTreeNode*&);
 
-    int getLeftHeight();
+    void singleRightRotate(AVLTreeNode*&);
 
-    int getLeftHeightHelper(AVLTreeNode*&, int);
+    void singleLeftRotate(AVLTreeNode*&);
 
-    int getRightHeight();
+    void doubleLeftRotate(AVLTreeNode*&);
+
+    void doubleRightRotate(AVLTreeNode*&);
+
+
+
+    // int getLeftHeight();
+
+    // int getLeftHeightHelper(AVLTreeNode*&, int);
+
+    // int getRightHeight();
 
     void deleteTreePostorder(AVLTreeNode*&);
 
-    int getHeightHelper();
+    int getHeightHelper(AVLTreeNode*, int);
+
+    int getBalance(const AVLTreeNode*);
 
     bool findHelper(int, string&, AVLTreeNode*&);
+
+    vector<string> findRangeHelper(int, int, const AVLTreeNode*, vector<string>&);
+
+
+    int getLeftHeight(AVLTreeNode*, int);
+
+    int getRightHeight(AVLTreeNode*, int);
+
 };
