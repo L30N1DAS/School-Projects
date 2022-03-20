@@ -37,7 +37,7 @@ AVLTree::~AVLTree() {
     numElts = 0;
 }
 
-void AVLTree::deleteTreePostorder(AVLTreeNode*& current) {
+void AVLTree::deleteTreePostorder(AVLTreeNode* current) {
     if (current == NULL) {
         return;
     }
@@ -179,7 +179,11 @@ void AVLTree::singleRightRotate(AVLTreeNode*& problem, bool singleRotate) {
     AVLTreeNode* hook = problem->left;
     AVLTreeNode* tmp = hook->right;
 
-    AVLTreeNode* problemParent = getParent(problem, root);
+    AVLTreeNode* problemParent = NULL;// = getParent(problem, root);
+
+    if (problem != root) {
+        problemParent = getParent(problem, root);
+    }
 
     hook->right = problem;
     problem->left = tmp;
@@ -204,14 +208,18 @@ void AVLTree::singleRightRotate(AVLTreeNode*& problem, bool singleRotate) {
     // else find parent // root != problem
     
     hook->rightHeight = getHeightHelper(hook->right, 0);
-    problem->leftHeight = getHeightHelper(hook->left, 0);
+    hook->right->leftHeight = getHeightHelper(hook->right->left, 0);
 }
 
 void AVLTree::singleLeftRotate(AVLTreeNode*& problem, bool singleRotate) {
     AVLTreeNode* hook = problem->right;
     AVLTreeNode* tmp = hook->left;
 
-    AVLTreeNode* problemParent = getParent(problem, root);
+    AVLTreeNode* problemParent = NULL;
+
+    if (problem != root) {
+        problemParent = getParent(problem, root);
+    }
 
     hook->left = problem;
     problem->right = tmp;
@@ -222,6 +230,7 @@ void AVLTree::singleLeftRotate(AVLTreeNode*& problem, bool singleRotate) {
         }
         else {
             problemParent->left = hook;
+            // problem = hook->left;
         }
     }
 
@@ -237,7 +246,7 @@ void AVLTree::singleLeftRotate(AVLTreeNode*& problem, bool singleRotate) {
     }
 
     hook->leftHeight = getHeightHelper(hook->left, 0);
-    problem->rightHeight = getHeightHelper(hook->right, 0);
+    hook->left->rightHeight = getHeightHelper(hook->left->right, 0);
 }
 
 // going correct way. first call does not update the problem node
@@ -252,21 +261,25 @@ void AVLTree::doubleRightRotate(AVLTreeNode*& problem) {
 }
 
 // AVLTreeNode* AVLTree::getParent(AVLTreeNode* child) {
-AVLTree::AVLTreeNode* AVLTree::getParent(AVLTreeNode* child, AVLTreeNode* current) {
-    if (current == NULL || current->value == child->value) {
+AVLTree::AVLTreeNode* AVLTree::getParent(const AVLTreeNode* child, AVLTreeNode* current) {
+    if (current == NULL/*|| current->value == child->value*/) {
         return NULL;
     }
     else {
         if (child->key < current->key) {
-            getParent(child, current->left);
             if (current->left->value == child->value || current->right->value == child->value) {
                 return current;
             }
+            else {
+                return getParent(child, current->left);
+            }
         }
         else if (child->key > current->key) {
-            getParent(child, current->right);
             if (current->left->value == child->value || current->right->value == child->value) {
                 return current;
+            }
+            else {
+                return getParent(child, current->right);
             }
         }
     }

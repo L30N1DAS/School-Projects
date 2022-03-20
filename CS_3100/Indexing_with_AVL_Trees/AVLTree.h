@@ -92,7 +92,7 @@ private:
 
     // int getRightHeight();
 
-    void deleteTreePostorder(AVLTreeNode*&);
+    void deleteTreePostorder(AVLTreeNode*);
 
     int getHeightHelper(AVLTreeNode*, int);
 
@@ -106,6 +106,6 @@ private:
 
     int getRightHeight(AVLTreeNode*, int);
 
-    AVLTreeNode* getParent(AVLTreeNode*, AVLTreeNode*);
+    AVLTreeNode* getParent(const AVLTreeNode*, AVLTreeNode*);
 
 };
