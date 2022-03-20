@@ -158,10 +158,10 @@ bool AVLTree::insertHelper(int key, string value, AVLTreeNode*& current) {
         bool result = insertHelper(key, value, current->right);
         if (result == true) {
             current->rightHeight = getHeightHelper(current->right, 0);
-            if (getBalance(current) > 1 && getBalance(current->right) > 0) {
+            if (getBalance(current) < -1 && getBalance(current->right) < 0) {
                 singleLeftRotate(current, true);
             }
-            else if (getBalance(current) > 1 && getBalance(current->right) < 0) {
+            else if (getBalance(current) < -1 && getBalance(current->right) > 0) {
                 //doubleRightRotate(current);
                 doubleLeftRotate(current);
             }
@@ -188,21 +188,21 @@ void AVLTree::singleRightRotate(AVLTreeNode*& problem, bool singleRotate) {
     hook->right = problem;
     problem->left = tmp;
 
+    if (root == problem) {
+        root = hook;
+    }
+
     // if (problemParent != NULL) {
     //     problemParent->right = hook;
     // }
 
     if (problemParent != NULL) {
-        if (singleRotate) {
+        if (problemParent->key > problem->key) {
             problemParent->left = hook;
         }
         else {
             problemParent->right = hook;
         }
-    }
-
-    if (root == problem) {
-        root = hook;
     }
 
     // else find parent // root != problem
@@ -224,8 +224,12 @@ void AVLTree::singleLeftRotate(AVLTreeNode*& problem, bool singleRotate) {
     hook->left = problem;
     problem->right = tmp;
 
+    if (root == problem) {
+        root = hook;
+    }
+
     if (problemParent != NULL) {
-        if (singleRotate) {
+        if (problemParent->key < problem->key) {
             problemParent->right = hook;
         }
         else {
@@ -240,10 +244,6 @@ void AVLTree::singleLeftRotate(AVLTreeNode*& problem, bool singleRotate) {
     // if (problemParent != NULL) {
     //     problemParent->left = hook;
     // }
-
-    if (root == problem) {
-        root = hook;
-    }
 
     hook->leftHeight = getHeightHelper(hook->left, 0);
     hook->left->rightHeight = getHeightHelper(hook->left->right, 0);
@@ -261,13 +261,13 @@ void AVLTree::doubleRightRotate(AVLTreeNode*& problem) {
 }
 
 // AVLTreeNode* AVLTree::getParent(AVLTreeNode* child) {
-AVLTree::AVLTreeNode* AVLTree::getParent(const AVLTreeNode* child, AVLTreeNode* current) {
+AVLTree::AVLTreeNode* AVLTree::getParent(AVLTreeNode* child, AVLTreeNode* current) {
     if (current == NULL/*|| current->value == child->value*/) {
         return NULL;
     }
     else {
         if (child->key < current->key) {
-            if (current->left->value == child->value || current->right->value == child->value) {
+            if (current->left->value == child->value/* || current->right->value == child->value*/) {
                 return current;
             }
             else {
@@ -275,7 +275,7 @@ AVLTree::AVLTreeNode* AVLTree::getParent(const AVLTreeNode* child, AVLTreeNode* 
             }
         }
         else if (child->key > current->key) {
-            if (current->left->value == child->value || current->right->value == child->value) {
+            if (/*current->left->value == child->value || */current->right->value == child->value) {
                 return current;
             }
             else {

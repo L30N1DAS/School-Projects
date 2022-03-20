@@ -106,6 +106,6 @@ private:
 
     int getRightHeight(AVLTreeNode*, int);
 
-    AVLTreeNode* getParent(const AVLTreeNode*, AVLTreeNode*);
+    AVLTreeNode* getParent(AVLTreeNode*, AVLTreeNode*);
 
 };
