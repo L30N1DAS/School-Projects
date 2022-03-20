@@ -76,9 +76,9 @@ private:
 
     bool insertHelper(int, string, AVLTreeNode*&);
 
-    void singleRightRotate(AVLTreeNode*&);
+    void singleRightRotate(AVLTreeNode*&, bool);
 
-    void singleLeftRotate(AVLTreeNode*&);
+    void singleLeftRotate(AVLTreeNode*&, bool);
 
     void doubleLeftRotate(AVLTreeNode*&);
 
@@ -102,9 +102,10 @@ private:
 
     vector<string> findRangeHelper(int, int, const AVLTreeNode*, vector<string>&);
 
-
     int getLeftHeight(AVLTreeNode*, int);
 
     int getRightHeight(AVLTreeNode*, int);
+
+    AVLTreeNode* getParent(AVLTreeNode*, AVLTreeNode*);
 
 };

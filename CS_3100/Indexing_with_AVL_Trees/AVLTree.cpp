@@ -145,7 +145,7 @@ bool AVLTree::insertHelper(int key, string value, AVLTreeNode*& current) {
             // int leftChildBalance = current->left->leftHeight
             // maybe rotate
             if (getBalance(current) > 1 && getBalance(current->left) > 0) {
-                singleRightRotate(current);
+                singleRightRotate(current, true);
             }
             else if (getBalance(current) > 1 && getBalance(current->left) < 0) {
                 //doubleLeftRotate(current);
@@ -159,7 +159,7 @@ bool AVLTree::insertHelper(int key, string value, AVLTreeNode*& current) {
         if (result == true) {
             current->rightHeight = getHeightHelper(current->right, 0);
             if (getBalance(current) > 1 && getBalance(current->right) > 0) {
-                singleLeftRotate(current);
+                singleLeftRotate(current, true);
             }
             else if (getBalance(current) > 1 && getBalance(current->right) < 0) {
                 //doubleRightRotate(current);
@@ -175,27 +175,62 @@ bool AVLTree::insertHelper(int key, string value, AVLTreeNode*& current) {
 
 // recalc hook->right height on srr
 // recalc hook right height
-void AVLTree::singleRightRotate(AVLTreeNode*& problem) {
+void AVLTree::singleRightRotate(AVLTreeNode*& problem, bool singleRotate) {
     AVLTreeNode* hook = problem->left;
     AVLTreeNode* tmp = hook->right;
+
+    AVLTreeNode* problemParent = getParent(problem, root);
 
     hook->right = problem;
     problem->left = tmp;
 
+    // if (problemParent != NULL) {
+    //     problemParent->right = hook;
+    // }
+
+    if (problemParent != NULL) {
+        if (singleRotate) {
+            problemParent->left = hook;
+        }
+        else {
+            problemParent->right = hook;
+        }
+    }
+
     if (root == problem) {
         root = hook;
     }
+
+    // else find parent // root != problem
     
     hook->rightHeight = getHeightHelper(hook->right, 0);
     problem->leftHeight = getHeightHelper(hook->left, 0);
 }
 
-void AVLTree::singleLeftRotate(AVLTreeNode*& problem) {
+void AVLTree::singleLeftRotate(AVLTreeNode*& problem, bool singleRotate) {
     AVLTreeNode* hook = problem->right;
     AVLTreeNode* tmp = hook->left;
 
+    AVLTreeNode* problemParent = getParent(problem, root);
+
     hook->left = problem;
     problem->right = tmp;
+
+    if (problemParent != NULL) {
+        if (singleRotate) {
+            problemParent->right = hook;
+        }
+        else {
+            problemParent->left = hook;
+        }
+    }
+
+    // in double rotate, make prob's parent's left pointer point to hook
+    // ie. use bool deciding whether to make change, pass in parent as parameter
+    // make change in if statement
+    // if (problemParent != NULL) {
+    //     problemParent->left = hook;
+    // }
 
     if (root == problem) {
         root = hook;
@@ -207,13 +242,40 @@ void AVLTree::singleLeftRotate(AVLTreeNode*& problem) {
 
 // going correct way. first call does not update the problem node
 void AVLTree::doubleLeftRotate(AVLTreeNode*& problem) {
-    singleRightRotate(problem->right);
-    singleLeftRotate(problem);
+    singleRightRotate(problem->right, false);
+    singleLeftRotate(problem, true);
 }
 
 void AVLTree::doubleRightRotate(AVLTreeNode*& problem) {
-    singleLeftRotate(problem->left);
-    singleRightRotate(problem);
+    singleLeftRotate(problem->left, false);
+    singleRightRotate(problem, true);
+}
+
+// AVLTreeNode* AVLTree::getParent(AVLTreeNode* child) {
+AVLTree::AVLTreeNode* AVLTree::getParent(AVLTreeNode* child, AVLTreeNode* current) {
+    if (current == NULL || current->value == child->value) {
+        return NULL;
+    }
+    else {
+        if (child->key < current->key) {
+            getParent(child, current->left);
+            if (current->left->value == child->value || current->right->value == child->value) {
+                return current;
+            }
+        }
+        else if (child->key > current->key) {
+            getParent(child, current->right);
+            if (current->left->value == child->value || current->right->value == child->value) {
+                return current;
+            }
+        }
+    }
+        // if (current->left == child || current->right == child) {
+        //     return current;
+        //     bool parentFound = true;
+        // }
+        // getParent(child, current->left);
+        // getParent(child, current->right);
 }
 
 // test this and fix getHeight, getLeftHeight, and getRightHeight

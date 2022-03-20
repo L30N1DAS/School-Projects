@@ -47,7 +47,7 @@ int main() {
     AVLTree tree3;
     tree3.insert(1000, "one thousand");
     tree3.insert(500, "five hundred");
-    tree3. insert(250, "two hundred fifty");
+    tree3.insert(250, "two hundred fifty");
     cout << tree3 << endl << endl;
 
     cout << tree << endl;
