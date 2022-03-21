@@ -8,6 +8,7 @@
 using namespace std;
 
 class AVLTree {
+
 public:
 
     AVLTree();
@@ -18,18 +19,17 @@ public:
 
     bool insert(int, string);
 
-    int getHeight();
+    int getHeight() const;
 
-    int getSize();
+    int getSize() const;
 
-    bool find(int, string&);
+    bool find(int, string&) const;
 
-    vector<string> findRange(int, int);
+    vector<string> findRange(int, int) const;
 
     friend ostream& operator<<(ostream&, const AVLTree&);
 
     AVLTree& operator=(const AVLTree& a);
-
     
 private:
 
@@ -41,12 +41,10 @@ private:
         int rightHeight;
 		AVLTreeNode* left;
 		AVLTreeNode* right;
-        AVLTreeNode* parent;
 
 		AVLTreeNode() {
 			left = nullptr;
 			right = nullptr;
-            parent = nullptr;
 		}
 
 		AVLTreeNode(int thiskey, string thisvalue, int thisleftH, int thisrightH) {
@@ -56,11 +54,9 @@ private:
             value = thisvalue;
             leftHeight = thisleftH;
             rightHeight = thisrightH;
-            parent = nullptr;
 		}
 
 		~AVLTreeNode() {};
-
 	};
 
     AVLTreeNode* root;
@@ -82,18 +78,13 @@ private:
 
     void deleteTreePostorder(AVLTreeNode*);
 
-    int getHeightHelper(AVLTreeNode*, int);
+    int getHeightHelper(const AVLTreeNode*, int) const;
 
-    int getBalance(const AVLTreeNode*);
+    int getBalance(const AVLTreeNode*) const;
 
-    bool findHelper(int, string&, AVLTreeNode*&);
+    bool findHelper(int, string&, const AVLTreeNode*) const;
 
-    vector<string> findRangeHelper(int, int, const AVLTreeNode*, vector<string>&);
+    vector<string> findRangeHelper(int, int, const AVLTreeNode*, vector<string>&) const;
 
-    int getLeftHeight(AVLTreeNode*, int);
-
-    int getRightHeight(AVLTreeNode*, int);
-
-    AVLTreeNode* getParent(AVLTreeNode*, AVLTreeNode*);
-
+    AVLTreeNode* getParent(const AVLTreeNode*, AVLTreeNode*) const;
 };

@@ -11,7 +11,7 @@
 // Sequence: Constructor for the sequence
 //      Returns: none
 //      Parameters:
-//      sz (size_type) - size of the sequence
+//          sz (size_type) - size of the sequence
 //-------------------------------------------
 Sequence::Sequence( size_type sz )
 {
@@ -312,11 +312,11 @@ const Sequence::value_type& Sequence::back() const
     }
 }
 
-//-------------------------------------------
+//----------------------------------------------------------------
 // empty: determines if the sequence is empty
-//      Returns: none
+//      Returns: true if the sequence is empty and false otherwise
 //      Parameters: none
-//-------------------------------------------
+//----------------------------------------------------------------
 bool Sequence::empty() const
 {
     // returns 1 if the sequence is empty

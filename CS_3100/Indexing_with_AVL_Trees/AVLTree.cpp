@@ -1,25 +1,43 @@
+//----------------------------------------------------------------
+// Name: Anmol Saini
+// Project 4: Indexing with AVL Trees
+//      This file contains the functions implemented for AVL trees
+//----------------------------------------------------------------
+
 #include "AVLTree.h"
 #include <exception>
 
+//--------------------------------------
+// AVLTree: Constructor for the AVL tree
+//      Returns: none
+//      Parameters: none
+//--------------------------------------
 AVLTree::AVLTree() {
     root = NULL;
     numElts = 0;
 }
 
+//----------------------------------------------------------------------------------
+// AVLTree: Copy Constructor for the AVL tree
+//      Returns: none
+//      Parameters:
+//          a (AVLTree&) - the AVL tree off of which the new AVL tree is being based
+//----------------------------------------------------------------------------------
 AVLTree::AVLTree(const AVLTree& a) {
-    // this may not be necessary if the if statement in the recursive function is updated
-    if (a.root == NULL) {
-        root = NULL;
-        return;
-    }
-
     numElts = a.numElts;
-
     createNewTreePreorder(a.root, root);
 }
 
+//----------------------------------------------------------------------------------------------------
+// createNewTreePreorder: used by the Copy Constructor and operator= function to duplicate an AVL tree
+//      Returns: none
+//      Parameters:
+//          aCurrent (AVLTreeNode*) - pointer to the nodes of the old AVL tree
+//          current (AVLTreeNode*&) - reference to the pointer to the nodes of the new AVL tree
+//----------------------------------------------------------------------------------------------------
 void AVLTree::createNewTreePreorder(const AVLTreeNode* aCurrent, AVLTreeNode*& current) {
     if (aCurrent == NULL) {
+        current = NULL;
         return;
     }
     else {
@@ -29,6 +47,11 @@ void AVLTree::createNewTreePreorder(const AVLTreeNode* aCurrent, AVLTreeNode*& c
     }
 }
 
+//--------------------------------------
+// ~AVLTree: Destructor for the AVL tree
+//      Returns: none
+//      Parameters: none
+//--------------------------------------
 AVLTree::~AVLTree() {
     deleteTreePostorder(root);
 
@@ -36,6 +59,12 @@ AVLTree::~AVLTree() {
     numElts = 0;
 }
 
+//-----------------------------------------------------------------------------------------
+// deleteTreePostorder: used by the Destructor and operator= function to delete an AVL tree
+//      Returns: none
+//      Parameters:
+//          current (AVLTreeNode*) - pointer to the nodes of the AVL tree
+//-----------------------------------------------------------------------------------------
 void AVLTree::deleteTreePostorder(AVLTreeNode* current) {
     if (current == NULL) {
         return;
@@ -47,6 +76,12 @@ void AVLTree::deleteTreePostorder(AVLTreeNode* current) {
     }
 }
 
+//-------------------------------------------------------------------------------------------------
+// operator=: sets an AVL tree equal to a provided AVL tree
+//      Returns: a reference to the AVL tree that is being set equal to the provided AVL tree
+//      Parameters:
+//          a (AVLTree&) - reference to the AVL tree to which another AVL tree is being set equal
+//-------------------------------------------------------------------------------------------------
 AVLTree& AVLTree::operator=(const AVLTree& a) {
     deleteTreePostorder(root);
     root = NULL;
@@ -56,14 +91,34 @@ AVLTree& AVLTree::operator=(const AVLTree& a) {
     return (*this);
 }
 
-int AVLTree::getSize() {
+//--------------------------------------------------
+// getSize: returns the size of the AVL tree
+//      Returns: the number of items in the AVL tree
+//      Parameters: none
+//--------------------------------------------------
+int AVLTree::getSize() const {
     return numElts;
 }
 
+//----------------------------------------------------------------------------
+// insert: adds new items to the AVL tree
+//      Returns: true if the item is added to the AVL tree and false otherwise
+//      Parameters:
+//          key (integer) - the index or label of the item to be added
+//          value (string) - the data associated with the item to be added
+//----------------------------------------------------------------------------
 bool AVLTree::insert(int key, string value) {
     return insertHelper(key, value, root);
 }
 
+//-----------------------------------------------------------------------------------------
+// insertHelper: used by the insert function to add new items to the AVL tree
+//      Returns: true if the item is added to the AVL tree and false otherwise
+//      Parameters:
+//          key (integer) - the index or label of the item to be added
+//          value (string) - the data associated with the item to be added
+//          current (AVLTreeNode*&) - reference to the pointer to the nodes of the AVL tree
+//-----------------------------------------------------------------------------------------
 bool AVLTree::insertHelper(int key, string value, AVLTreeNode*& current) {
     if (current == NULL) {
         current = new AVLTreeNode(key, value, 0, 0);
@@ -106,6 +161,12 @@ bool AVLTree::insertHelper(int key, string value, AVLTreeNode*& current) {
     }
 }
 
+//----------------------------------------------------------------------------------------------------------
+// singleRightRotate: performs a single right rotation to rebalance the AVL tree
+//      Returns: none
+//      Parameters:
+//          problem (AVLTreeNode*&) - reference to the pointer to the node to be singly rotated to the right
+//----------------------------------------------------------------------------------------------------------
 void AVLTree::singleRightRotate(AVLTreeNode*& problem) {
     AVLTreeNode* hook = problem->left;
     AVLTreeNode* tmp = hook->right;
@@ -136,6 +197,12 @@ void AVLTree::singleRightRotate(AVLTreeNode*& problem) {
     hook->right->leftHeight = getHeightHelper(hook->right->left, 0);
 }
 
+//---------------------------------------------------------------------------------------------------------
+// singleLeftRotate: performs a single left rotation to rebalance the AVL tree
+//      Returns: none
+//      Parameters:
+//          problem (AVLTreeNode*&) - reference to the pointer to the node to be singly rotated to the left
+//---------------------------------------------------------------------------------------------------------
 void AVLTree::singleLeftRotate(AVLTreeNode*& problem) {
     AVLTreeNode* hook = problem->right;
     AVLTreeNode* tmp = hook->left;
@@ -166,17 +233,36 @@ void AVLTree::singleLeftRotate(AVLTreeNode*& problem) {
     hook->left->rightHeight = getHeightHelper(hook->left->right, 0);
 }
 
+//---------------------------------------------------------------------------------------------------------
+// doubleLeftRotate: performs a double left rotation to rebalance the AVL tree
+//      Returns: none
+//      Parameters:
+//          problem (AVLTreeNode*&) - reference to the pointer to the node to be doubly rotated to the left
+//---------------------------------------------------------------------------------------------------------
 void AVLTree::doubleLeftRotate(AVLTreeNode*& problem) {
     singleRightRotate(problem->right);
     singleLeftRotate(problem);
 }
 
+//----------------------------------------------------------------------------------------------------------
+// doubleRightRotate: performs a double right rotation to rebalance the AVL tree
+//      Returns: none
+//      Parameters:
+//          problem (AVLTreeNode*&) - reference to the pointer to the node to be doubly rotated to the right
+//----------------------------------------------------------------------------------------------------------
 void AVLTree::doubleRightRotate(AVLTreeNode*& problem) {
     singleLeftRotate(problem->left);
     singleRightRotate(problem);
 }
 
-AVLTree::AVLTreeNode* AVLTree::getParent(AVLTreeNode* child, AVLTreeNode* current) {
+//-------------------------------------------------------------------------------------
+// getParent: returns a pointer to the parent node of a specified node in thw AVL tree
+//      Returns: pointer to the parent node of a specified node
+//      Parameters:
+//          child (AVLTreeNode*) - pointer to the node whose parent is being determined
+//          current (AVLTreeNode*) - pointer to the nodes of the AVL tree
+//-------------------------------------------------------------------------------------
+AVLTree::AVLTreeNode* AVLTree::getParent(const AVLTreeNode* child, AVLTreeNode* current) const {
     if (current == NULL) {
         return NULL;
     }
@@ -200,11 +286,26 @@ AVLTree::AVLTreeNode* AVLTree::getParent(AVLTreeNode* child, AVLTreeNode* curren
     }
 }
 
-bool AVLTree::find(int key, string& value) {
+//-------------------------------------------------------------------------------------------
+// find: retrieves the value in a specified node and puts it in a specified string
+//      Returns: true if the value is retrieved and false otherwise
+//      Parameters:
+//          key (integer) - the index or label of the item being searched for in the AVL tree
+//          value (string&) - reference to a string to hold the value of the specified node
+//-------------------------------------------------------------------------------------------
+bool AVLTree::find(int key, string& value) const {
     return findHelper(key, value, root);
 }
 
-bool AVLTree::findHelper(int key, string& value, AVLTreeNode*& current) {
+//-----------------------------------------------------------------------------------------------------------------
+// findHelper: used by the find function to retrieve the value in a specified node and put it in a specified string
+//      Returns: true if the value is retrieved and false otherwise
+//      Parameters:
+//          key (integer) - the index or label of the item being searched for in the AVL tree
+//          value (string&) - reference to a string to hold the value of the specified node
+//          current (AVLTreeNode*&) - reference to the pointer to the nodes of the AVL tree
+//-----------------------------------------------------------------------------------------------------------------
+bool AVLTree::findHelper(int key, string& value, const AVLTreeNode* current) const {
     if (current == NULL) {
         return false;
     }
@@ -220,11 +321,23 @@ bool AVLTree::findHelper(int key, string& value, AVLTreeNode*& current) {
     }
 }
 
-int AVLTree::getHeight() {
+//-------------------------------------------------
+// getHeight: calculates the height of the AVL tree
+//      Returns: the height of the AVL tree
+//      Parameters: none
+//-------------------------------------------------
+int AVLTree::getHeight() const {
     return getHeightHelper(root, 0) - 1;
 }
 
-int AVLTree::getHeightHelper(AVLTreeNode* current, int height) {
+//----------------------------------------------------------------------------------------------------------------------
+// getHeightHelper: used by the getHeight, insertHelper, and rotate functions to calulate the height of a specified node
+//      Returns: the height of the node
+//      Parameters: 
+//          current (AVLTreeNode*) - pointer to the node to have its height calculated
+//          height (integer) - the height of the current node
+//----------------------------------------------------------------------------------------------------------------------
+int AVLTree::getHeightHelper(const AVLTreeNode* current, int height) const {
     if (current == NULL) {
         return 0;
     }
@@ -240,22 +353,51 @@ int AVLTree::getHeightHelper(AVLTreeNode* current, int height) {
     }
 }
 
-int AVLTree::getBalance(const AVLTreeNode* current) {
+//-------------------------------------------------------------------------------------
+// getBalance: calulates the balance of a specified node
+//      Returns: the balance of the node
+//      Parameters:
+//          current (AVLTreeNode*) - pointer to the node to have its balance calculated
+//-------------------------------------------------------------------------------------
+int AVLTree::getBalance(const AVLTreeNode* current) const {
     return current->leftHeight - current->rightHeight;
 }
-     
+
+//-----------------------------------------------------------------
+// operator<<: prints out the AVL tree
+//      Returns: the output stream
+//      Parameters:
+//          os (ostream&) - reference to the output stream
+//          me (AVLTree&) - reference to the AVL tree being printed
+//-----------------------------------------------------------------
 ostream& operator<<(ostream& os, const AVLTree& me) {
     int level = 0;
     me.printPreorder(os, me.root, level);
     return os;
 }
 
-vector<string> AVLTree::findRange(int lowkey, int highkey) {
+//----------------------------------------------------------------------------------------------------------------------------------
+// findRange: finds all values of the AVL tree with keys that fall between two specified numbers inclusive
+//      Returns: a vector containing all the string values of the AVL tree with keys falling between two specified numbers inclusive
+//      Parameters:
+//          lowkey (integer) - the lower bound
+//          highkey (integer) - the upper bound
+//----------------------------------------------------------------------------------------------------------------------------------
+vector<string> AVLTree::findRange(int lowkey, int highkey) const {
     vector<string> range;
     return findRangeHelper(lowkey, highkey, root, range);
 }
 
-vector<string> AVLTree::findRangeHelper(int lowkey, int highkey, const AVLTreeNode* current, vector<string>& range) {
+//---------------------------------------------------------------------------------------------------------------------------------------------
+// findRangeHelper: used by the findRange function to find all values of the AVL tree with keys falling between two specified numbers inclusive
+//      Returns: a vector containing all the string values of the AVL tree with keys falling between two specified numbers inclusive
+//      Parameters:
+//          lowkey (integer) - the lower bound
+//          highkey (integer) - the upper bound
+//          current (AVLTreeNode*) - pointer to the nodes of the AVL tree
+//          range (vector<string>&) - reference to a vector of type string holding all values of the AVL tree meeting the requirements
+//---------------------------------------------------------------------------------------------------------------------------------------------
+vector<string> AVLTree::findRangeHelper(int lowkey, int highkey, const AVLTreeNode* current, vector<string>& range) const {
     if (current == NULL) {
         return range;                                                                                                                
     }
@@ -268,6 +410,14 @@ vector<string> AVLTree::findRangeHelper(int lowkey, int highkey, const AVLTreeNo
 
 }
 
+//--------------------------------------------------------------------------------------------
+// printPreorder: used by the operator<< function to print out the AVL tree
+//      Returns: none
+//      Parameters:
+//          os (ostream&) - reference to the output stream
+//          current (AVLTreeNode*) - pointer to the nodes of the AVL tree
+//          level (integer) - records the depth of the tree to print the correct numer of tabs
+//--------------------------------------------------------------------------------------------
 void AVLTree::printPreorder(ostream& os, const AVLTreeNode* current, int level) const {
     if (current == NULL) {
         return;
@@ -281,6 +431,5 @@ void AVLTree::printPreorder(ostream& os, const AVLTreeNode* current, int level) 
     }
 
     os << current->key << ", " << current->value << endl;
-
     printPreorder(os, current->left, level+1);
 }
