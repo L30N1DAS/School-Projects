@@ -14,8 +14,6 @@ public:
 
     AVLTree(const AVLTree& a);
 
-    // void copyConstructorHelper(const AVLTree&, AVLTreeNode&);
-
     ~AVLTree();
 
     bool insert(int, string);
@@ -68,8 +66,6 @@ private:
     AVLTreeNode* root;
     unsigned int numElts;
 
-    //void print(ostream&, const AVLTreeNode*) const;
-
     void printPreorder(ostream&, const AVLTreeNode*, int) const;
 
     void createNewTreePreorder(const AVLTreeNode*, AVLTreeNode*&);
@@ -83,14 +79,6 @@ private:
     void doubleLeftRotate(AVLTreeNode*&);
 
     void doubleRightRotate(AVLTreeNode*&);
-
-
-
-    // int getLeftHeight();
-
-    // int getLeftHeightHelper(AVLTreeNode*&, int);
-
-    // int getRightHeight();
 
     void deleteTreePostorder(AVLTreeNode*);
 

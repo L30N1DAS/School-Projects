@@ -6,7 +6,6 @@ AVLTree::AVLTree() {
     numElts = 0;
 }
 
-// create this, left, right
 AVLTree::AVLTree(const AVLTree& a) {
     // this may not be necessary if the if statement in the recursive function is updated
     if (a.root == NULL) {
@@ -57,75 +56,11 @@ AVLTree& AVLTree::operator=(const AVLTree& a) {
     return (*this);
 }
 
-// /*void AVLTree::copyConstructorHelper(const AVLTree& a, AVLTreeNode& cur) {
-//     //if (a.left)
-// }*/
-
 int AVLTree::getSize() {
     return numElts;
 }
 
-// bool AVLTree::insert(int key, string value) {
-//     AVLTreeNode* current;
-//     AVLTreeNode* newNode;
-
-//     current = root;
-
-//     if (root == NULL) {
-//         newNode = new AVLTreeNode(key, value, 0, 0);
-//         root = newNode;
-//     }
-
-//     else if (key == current->key) {
-//         return false;
-//     }
-
-//     while (current->left != NULL && current->right != NULL) {
-//         if (key < current->key) {
-//             current = current->left;
-//         }
-
-//         else if (key > current->key) {
-//             current = current->right;
-//         }
-
-//         else if (key == current->key) {
-//             return false;
-//         }
-//     }
-
-//     if (current->left != NULL && key < current->key) {
-//         current = current->left;
-//         if (key == current->key) {
-//             return false;
-//         }
-//     }
-
-//     else if (current->right != NULL && key > current->key) {
-//         current = current->right;
-//         if (key == current->key) {
-//             return false;
-//         }
-//     }
-
-//     newNode = new AVLTreeNode(key, value, 0, 0);
-
-//     if (key < current->key) {
-//         current->left = newNode;
-//         numElts++;
-//         return true;
-//     }
-
-//     else if (key > current->key) {
-//         current->right = newNode;
-//         numElts++;
-//         return true;
-//     }
-// }
-
 bool AVLTree::insert(int key, string value) {
-    // AVLTreeNode* current;
-    // current = root;
     return insertHelper(key, value, root);
 }
 
@@ -148,7 +83,6 @@ bool AVLTree::insertHelper(int key, string value, AVLTreeNode*& current) {
                 singleRightRotate(current);
             }
             else if (getBalance(current) > 1 && getBalance(current->left) < 0) {
-                //doubleLeftRotate(current);
                 doubleRightRotate(current);
             }
         }
@@ -162,7 +96,6 @@ bool AVLTree::insertHelper(int key, string value, AVLTreeNode*& current) {
                 singleLeftRotate(current);
             }
             else if (getBalance(current) < -1 && getBalance(current->right) > 0) {
-                //doubleRightRotate(current);
                 doubleLeftRotate(current);
             }
         }
@@ -173,13 +106,11 @@ bool AVLTree::insertHelper(int key, string value, AVLTreeNode*& current) {
     }
 }
 
-// recalc hook->right height on srr
-// recalc hook right height
 void AVLTree::singleRightRotate(AVLTreeNode*& problem) {
     AVLTreeNode* hook = problem->left;
     AVLTreeNode* tmp = hook->right;
 
-    AVLTreeNode* problemParent = NULL;// = getParent(problem, root);
+    AVLTreeNode* problemParent = NULL;
 
     if (problem != root) {
         problemParent = getParent(problem, root);
@@ -192,10 +123,6 @@ void AVLTree::singleRightRotate(AVLTreeNode*& problem) {
         root = hook;
     }
 
-    // if (problemParent != NULL) {
-    //     problemParent->right = hook;
-    // }
-
     if (problemParent != NULL) {
         if (problemParent->key > problem->key) {
             problemParent->left = hook;
@@ -204,8 +131,6 @@ void AVLTree::singleRightRotate(AVLTreeNode*& problem) {
             problemParent->right = hook;
         }
     }
-
-    // else find parent // root != problem
     
     hook->rightHeight = getHeightHelper(hook->right, 0);
     hook->right->leftHeight = getHeightHelper(hook->right->left, 0);
@@ -234,22 +159,13 @@ void AVLTree::singleLeftRotate(AVLTreeNode*& problem) {
         }
         else {
             problemParent->left = hook;
-            // problem = hook->left;
         }
     }
-
-    // in double rotate, make prob's parent's left pointer point to hook
-    // ie. use bool deciding whether to make change, pass in parent as parameter
-    // make change in if statement
-    // if (problemParent != NULL) {
-    //     problemParent->left = hook;
-    // }
 
     hook->leftHeight = getHeightHelper(hook->left, 0);
     hook->left->rightHeight = getHeightHelper(hook->left->right, 0);
 }
 
-// going correct way. first call does not update the problem node
 void AVLTree::doubleLeftRotate(AVLTreeNode*& problem) {
     singleRightRotate(problem->right);
     singleLeftRotate(problem);
@@ -260,14 +176,13 @@ void AVLTree::doubleRightRotate(AVLTreeNode*& problem) {
     singleRightRotate(problem);
 }
 
-// AVLTreeNode* AVLTree::getParent(AVLTreeNode* child) {
 AVLTree::AVLTreeNode* AVLTree::getParent(AVLTreeNode* child, AVLTreeNode* current) {
-    if (current == NULL/*|| current->value == child->value*/) {
+    if (current == NULL) {
         return NULL;
     }
     else {
         if (child->key < current->key) {
-            if (current->left->key == child->key/* || current->right->value == child->value*/) {
+            if (current->left->key == child->key) {
                 return current;
             }
             else {
@@ -275,7 +190,7 @@ AVLTree::AVLTreeNode* AVLTree::getParent(AVLTreeNode* child, AVLTreeNode* curren
             }
         }
         else if (child->key > current->key) {
-            if (/*current->left->value == child->value || */current->right->key == child->key) {
+            if (current->right->key == child->key) {
                 return current;
             }
             else {
@@ -283,15 +198,8 @@ AVLTree::AVLTreeNode* AVLTree::getParent(AVLTreeNode* child, AVLTreeNode* curren
             }
         }
     }
-        // if (current->left == child || current->right == child) {
-        //     return current;
-        //     bool parentFound = true;
-        // }
-        // getParent(child, current->left);
-        // getParent(child, current->right);
 }
 
-// test this and fix getHeight, getLeftHeight, and getRightHeight
 bool AVLTree::find(int key, string& value) {
     return findHelper(key, value, root);
 }
@@ -313,9 +221,7 @@ bool AVLTree::findHelper(int key, string& value, AVLTreeNode*& current) {
 }
 
 int AVLTree::getHeight() {
-    //return getLeftHeight();
     return getHeightHelper(root, 0) - 1;
-
 }
 
 int AVLTree::getHeightHelper(AVLTreeNode* current, int height) {
@@ -337,52 +243,7 @@ int AVLTree::getHeightHelper(AVLTreeNode* current, int height) {
 int AVLTree::getBalance(const AVLTreeNode* current) {
     return current->leftHeight - current->rightHeight;
 }
-
-/*int AVLTree::getLeftHeight(AVLTreeNode* current, int height) {
-    if (current == NULL) {
-        return 0;
-    }
-    else {
-        int leftHeight = getHeightHelper(current->left, height);
-        int rightHeight = getHeightHelper(current->right, height);
-        return leftHeight+1;
-    }
-}
-
-int AVLTree::getRightHeight(AVLTreeNode* current, int height) {
-    if (current == NULL) {
-        return 0;
-    }
-    else {
-        int leftHeight = getHeightHelper(current->left, height);
-        int rightHeight = getHeightHelper(current->right, height);
-        return leftHeight+1;
-    }
-}*/
-
-/*int AVLTree::getLeftHeight() {
-    if (root == NULL) {
-        return 0;
-    }
-    else {
-    return getLeftHeightHelper(root->left, 0);
-    }
-}
-
-int AVLTree::getLeftHeightHelper(AVLTreeNode*& current, int height) {
-    if (current == NULL) {
-        return height;
-    }
-    else {
-        getLeftHeightHelper(current->left, height+1);
-        //cout << height << endl;
-    }
-}
-
-int AVLTree::getRightHeight() {
-
-}*/
-
+     
 ostream& operator<<(ostream& os, const AVLTree& me) {
     int level = 0;
     me.printPreorder(os, me.root, level);
@@ -404,57 +265,22 @@ vector<string> AVLTree::findRangeHelper(int lowkey, int highkey, const AVLTreeNo
     findRangeHelper(lowkey, highkey, current->left, range);
     findRangeHelper(lowkey, highkey, current->right, range);
     return range;
-    
-    // else if (current->key >= lowkey && current->key <= highkey) {
-    //     range.push_back(current->value);
-    //     findRangeHelper(lowkey, highkey, current->left, range);
-    //     findRangeHelper(lowkey, highkey, current->right, range);
-    //     return range;
-    // }
-    
 
-
-
-
-
-
-    // return findRangeHelper(lowkey, highkey, current->left, range);
-    // if (current->key >= lowkey && current->key <= highkey) {
-    //     range.push_back(current->value);
-    // }
-    // return findRangeHelper(lowkey, highkey, current->right, range);
-    // if (current->key >= lowkey && current->key <= highkey) {
-    //     range.push_back(current->value);
-    // }
-
-
-    // else if (current->key >= lowkey) {
-    //     range.push_back(current->value);
-    //     return findRangeHelper(lowkey, highkey, current->left, range);
-    // }
-    // else if (current->key <= highkey) {
-    //     range
-    // }
 }
 
-void AVLTree::printPreorder(ostream& os, const AVLTreeNode* cur, int level) const {
-    if (cur == NULL) {
+void AVLTree::printPreorder(ostream& os, const AVLTreeNode* current, int level) const {
+    if (current == NULL) {
         return;
     }
     else {
-        printPreorder(os, cur->right, level+1);
+        printPreorder(os, current->right, level+1);
 
         for (int i = 0; i < level; i++) {
             os << "\t";
         }
     }
 
-    //print(os, cur);
-    os << cur->key << ", " << cur->value << endl;
+    os << current->key << ", " << current->value << endl;
 
-    printPreorder(os, cur->left, level+1);
+    printPreorder(os, current->left, level+1);
 }
-
-// void AVLTree::print(ostream& os, const AVLTreeNode* cur) const {
-//     os << cur->key << ", " << cur->value << endl;
-// }
