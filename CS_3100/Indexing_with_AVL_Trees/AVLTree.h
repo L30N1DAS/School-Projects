@@ -76,9 +76,9 @@ private:
 
     bool insertHelper(int, string, AVLTreeNode*&);
 
-    void singleRightRotate(AVLTreeNode*&, bool);
+    void singleRightRotate(AVLTreeNode*&);
 
-    void singleLeftRotate(AVLTreeNode*&, bool);
+    void singleLeftRotate(AVLTreeNode*&);
 
     void doubleLeftRotate(AVLTreeNode*&);
 

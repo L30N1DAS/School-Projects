@@ -145,7 +145,7 @@ bool AVLTree::insertHelper(int key, string value, AVLTreeNode*& current) {
             // int leftChildBalance = current->left->leftHeight
             // maybe rotate
             if (getBalance(current) > 1 && getBalance(current->left) > 0) {
-                singleRightRotate(current, true);
+                singleRightRotate(current);
             }
             else if (getBalance(current) > 1 && getBalance(current->left) < 0) {
                 //doubleLeftRotate(current);
@@ -159,7 +159,7 @@ bool AVLTree::insertHelper(int key, string value, AVLTreeNode*& current) {
         if (result == true) {
             current->rightHeight = getHeightHelper(current->right, 0);
             if (getBalance(current) < -1 && getBalance(current->right) < 0) {
-                singleLeftRotate(current, true);
+                singleLeftRotate(current);
             }
             else if (getBalance(current) < -1 && getBalance(current->right) > 0) {
                 //doubleRightRotate(current);
@@ -175,7 +175,7 @@ bool AVLTree::insertHelper(int key, string value, AVLTreeNode*& current) {
 
 // recalc hook->right height on srr
 // recalc hook right height
-void AVLTree::singleRightRotate(AVLTreeNode*& problem, bool singleRotate) {
+void AVLTree::singleRightRotate(AVLTreeNode*& problem) {
     AVLTreeNode* hook = problem->left;
     AVLTreeNode* tmp = hook->right;
 
@@ -211,7 +211,7 @@ void AVLTree::singleRightRotate(AVLTreeNode*& problem, bool singleRotate) {
     hook->right->leftHeight = getHeightHelper(hook->right->left, 0);
 }
 
-void AVLTree::singleLeftRotate(AVLTreeNode*& problem, bool singleRotate) {
+void AVLTree::singleLeftRotate(AVLTreeNode*& problem) {
     AVLTreeNode* hook = problem->right;
     AVLTreeNode* tmp = hook->left;
 
@@ -251,13 +251,13 @@ void AVLTree::singleLeftRotate(AVLTreeNode*& problem, bool singleRotate) {
 
 // going correct way. first call does not update the problem node
 void AVLTree::doubleLeftRotate(AVLTreeNode*& problem) {
-    singleRightRotate(problem->right, false);
-    singleLeftRotate(problem, true);
+    singleRightRotate(problem->right);
+    singleLeftRotate(problem);
 }
 
 void AVLTree::doubleRightRotate(AVLTreeNode*& problem) {
-    singleLeftRotate(problem->left, false);
-    singleRightRotate(problem, true);
+    singleLeftRotate(problem->left);
+    singleRightRotate(problem);
 }
 
 // AVLTreeNode* AVLTree::getParent(AVLTreeNode* child) {
@@ -267,7 +267,7 @@ AVLTree::AVLTreeNode* AVLTree::getParent(AVLTreeNode* child, AVLTreeNode* curren
     }
     else {
         if (child->key < current->key) {
-            if (current->left->value == child->value/* || current->right->value == child->value*/) {
+            if (current->left->key == child->key/* || current->right->value == child->value*/) {
                 return current;
             }
             else {
@@ -275,7 +275,7 @@ AVLTree::AVLTreeNode* AVLTree::getParent(AVLTreeNode* child, AVLTreeNode* curren
             }
         }
         else if (child->key > current->key) {
-            if (/*current->left->value == child->value || */current->right->value == child->value) {
+            if (/*current->left->value == child->value || */current->right->key == child->key) {
                 return current;
             }
             else {
