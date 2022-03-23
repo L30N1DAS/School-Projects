@@ -65,7 +65,7 @@ int main() {
     cout << tree3 << endl << endl;
 
     
-    vector<string> vec = tree.findRange(0, 14);
+    vector<string> vec = tree.findRange(48, 132);
     // vector<int>::iterator it;
     // for (it = vec.begin(); it != vec.end(); it++) {
     //     cout << *it << endl;

@@ -198,12 +198,16 @@ void AVLTree::singleRightRotate(AVLTreeNode*& problem) {
         problemParent = getParent(problem, root);
     }
 
+    // performs the rotation
     hook->right = problem;
     problem->left = tmp;
 
+    // sets the root pointer to the hook node if the root pointer points to the problem node
     if (root == problem) {
         root = hook;
     }
+    // has the problem node's parent point to the hook node on the correct side
+    // if the root pointer does not point to the problem node
     else {
         if (problemParent->key > problem->key) {
             problemParent->left = hook;
@@ -213,6 +217,7 @@ void AVLTree::singleRightRotate(AVLTreeNode*& problem) {
         }
     }
     
+    // recalculates the heights of nodes with altered heights
     hook->rightHeight = getHeightHelper(hook->right, 0);
     hook->right->leftHeight = getHeightHelper(hook->right->left, 0);
 }
@@ -224,21 +229,31 @@ void AVLTree::singleRightRotate(AVLTreeNode*& problem) {
 //          problem (AVLTreeNode*&) - reference to the pointer to the node to be singly rotated to the left
 //---------------------------------------------------------------------------------------------------------
 void AVLTree::singleLeftRotate(AVLTreeNode*& problem) {
-    AVLTreeNode* hook = problem->right;
-    AVLTreeNode* tmp = hook->left;
+    // Local variables
+    AVLTreeNode* hook;              // pointer to the node to be pulled upward in the rotation process
+    AVLTreeNode* tmp;               // pointer that ensures that hook's left subtree is not lost
+    AVLTreeNode* problemParent;     // pointer to the parent node of the problem node
 
-    AVLTreeNode* problemParent = NULL;
+    // sets the local variables
+    hook = problem->right;
+    tmp = hook->left;
+    problemParent = NULL;
 
+    // determines the parent of the problem node if the problem node is not the root node
     if (problem != root) {
         problemParent = getParent(problem, root);
     }
 
+    // performs the rotation
     hook->left = problem;
     problem->right = tmp;
 
+    // sets the root pointer to the hook node if the root pointer points to the problem node
     if (root == problem) {
         root = hook;
     }
+    // has the problem node's parent point to the hook node on the correct side
+    // if the root pointer does not point to the problem node
     else {
         if (problemParent->key < problem->key) {
             problemParent->right = hook;
@@ -248,6 +263,7 @@ void AVLTree::singleLeftRotate(AVLTreeNode*& problem) {
         }
     }
 
+    // recalculates the heights of nodes with altered heights
     hook->leftHeight = getHeightHelper(hook->left, 0);
     hook->left->rightHeight = getHeightHelper(hook->left->right, 0);
 }
@@ -259,8 +275,8 @@ void AVLTree::singleLeftRotate(AVLTreeNode*& problem) {
 //          problem (AVLTreeNode*&) - reference to the pointer to the node to be doubly rotated to the left
 //---------------------------------------------------------------------------------------------------------
 void AVLTree::doubleLeftRotate(AVLTreeNode*& problem) {
-    singleRightRotate(problem->right);
-    singleLeftRotate(problem);
+    singleRightRotate(problem->right); // performs a single right rotation with problem's right child as the problem
+    singleLeftRotate(problem); // performs a single left rotation with problem as the problem
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -270,8 +286,8 @@ void AVLTree::doubleLeftRotate(AVLTreeNode*& problem) {
 //          problem (AVLTreeNode*&) - reference to the pointer to the node to be doubly rotated to the right
 //----------------------------------------------------------------------------------------------------------
 void AVLTree::doubleRightRotate(AVLTreeNode*& problem) {
-    singleLeftRotate(problem->left);
-    singleRightRotate(problem);
+    singleLeftRotate(problem->left); // performs a single left rotation with problem's left child as the problem
+    singleRightRotate(problem); // performs a single right rotation with problem as the problem
 }
 
 //-------------------------------------------------------------------------------------
@@ -282,22 +298,30 @@ void AVLTree::doubleRightRotate(AVLTreeNode*& problem) {
 //          current (AVLTreeNode*) - pointer to the nodes of the AVL tree
 //-------------------------------------------------------------------------------------
 AVLTree::AVLTreeNode* AVLTree::getParent(const AVLTreeNode* child, AVLTreeNode* current) const {
+    // returns NULL if the specified node does not have a parent, i.e., it is the root
     if (current == NULL) {
         return NULL;
     }
+    // returns the parent if the specified node has one
     else {
+        // checks the left subtree
         if (child->key < current->key) {
+            // returns the current node if its left child is the specified node
             if (current->left->key == child->key) {
                 return current;
             }
+            // traverses the left subtree otherwise
             else {
                 return getParent(child, current->left);
             }
         }
+        // checks the right subtree
         else if (child->key > current->key) {
+            // returns the current node if its right child is the specified node
             if (current->right->key == child->key) {
                 return current;
             }
+            // traverses the right subtree otherwise
             else {
                 return getParent(child, current->right);
             }
@@ -313,7 +337,7 @@ AVLTree::AVLTreeNode* AVLTree::getParent(const AVLTreeNode* child, AVLTreeNode* 
 //          value (string&) - reference to a string to hold the value of the specified node
 //-------------------------------------------------------------------------------------------
 bool AVLTree::find(int key, string& value) const {
-    return findHelper(key, value, root);
+    return findHelper(key, value, root); // recursively traverses the tree for a specific node and records its value
 }
 
 //-----------------------------------------------------------------------------------------------------------------
@@ -325,15 +349,19 @@ bool AVLTree::find(int key, string& value) const {
 //          current (AVLTreeNode*&) - reference to the pointer to the nodes of the AVL tree
 //-----------------------------------------------------------------------------------------------------------------
 bool AVLTree::findHelper(int key, string& value, const AVLTreeNode* current) const {
+    // returns false if the node is not found
     if (current == NULL) {
         return false;
     }
+    // traverses the left subtree if the key of the desired node is less than the current node's key
     else if (key < current->key) {
         return findHelper(key, value, current->left);
     }
+    // traverses the right subtree if the key of the desired node is greater than the current node's key
     else if (key > current->key) {
         return findHelper(key, value, current->right);
     }
+    // records the value and returns true if the desired node is found
     else {
         value = current->value;
         return true;
@@ -346,7 +374,7 @@ bool AVLTree::findHelper(int key, string& value, const AVLTreeNode* current) con
 //      Parameters: none
 //-------------------------------------------------
 int AVLTree::getHeight() const {
-    return getHeightHelper(root, 0) - 1;
+    return getHeightHelper(root, 0) - 1; // recursively traverses the tree to determine its height
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -357,9 +385,11 @@ int AVLTree::getHeight() const {
 //          height (integer) - the height of the current node
 //----------------------------------------------------------------------------------------------------------------------
 int AVLTree::getHeightHelper(const AVLTreeNode* current, int height) const {
+    // returns 0 if the current node does not exist
     if (current == NULL) {
         return 0;
     }
+    // determines the heights of the left and right subtrees otherwise and returns the greater added to one
     else {
         int leftHeight = getHeightHelper(current->left, height);
         int rightHeight = getHeightHelper(current->right, height);
@@ -391,7 +421,7 @@ int AVLTree::getBalance(const AVLTreeNode* current) const {
 //-----------------------------------------------------------------
 ostream& operator<<(ostream& os, const AVLTree& me) {
     int level = 0;
-    me.printPreorder(os, me.root, level);
+    me.printPreorder(os, me.root, level); // recursively traverses the tree and prints out the items
     return os;
 }
 
@@ -405,7 +435,9 @@ ostream& operator<<(ostream& os, const AVLTree& me) {
 //--------------------------------------------------------------------------------------------------------
 vector<string> AVLTree::findRange(int lowkey, int highkey) const {
     vector<string> range;
-    return findRangeHelper(lowkey, highkey, root, range);
+    return findRangeHelper(lowkey, highkey, root, range); // recursively traverses the tree 
+                                                          // determining which nodes have keys
+                                                          // that fall between two specified numbers
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -442,17 +474,19 @@ vector<string> AVLTree::findRangeHelper(int lowkey, int highkey, const AVLTreeNo
 //          level (integer) - records the depth of the tree to print the correct numer of tabs
 //--------------------------------------------------------------------------------------------
 void AVLTree::printPreorder(ostream& os, const AVLTreeNode* current, int level) const {
+    // does nothing if the node does not exist
     if (current == NULL) {
         return;
     }
+    // traverses the right subtree, printing the items at the end first
+    // and then traverses the left subtree, printing the items as it goes
     else {
         printPreorder(os, current->right, level+1);
-
+        // calculates the amount spacing needed when printing out a particular item
         for (int i = 0; i < level; i++) {
             os << "\t";
         }
+        os << current->key << ", " << current->value << endl;
+        printPreorder(os, current->left, level+1);
     }
-
-    os << current->key << ", " << current->value << endl;
-    printPreorder(os, current->left, level+1);
 }
