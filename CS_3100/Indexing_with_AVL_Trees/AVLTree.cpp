@@ -72,7 +72,7 @@ void AVLTree::deleteTreePostorder(AVLTreeNode* current) {
     if (current == NULL) {
         return;
     }
-    // otherwise recursively traverses the left subtree and then the right subtree
+    // otherwise, recursively traverses the left subtree and then the right subtree
     // and deletes the node
     else {
         deleteTreePostorder(current->left);
@@ -453,16 +453,26 @@ vector<string> AVLTree::findRange(int lowkey, int highkey) const {
 //                                    holding all values of the AVL tree meeting the requirements
 //-----------------------------------------------------------------------------------------------
 vector<string> AVLTree::findRangeHelper(int lowkey, int highkey, const AVLTreeNode* current, vector<string>& range) const {
+    // returns the range if the current node does not exist
     if (current == NULL) {
         return range;                                                                                                                
     }
-    if (current->key >= lowkey && current->key <= highkey) {
-        range.push_back(current->value);
+    // otherwise, finds and adds values to the range
+    else {
+        // adds values to the range if the corresponding keys fall between the two numbers inclusive
+        if (current->key >= lowkey && current->key <= highkey) {
+            range.push_back(current->value);
+        }
+        // traverses the left subtree if the current node's key is greater than the lower number
+        if (current->key > lowkey) {
+            findRangeHelper(lowkey, highkey, current->left, range);
+        }
+        // traverses the right subtree if the current node's key is less than the higher number
+        if (current->key < highkey) {
+            findRangeHelper(lowkey, highkey, current->right, range);
+        }
+        return range;
     }
-    findRangeHelper(lowkey, highkey, current->left, range);
-    findRangeHelper(lowkey, highkey, current->right, range);
-    return range;
-
 }
 
 //--------------------------------------------------------------------------------------------
@@ -482,7 +492,7 @@ void AVLTree::printPreorder(ostream& os, const AVLTreeNode* current, int level) 
     // and then traverses the left subtree, printing the items as it goes
     else {
         printPreorder(os, current->right, level+1);
-        // calculates the amount spacing needed when printing out a particular item
+        // calculates the amount of spacing needed when printing out a particular item
         for (int i = 0; i < level; i++) {
             os << "\t";
         }

@@ -65,7 +65,7 @@ int main() {
     cout << tree3 << endl << endl;
 
     
-    vector<string> vec = tree.findRange(48, 132);
+    vector<string> vec = tree.findRange(50, 125);
     // vector<int>::iterator it;
     // for (it = vec.begin(); it != vec.end(); it++) {
     //     cout << *it << endl;
@@ -175,4 +175,10 @@ int main() {
     AVLTree emptyTreeCopy(tree5);
     cout << tree5 << endl;
     cout << emptyTreeCopy << endl;
+
+    AVLTree negTree;
+    negTree.insert(1, "positive one");
+    negTree.insert(-1, "negative one");
+    negTree.insert(0, "zero");
+    cout << negTree << endl;
 }
