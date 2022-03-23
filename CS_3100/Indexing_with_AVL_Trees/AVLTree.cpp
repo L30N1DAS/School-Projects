@@ -1,8 +1,8 @@
-//----------------------------------------------------------------
+//-----------------------------------------------------------------
 // Name: Anmol Saini
 // Project 4: Indexing with AVL Trees
-//      This file contains the functions implemented for AVL trees
-//----------------------------------------------------------------
+//      This file contains the functions implemented for AVL trees.
+//-----------------------------------------------------------------
 
 #include "AVLTree.h"
 #include <exception>
@@ -101,15 +101,6 @@ AVLTree& AVLTree::operator=(const AVLTree& a) {
     return (*this);
 }
 
-//--------------------------------------------------
-// getSize: returns the size of the AVL tree
-//      Returns: the number of items in the AVL tree
-//      Parameters: none
-//--------------------------------------------------
-int AVLTree::getSize() const {
-    return numElts;
-}
-
 //----------------------------------------------------------------------------
 // insert: adds new items to the AVL tree
 //      Returns: true if the item is added to the AVL tree and false otherwise
@@ -176,6 +167,52 @@ bool AVLTree::insertHelper(int key, string value, AVLTreeNode*& current) {
     }
 }
 
+//---------------------------------------------------------------------------------------------------------
+// singleLeftRotate: performs a single left rotation to rebalance the AVL tree
+//      Returns: none
+//      Parameters:
+//          problem (AVLTreeNode*&) - reference to the pointer to the node to be singly rotated to the left
+//---------------------------------------------------------------------------------------------------------
+void AVLTree::singleLeftRotate(AVLTreeNode*& problem) {
+    // Local variables
+    AVLTreeNode* hook;              // pointer to the node to be pulled upward in the rotation process
+    AVLTreeNode* tmp;               // pointer that ensures that hook's left subtree is not lost
+    AVLTreeNode* problemParent;     // pointer to the parent node of the problem node
+
+    // sets the local variables
+    hook = problem->right;
+    tmp = hook->left;
+    problemParent = NULL;
+
+    // determines the parent of the problem node if the problem node is not the root node
+    if (problem != root) {
+        problemParent = getParent(problem, root);
+    }
+
+    // performs the rotation
+    hook->left = problem;
+    problem->right = tmp;
+
+    // sets the root pointer to the hook node if the root pointer points to the problem node
+    if (root == problem) {
+        root = hook;
+    }
+    // has the problem node's parent point to the hook node on the correct side
+    // if the root pointer does not point to the problem node
+    else {
+        if (problemParent->key < problem->key) {
+            problemParent->right = hook;
+        }
+        else {
+            problemParent->left = hook;
+        }
+    }
+
+    // recalculates the heights of nodes with altered heights
+    hook->leftHeight = getHeightHelper(hook->left, 0);
+    hook->left->rightHeight = getHeightHelper(hook->left->right, 0);
+}
+
 //----------------------------------------------------------------------------------------------------------
 // singleRightRotate: performs a single right rotation to rebalance the AVL tree
 //      Returns: none
@@ -223,52 +260,6 @@ void AVLTree::singleRightRotate(AVLTreeNode*& problem) {
 }
 
 //---------------------------------------------------------------------------------------------------------
-// singleLeftRotate: performs a single left rotation to rebalance the AVL tree
-//      Returns: none
-//      Parameters:
-//          problem (AVLTreeNode*&) - reference to the pointer to the node to be singly rotated to the left
-//---------------------------------------------------------------------------------------------------------
-void AVLTree::singleLeftRotate(AVLTreeNode*& problem) {
-    // Local variables
-    AVLTreeNode* hook;              // pointer to the node to be pulled upward in the rotation process
-    AVLTreeNode* tmp;               // pointer that ensures that hook's left subtree is not lost
-    AVLTreeNode* problemParent;     // pointer to the parent node of the problem node
-
-    // sets the local variables
-    hook = problem->right;
-    tmp = hook->left;
-    problemParent = NULL;
-
-    // determines the parent of the problem node if the problem node is not the root node
-    if (problem != root) {
-        problemParent = getParent(problem, root);
-    }
-
-    // performs the rotation
-    hook->left = problem;
-    problem->right = tmp;
-
-    // sets the root pointer to the hook node if the root pointer points to the problem node
-    if (root == problem) {
-        root = hook;
-    }
-    // has the problem node's parent point to the hook node on the correct side
-    // if the root pointer does not point to the problem node
-    else {
-        if (problemParent->key < problem->key) {
-            problemParent->right = hook;
-        }
-        else {
-            problemParent->left = hook;
-        }
-    }
-
-    // recalculates the heights of nodes with altered heights
-    hook->leftHeight = getHeightHelper(hook->left, 0);
-    hook->left->rightHeight = getHeightHelper(hook->left->right, 0);
-}
-
-//---------------------------------------------------------------------------------------------------------
 // doubleLeftRotate: performs a double left rotation to rebalance the AVL tree
 //      Returns: none
 //      Parameters:
@@ -288,6 +279,50 @@ void AVLTree::doubleLeftRotate(AVLTreeNode*& problem) {
 void AVLTree::doubleRightRotate(AVLTreeNode*& problem) {
     singleLeftRotate(problem->left); // performs a single left rotation with problem's left child as the problem
     singleRightRotate(problem); // performs a single right rotation with problem as the problem
+}
+
+//-------------------------------------------------
+// getHeight: calculates the height of the AVL tree
+//      Returns: the height of the AVL tree
+//      Parameters: none
+//-------------------------------------------------
+int AVLTree::getHeight() const {
+    return getHeightHelper(root, 0) - 1; // recursively traverses the tree to determine its height
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// getHeightHelper: used by the getHeight, insertHelper, and rotate functions to calulate the height of a specified node
+//      Returns: the height of the node
+//      Parameters: 
+//          current (AVLTreeNode*) - pointer to the node to have its height calculated
+//          height (integer) - the height of the current node
+//----------------------------------------------------------------------------------------------------------------------
+int AVLTree::getHeightHelper(const AVLTreeNode* current, int height) const {
+    // returns 0 if the current node does not exist
+    if (current == NULL) {
+        return 0;
+    }
+    // determines the heights of the left and right subtrees otherwise and returns the greater added to one
+    else {
+        int leftHeight = getHeightHelper(current->left, height);
+        int rightHeight = getHeightHelper(current->right, height);
+        if (leftHeight >= rightHeight) {
+            return leftHeight+1;
+        }
+        else if (rightHeight > leftHeight) {
+            return rightHeight+1;
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------
+// getBalance: calulates the balance of a specified node
+//      Returns: the balance of the node
+//      Parameters:
+//          current (AVLTreeNode*) - pointer to the node to have its balance calculated
+//-------------------------------------------------------------------------------------
+int AVLTree::getBalance(const AVLTreeNode* current) const {
+    return current->leftHeight - current->rightHeight;
 }
 
 //-------------------------------------------------------------------------------------
@@ -368,63 +403,6 @@ bool AVLTree::findHelper(int key, string& value, const AVLTreeNode* current) con
     }
 }
 
-//-------------------------------------------------
-// getHeight: calculates the height of the AVL tree
-//      Returns: the height of the AVL tree
-//      Parameters: none
-//-------------------------------------------------
-int AVLTree::getHeight() const {
-    return getHeightHelper(root, 0) - 1; // recursively traverses the tree to determine its height
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-// getHeightHelper: used by the getHeight, insertHelper, and rotate functions to calulate the height of a specified node
-//      Returns: the height of the node
-//      Parameters: 
-//          current (AVLTreeNode*) - pointer to the node to have its height calculated
-//          height (integer) - the height of the current node
-//----------------------------------------------------------------------------------------------------------------------
-int AVLTree::getHeightHelper(const AVLTreeNode* current, int height) const {
-    // returns 0 if the current node does not exist
-    if (current == NULL) {
-        return 0;
-    }
-    // determines the heights of the left and right subtrees otherwise and returns the greater added to one
-    else {
-        int leftHeight = getHeightHelper(current->left, height);
-        int rightHeight = getHeightHelper(current->right, height);
-        if (leftHeight >= rightHeight) {
-            return leftHeight+1;
-        }
-        else if (rightHeight > leftHeight) {
-            return rightHeight+1;
-        }
-    }
-}
-
-//-------------------------------------------------------------------------------------
-// getBalance: calulates the balance of a specified node
-//      Returns: the balance of the node
-//      Parameters:
-//          current (AVLTreeNode*) - pointer to the node to have its balance calculated
-//-------------------------------------------------------------------------------------
-int AVLTree::getBalance(const AVLTreeNode* current) const {
-    return current->leftHeight - current->rightHeight;
-}
-
-//-----------------------------------------------------------------
-// operator<<: prints out the AVL tree
-//      Returns: the output stream
-//      Parameters:
-//          os (ostream&) - reference to the output stream
-//          me (AVLTree&) - reference to the AVL tree being printed
-//-----------------------------------------------------------------
-ostream& operator<<(ostream& os, const AVLTree& me) {
-    int level = 0;
-    me.printPreorder(os, me.root, level); // recursively traverses the tree and prints out the items
-    return os;
-}
-
 //--------------------------------------------------------------------------------------------------------
 // findRange: finds all values of the AVL tree with keys that fall between two specified numbers inclusive
 //      Returns: a vector containing all the string values of the AVL tree
@@ -473,6 +451,28 @@ vector<string> AVLTree::findRangeHelper(int lowkey, int highkey, const AVLTreeNo
         }
         return range;
     }
+}
+
+//--------------------------------------------------
+// getSize: returns the size of the AVL tree
+//      Returns: the number of items in the AVL tree
+//      Parameters: none
+//--------------------------------------------------
+int AVLTree::getSize() const {
+    return numElts;
+}
+
+//-----------------------------------------------------------------
+// operator<<: prints out the AVL tree
+//      Returns: the output stream
+//      Parameters:
+//          os (ostream&) - reference to the output stream
+//          me (AVLTree&) - reference to the AVL tree being printed
+//-----------------------------------------------------------------
+ostream& operator<<(ostream& os, const AVLTree& me) {
+    int level = 0;
+    me.printPreorder(os, me.root, level); // recursively traverses the tree and prints out the items
+    return os;
 }
 
 //--------------------------------------------------------------------------------------------
