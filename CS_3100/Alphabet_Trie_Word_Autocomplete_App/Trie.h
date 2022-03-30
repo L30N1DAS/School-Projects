@@ -46,4 +46,6 @@ private:
     TrieNode* root;
     unsigned int numWords;
     unsigned int numNodes;
+
+    int completeCountHelper(int&, /*TrieNode*,*/ TrieNode*);
 };

@@ -23,15 +23,26 @@ int main() {
     }
     // cout << trie.count() << endl;
 
-    bool end = false;
     string input;
-    while (!end) {
+    while (true) {
         cout << "Please enter a word prefix (or press enter to exit): ";
-        cin >> input;
-        if (input == "\n") {
+        char firstChar = cin.get();
+        // http://www.cplusplus.com/forum/beginner/2624/
+        if (firstChar == '\n') {
             break;
         } else {
-            
+            cin >> input;
+            input = firstChar + input;
+            cin.ignore(); // https://stackoverflow.com/questions/42818899/detecting-enter-key-in-c
+            // working/tested up until here
+            int numCompletions = trie.completeCount(input);
+            cout << "There are " << numCompletions << " completions for the prefix '" << input << "'. Show completions? ";
+            // cout << "Completions" << endl;
+            // cout << "-----------" << endl;
+            // vector<string> completions = trie.complete(input);
+            // for (int i = 0; i < numCompletions; i++) {
+            //     cout << completions[i] << endl;
+            // }
         }
     }
 }

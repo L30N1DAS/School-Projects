@@ -65,5 +65,31 @@ int Trie::completeCount(string word) {
     for (int i = 0; i < word.length(); i++) {
         char letter = word[i];
         int slot = letter - 'a';
+        current = current->pointers[slot];
+        if (current == NULL) {
+            return 0;
+        }
     }
+    // TrieNode* tempRoot = current;
+    int count = 0;
+    // if (current->endOfWord == true) {
+    //     count++;
+    // }
+    return completeCountHelper(count, current);
+}
+
+int Trie::completeCountHelper(int& count, /*TrieNode* tempRoot,*/ TrieNode* current) {
+    if (current == NULL) {
+        return count;
+    }
+
+    for (int i = 0; i < 26; i++) {
+        completeCountHelper(count, current->pointers[i]);
+    }
+
+    if (current->endOfWord == true) {
+        count++;
+    }
+
+    return count;
 }
