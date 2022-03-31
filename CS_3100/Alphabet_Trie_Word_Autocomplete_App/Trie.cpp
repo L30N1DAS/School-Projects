@@ -78,7 +78,7 @@ int Trie::completeCount(string word) {
     return completeCountHelper(count, current);
 }
 
-int Trie::completeCountHelper(int& count, /*TrieNode* tempRoot,*/ TrieNode* current) {
+int Trie::completeCountHelper(int& count, TrieNode* current) {
     if (current == NULL) {
         return count;
     }
@@ -92,4 +92,35 @@ int Trie::completeCountHelper(int& count, /*TrieNode* tempRoot,*/ TrieNode* curr
     }
 
     return count;
+}
+
+vector<string> Trie::complete(string word) {
+    TrieNode* current = root;
+    vector<string> completions;
+    for (int i = 0; i < word.length(); i++) {
+        char letter = word[i];
+        int slot = letter - 'a';
+        current = current->pointers[slot];
+        if (current == NULL) {
+            return completions;
+        }
+    }
+    return completeHelper(word, completions, current);
+}
+
+vector<string> Trie::completeHelper(string word, vector<string>& completions, TrieNode* current) {
+    if (current == NULL) {
+        return completions;
+    }
+
+    for (int i = 0; i < 26; i++) {
+        char letter = i + 'a';
+        completeHelper(word+letter, completions, current->pointers[i]);
+    }
+
+    if (current->endOfWord == true) {
+        completions.push_back(word);
+    }
+
+    return completions;
 }

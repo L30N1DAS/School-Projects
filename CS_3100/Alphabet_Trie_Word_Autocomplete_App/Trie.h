@@ -47,5 +47,7 @@ private:
     unsigned int numWords;
     unsigned int numNodes;
 
-    int completeCountHelper(int&, /*TrieNode*,*/ TrieNode*);
+    int completeCountHelper(int&, TrieNode*);
+    vector<string> completeHelper(string, vector<string>&, TrieNode*);
+
 };
