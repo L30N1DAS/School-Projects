@@ -7,7 +7,19 @@ Trie::Trie() {
 }
 
 Trie::~Trie() {
+    TrieNode* current = root;
+}
 
+void Trie::DestructorHelper(TrieNode* current) {
+    if (current == NULL) {
+        return;
+    }
+
+    for (int i = 0; i < 26; i++) {
+        DestructorHelper(current->pointers[i]);
+    }
+
+    delete current;
 }
 
 bool Trie::insert(string word) {
@@ -113,13 +125,13 @@ vector<string> Trie::completeHelper(string word, vector<string>& completions, Tr
         return completions;
     }
 
+    if (current->endOfWord == true) {
+        completions.push_back(word);
+    }
+
     for (int i = 0; i < 26; i++) {
         char letter = i + 'a';
         completeHelper(word+letter, completions, current->pointers[i]);
-    }
-
-    if (current->endOfWord == true) {
-        completions.push_back(word);
     }
 
     return completions;

@@ -21,20 +21,23 @@ int main() {
         getline(infile, currentWord);
         trie.insert(currentWord);
     }
-    // cout << trie.count() << endl;
+    
+    cout << trie.count() << endl;
+    cout << trie.getSize() << endl;
 
     string input;
     string answer;
     while (true) {
         cout << "Please enter a word prefix (or press enter to exit): ";
-        char firstChar = cin.get();
+        getline(cin, input);
+        // char firstChar = cin.get();
         // http://www.cplusplus.com/forum/beginner/2624/
-        if (firstChar == '\n') {
+        if (input == "") {
             break;
         } else {
-            cin >> input;
-            input = firstChar + input;
-            cin.ignore(); // https://stackoverflow.com/questions/42818899/detecting-enter-key-in-c
+            // cin >> input;
+            // input = firstChar + input;
+            // cin.ignore(); // https://stackoverflow.com/questions/42818899/detecting-enter-key-in-c
             int numCompletions = trie.completeCount(input);
             cout << "There are " << numCompletions << " completions for the prefix '" << input << "'. Show completions? ";
             cin >> answer;
