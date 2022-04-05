@@ -7,7 +7,7 @@ Trie::Trie() {
 }
 
 Trie::~Trie() {
-    TrieNode* current = root;
+    DestructorHelper(root);
 }
 
 void Trie::DestructorHelper(TrieNode* current) {
