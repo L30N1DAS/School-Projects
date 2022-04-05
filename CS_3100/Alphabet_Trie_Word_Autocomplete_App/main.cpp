@@ -22,26 +22,21 @@
 //         trie.insert(currentWord);
 //     }
 
-//     // cout << trie.count() << endl;
-//     // cout << trie.getSize() << endl;
-
 //     string input;
 //     string answer;
+
 //     while (true) {
 //         cout << "Please enter a word prefix (or press enter to exit): ";
 //         getline(cin, input);
-//         // char firstChar = cin.get();
-//         // http://www.cplusplus.com/forum/beginner/2624/
 //         if (input == "") {
 //             break;
-//         } else {
-//             // cin >> input;
-//             // input = firstChar + input;
-//             // cin.ignore(); // https://stackoverflow.com/questions/42818899/detecting-enter-key-in-c
+//         } 
+        
+//         else {
 //             int numCompletions = trie.completeCount(input);
 //             cout << "There are " << numCompletions << " completions for the prefix '" << input << "'. Show completions? ";
 //             cin >> answer;
-//             cin.ignore();
+//             cin.ignore(); // https://stackoverflow.com/questions/42818899/detecting-enter-key-in-c
 //             if (answer == "Yes" || answer == "yes") {
 //                 cout << "Completions" << endl;
 //                 cout << "-----------" << endl;

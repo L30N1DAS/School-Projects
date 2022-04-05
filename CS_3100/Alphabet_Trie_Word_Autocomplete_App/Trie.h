@@ -29,12 +29,10 @@ private:
 
     class TrieNode {
     public:
-        // TrieNode** pointers;
         TrieNode* pointers[26];
         bool endOfWord;
 
         TrieNode() {
-            // pointers = new TrieNode*[26];
             for (int i = 0; i < 26; i++) {
                 pointers[i] = NULL;
             }
