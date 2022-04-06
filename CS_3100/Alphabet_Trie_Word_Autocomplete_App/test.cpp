@@ -24,6 +24,7 @@
 
 //     vector<string> doComps = trie.complete("do");
 //     cout << "do comps" << endl;
+//     cout << trie.completeCount("do") << endl;
 //     for (int i = 0; i < doComps.size(); i++) {
 //         cout << doComps[i] << endl;
 //     }
@@ -31,6 +32,7 @@
 
 //     vector<string> dogComps = trie.complete("dog");
 //     cout << "dog comps" << endl;
+//     cout << trie.completeCount("dog") << endl;
 //     for (int i = 0; i < dogComps.size(); i++) {
 //         cout << dogComps[i] << endl;
 //     }
@@ -38,6 +40,7 @@
 
 //     vector<string> dogsComps = trie.complete("dogs");
 //     cout << "dogs comps" << endl;
+//     cout << trie.completeCount("dogs") << endl;
 //     for (int i = 0; i < dogsComps.size(); i++) {
 //         cout << dogsComps[i] << endl;
 //     }

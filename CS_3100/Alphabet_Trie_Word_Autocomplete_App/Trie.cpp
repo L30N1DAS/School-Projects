@@ -256,7 +256,7 @@ vector<string> Trie::completeHelper(string word, vector<string>& completions, Tr
         completions.push_back(word);
     }
 
-    // rrecursively traverses the trie extending from the last node reached from the given prefix
+    // recursively traverses the trie extending from the last node reached from the given prefix
     for (int i = 0; i < 26; i++) {
         char letter = i + 'a';
         completeHelper(word+letter, completions, current->pointers[i]);
