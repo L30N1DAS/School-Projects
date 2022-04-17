@@ -1,5 +1,7 @@
 #include <iostream>
 #include "HashTable.h"
+// #include "hashfunction.h"
+
 
 using namespace std;
 
@@ -12,10 +14,15 @@ int main() {
     // else std::cout << "pre-standard C++\n";
     HashTable table;
     int collisions = 0;
+    // int yay = jsHash(5);
+    cout << "alpha: " << table.alpha() << endl;
     cout << table.insert(112233, 2, collisions) << endl;
+    cout << "alpha: " << table.alpha() << endl;
     cout << table.insert(223344, 0, collisions) << endl;
     cout << table.insert(334455, 1, collisions) << endl;
+    cout << "alpha: " << table.alpha() << endl;
     cout << table.insert(334455, 4, collisions) << endl;
+    cout << "alpha: " << table.alpha() << endl;
     cout << table.insert(838294, 5, collisions) << endl;
     cout << table.insert(128429, 6, collisions) << endl;
     cout << table.insert(473821, 7, collisions) << endl;
@@ -32,7 +39,18 @@ int main() {
     cout << table.insert(234566, 17, collisions) << endl;
     cout << table.insert(432626, 18, collisions) << endl;
     cout << table.insert(488382, 19, collisions) << endl;
+    cout << "alpha: " << table.alpha() << endl;
     cout << table.insert(621521, 20, collisions) << endl;
 
+    cout << "alpha: " << table.alpha() << endl;
 
+    cout << table << endl;
+
+    cout << table.remove(743828) << endl;
+    cout << table.remove(743829) << endl;
+    cout << table.remove(743829) << endl << endl;
+
+    cout << table.alpha() << endl;
+    
+    cout << table << endl;
 }
