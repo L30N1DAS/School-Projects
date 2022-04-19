@@ -20,11 +20,13 @@ public:
 
     bool remove(int);
 
-    bool find(int, int&);
+    bool find(int, int&, int&);
 
     float alpha();
 
     friend ostream& operator<<(ostream&, const HashTable&);
+
+    Slot getSlot(int);
 
 private:
 

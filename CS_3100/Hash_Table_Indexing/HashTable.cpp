@@ -6,7 +6,7 @@
 #include <chrono>  
 #include <vector>
 
-#define MAXHASH 20
+// #define MAXHASH 20
 
 HashTable::HashTable() {
     usedSlots = 0;
@@ -43,8 +43,7 @@ HashTable::~HashTable() {
 }
 
 bool HashTable::insert(int key, int index, int& collisions) {
-
-    if (find(key, index) == true) {
+    if (find(key, index, collisions) == true) {
         return false;
     }
 
@@ -115,7 +114,8 @@ bool HashTable::remove(int key) {
     return false;
 }
 
-bool HashTable::find(int key, int& index) {
+bool HashTable::find(int key, int& index, int& collisions) {
+    collisions = 0;
     int currentProbe = 0;
 
     for (int i = 0; i < MAXHASH; i++) {
@@ -132,6 +132,7 @@ bool HashTable::find(int key, int& index) {
         }
 
         else {
+            collisions++;
             currentProbe = offsets[i];
         }
     }
@@ -151,6 +152,10 @@ ostream& operator<<(ostream& os, const HashTable& me) {
         }
     }
     return os;
+}
+
+Slot HashTable::getSlot(int slot) {
+    return slots[slot];
 }
 
 // 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 | 20
