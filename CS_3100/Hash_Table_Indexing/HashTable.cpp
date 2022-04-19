@@ -10,9 +10,9 @@
 
 HashTable::HashTable() {
     usedSlots = 0;
-    for (int i = 0; i < MAXHASH; i++) {
-        slots[i] = new Slot();
-    }
+    // for (int i = 0; i < MAXHASH; i++) {
+    //     slots[i] = new Slot();
+    // }
 
     for (int i = 0; i < MAXHASH - 1; i++) {
         offsets.push_back(i + 1);
@@ -37,38 +37,45 @@ HashTable::HashTable() {
 }
 
 HashTable::~HashTable() {
-    for (int i = 0; i < MAXHASH; i++) {
-        delete slots[i];
-    }
+    // for (int i = 0; i < MAXHASH; i++) {
+    //     delete slots[i];
+    // }
 }
 
 bool HashTable::insert(int key, int index, int& collisions) {
 
+    if (find(key, index) == true) {
+        return false;
+    }
+
     // int currentKey = slots[hash]->getKey();
     // int currentHash = jsHash(currentKey) % 20;
-
+    collisions = 0;
     int currentProbe = 0;
 
     for (int i = 0; i < MAXHASH; i++) {
-        int hash = ((jsHash(key) % 20) + currentProbe) % 20;
-        int currentKey = slots[hash]->getKey();
+        int hash = ((jsHash(key) % MAXHASH) + currentProbe) % MAXHASH;
+        // int currentKey = slots[hash].getKey();
         // int currentHash = jsHash(currentKey) % 20;
 
-        // duplicate
-        if (key == currentKey && slots[hash]->isNormal()) {
-            return false;
-        }
+        // // duplicate
+        // if (key == currentKey && slots[hash].isNormal()) {
+        //     return false;
+        // }
 
         // collision
-        else if (slots[hash]->isNormal()) {
+        if (slots[hash].isNormal()) {
             collisions++;
             currentProbe = offsets[i]; // possibly out of bounds (loop should end before it matters)
         }
 
         // insert
         else {
-            delete slots[hash];
-            slots[hash] = new Slot(key, index);
+            // delete slots[hash]; // make setter instead of this
+            // slots[hash] = new Slot(key, index); // and this
+            slots[hash].setKey(key);
+            slots[hash].setIndex(index);
+            slots[hash].setNormal();
             usedSlots++;
             return true;
         }
@@ -79,16 +86,21 @@ bool HashTable::insert(int key, int index, int& collisions) {
 
 // test this
 bool HashTable::remove(int key) {
+
     int currentProbe = 0;
 
     for (int i = 0; i < MAXHASH; i++) {
         int hash = ((jsHash(key) % MAXHASH) + currentProbe) % MAXHASH;
-        int currentKey = slots[hash]->getKey();
+        int currentKey = slots[hash].getKey();
 
-        if (key == currentKey && slots[hash]->isNormal()) {
-            slots[hash]->kill();
+        if (key == currentKey && slots[hash].isNormal()) {
+            slots[hash].kill();
             usedSlots--;
             return true;
+        }
+
+        else if (slots[hash].isEmptySinceStart()) {
+            return false;
         }
 
         // else if (key == currentKey && slots[hash]->isNormal() == false) {
@@ -107,12 +119,16 @@ bool HashTable::find(int key, int& index) {
     int currentProbe = 0;
 
     for (int i = 0; i < MAXHASH; i++) {
-        int hash = ((jsHash(key) % 20) + currentProbe) % 20;
-        int currentKey = slots[hash]->getKey();
+        int hash = ((jsHash(key) % MAXHASH) + currentProbe) % MAXHASH;
+        int currentKey = slots[hash].getKey();
 
-        if (key == currentKey && slots[hash]->isNormal()) {
-            index = slots[hash]->getIndex();
+        if (key == currentKey && slots[hash].isNormal()) {
+            index = slots[hash].getIndex();
             return true;
+        }
+
+        else if (slots[hash].isEmptySinceStart()) {
+            return false;
         }
 
         else {
@@ -130,8 +146,8 @@ float HashTable::alpha() {
 ostream& operator<<(ostream& os, const HashTable& me) {
     os << "HashTable contents:" << endl;
     for (int i = MAXHASH - 1; i >= 0; i--) {
-        if (me.slots[i]->isNormal()) {
-            os << "HashTable Slot " << i << ": Key = " << me.slots[i]->getKey() << ", Index = " << me.slots[i]->getIndex() << endl; 
+        if (me.slots[i].isNormal()) {
+            os << "HashTable Slot " << i << ": Key = " << me.slots[i].getKey() << ", Index = " << me.slots[i].getIndex() << endl; 
         }
     }
     return os;
@@ -140,4 +156,4 @@ ostream& operator<<(ostream& os, const HashTable& me) {
 // 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 | 20
 // 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 | 19
 
-// what if key is inserted on second probe, first probe key is removed, and key is reinserted at first probe position
+// what if key is inserted on second probe, first probe key is removed, and key is reinserted at first probe position (solved, potentially)

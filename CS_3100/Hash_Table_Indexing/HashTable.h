@@ -28,7 +28,7 @@ public:
 
 private:
 
-    Slot* slots[MAXHASH];
+    Slot slots[MAXHASH];
     vector<int> offsets;
     int usedSlots;
 };

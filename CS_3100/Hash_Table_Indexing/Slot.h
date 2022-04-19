@@ -53,6 +53,21 @@ public:
 		return index;
 	}
 
+	// Set the index of a slot
+	void setKey(int newKey) {
+		key = newKey;
+	}
+
+	// Set the index of a slot
+	void setIndex(int newIndex) {
+		index = newIndex;
+	}
+
+	// Convert a slot to a normalSlot
+	void setNormal() {
+		type = normalSlot;
+	}
+
 	// Check if a slot is emptySinceStart
 	bool isEmptySinceStart() const {
 		return(type == emptySinceStart);
