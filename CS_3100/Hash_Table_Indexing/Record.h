@@ -42,6 +42,16 @@ public:
 		return result;
 	}
 
+	// Get the student's last name
+	string getLastName() const {
+		return lastName;
+	}
+
+	// Get the student's first name
+	string getFirstName() const {
+		return firstName;
+	}
+
 	// Get the student's id
 	int getUID() const {
 		return uid;

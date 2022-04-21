@@ -154,9 +154,37 @@ ostream& operator<<(ostream& os, const HashTable& me) {
     return os;
 }
 
-Slot HashTable::getSlot(int slot) {
+Slot& HashTable::getSlot(int slot) {
     return slots[slot];
 }
+
+bool HashTable::findSlot(int key, int& slot) {
+    int currentProbe = 0;
+
+    for (int i = 0; i < MAXHASH; i++) {
+        int hash = ((jsHash(key) % MAXHASH) + currentProbe) % MAXHASH;
+        int currentKey = slots[hash].getKey();
+
+        if (key == currentKey && slots[hash].isNormal()) {
+            slot = hash;
+            return true;
+        }
+
+        else if (slots[hash].isEmptySinceStart()) {
+            return false;
+        }
+
+        else {
+            currentProbe = offsets[i];
+        }
+    }
+
+    return false;
+}
+
+// int HashTable::setIndex(int) {
+//     sl
+// }
 
 // 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 | 20
 // 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 | 19

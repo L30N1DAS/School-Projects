@@ -21,7 +21,7 @@ public:
 
     float alpha();
 
-    friend ostream& operator<<(ostream&, /*const*/ Database&);
+    friend ostream& operator<<(ostream&, Database&);
 
 private:
 

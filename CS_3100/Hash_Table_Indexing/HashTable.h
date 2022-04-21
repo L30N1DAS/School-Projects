@@ -26,7 +26,12 @@ public:
 
     friend ostream& operator<<(ostream&, const HashTable&);
 
-    Slot getSlot(int);
+    Slot& getSlot(int);
+
+    int setIndex(int);
+
+    bool findSlot(int, int&);
+
 
 private:
 
