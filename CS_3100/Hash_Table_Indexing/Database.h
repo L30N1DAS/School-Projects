@@ -1,4 +1,10 @@
-# pragma once
+//--------------------------------------------------------------
+// Name: Anmol Saini
+// Project 6: Hash Table Indexing
+//      This file contains the functions declared for databases.
+//--------------------------------------------------------------
+
+#pragma once
 
 #include "Record.h"
 #include "HashTable.h"

@@ -1,3 +1,9 @@
+//------------------------------------------------------------------------------------------------
+// Name: Anmol Saini
+// Project 6: Hash Table Indexing
+//      This file allows a user to store and retrieve data about student records using a database.
+//------------------------------------------------------------------------------------------------
+
 #include "Database.h"
 
 using namespace std;
@@ -73,9 +79,10 @@ int main() {
             }
         }
 
-        // prints the database
+        // prints the database and load factor
         else if (action == "P") {
             cout << database << endl;
+            cout << "Load Factor of the Database: " << database.alpha() << endl;
         }
 
         // quits the program
