@@ -1,77 +1,70 @@
 #include "HashTable.h"
 #include "hashfunction.h"
-#include <algorithm>
-#include <array>
 #include <random>
-#include <chrono>  
-#include <vector>
 
-// #define MAXHASH 20
-
+//------------------------------------------
+// HashTable: Constructor for the hash table
+//      Returns: none
+//      Parameters: none
+//------------------------------------------
 HashTable::HashTable() {
     usedSlots = 0;
-    // for (int i = 0; i < MAXHASH; i++) {
-    //     slots[i] = new Slot();
-    // }
 
+    // fills the vector of offsets
     for (int i = 0; i < MAXHASH - 1; i++) {
         offsets.push_back(i + 1);
-        // cout << offsets[i] << endl;
     }
 
+    // shuffles the vector of offsets
     // Work Cited: https://stackoverflow.com/questions/6926433/how-to-shuffle-a-stdvector
-    auto rd = std::random_device{}; 
-    auto rng = std::default_random_engine{rd()};
-    std::shuffle(offsets.begin(), offsets.end(), rng);
-    // random_shuffle(std::begin(offsets), std::end(offsets));
-    // std::random_shuffle(offsets.begin(), offsets.end());
-    // unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-    // shuffle (offsets.begin(), offsets.end(), std::default_random_engine(seed));
-   // std::srand(std::time(0)); // https://stackoverflow.com/questions/14221763/stdrandom-shuffle-produces-same-result-each-time
-    //random_shuffle(&offsets[0], &offsets[MAXHASH - 1]); // https://stackoverflow.com/questions/14720134/is-it-possible-to-random-shuffle-an-array-of-int-elements
-    //random_shuffle(offsets.begin(), offsets.end();
-    // for (int i = 0; i < MAXHASH - 1; i++) {
-    //     cout << offsets[i] << endl;
-    // }
+    auto rd = random_device{}; 
+    auto rng = default_random_engine{rd()};
+    shuffle(offsets.begin(), offsets.end(), rng);
     // End Work Cited
 }
 
-HashTable::~HashTable() {
-    // for (int i = 0; i < MAXHASH; i++) {
-    //     delete slots[i];
-    // }
-}
+//------------------------------------------
+// ~HashTable: Destructor for the hash table
+//      Returns: none
+//      Parameters: none
+//------------------------------------------
+HashTable::~HashTable() {}
 
+//-----------------------------------------------------------------------------------------------------------------
+// insert: inserts a new key/index pair corresponding to a student record into the hash table
+//      Returns: true if the key/index pair is sucessfully inserted into the hash table and false otherwise
+//      Parameters:
+//          key (int) - the UID of the student record to be inserted
+//          index (int) - the index of the the student record in the vector of student records
+//          collisions (int&) - a reference to an integer holding the number of times the hash table must be probed
+//-----------------------------------------------------------------------------------------------------------------
 bool HashTable::insert(int key, int index, int& collisions) {
+    // Local variables
+    int currentProbe;   // the offset being used for probing
+    int hash;           // the hash of the key with the offset
+
+    // if an entry in the hash table that corresponds to a student record with the provided UID already exists in the hash table,
+    // determines that the provided key/index pair cannot be inserted into the hash table
     if (find(key, index, collisions) == true) {
         return false;
     }
 
-    // int currentKey = slots[hash]->getKey();
-    // int currentHash = jsHash(currentKey) % 20;
     collisions = 0;
-    int currentProbe = 0;
+    currentProbe = 0;
 
+    // loops for each of the slots in the hash table
     for (int i = 0; i < MAXHASH; i++) {
-        int hash = ((jsHash(key) % MAXHASH) + currentProbe) % MAXHASH;
-        // int currentKey = slots[hash].getKey();
-        // int currentHash = jsHash(currentKey) % 20;
+        hash = ((jsHash(key) % MAXHASH) + currentProbe) % MAXHASH;
 
-        // // duplicate
-        // if (key == currentKey && slots[hash].isNormal()) {
-        //     return false;
-        // }
-
-        // collision
+        // if the slot at index "hash" of the hash table already contains a key/index pair,
+        // probes the hash table
         if (slots[hash].isNormal()) {
             collisions++;
-            currentProbe = offsets[i]; // possibly out of bounds (loop should end before it matters)
+            currentProbe = offsets[i];
         }
 
-        // insert
+        // otherwise, inserts the key/index pair in the slot at index "hash" of the hash table
         else {
-            // delete slots[hash]; // make setter instead of this
-            // slots[hash] = new Slot(key, index); // and this
             slots[hash].setKey(key);
             slots[hash].setIndex(index);
             slots[hash].setNormal();
@@ -83,29 +76,41 @@ bool HashTable::insert(int key, int index, int& collisions) {
     return false;
 }
 
-// test this
+//--------------------------------------------------------------------------------------------------------
+// remove: removes an entry from the hash table that corresponds to a student record with the provided UID
+//      Returns: true if the entry is removed and false otherwise
+//      Parameters: 
+//          key (int) - the UID of the student record corresponding to the hash table entry to be removed
+//--------------------------------------------------------------------------------------------------------
 bool HashTable::remove(int key) {
+    // Local variables
+    int currentProbe;   // the offset being used for probing
+    int hash;           // the hash of the key with the offset
+    int currentKey;     // the key currently in the slot at index "hash" of the hash table
 
-    int currentProbe = 0;
+    currentProbe = 0;
 
+    // loops for each of the slots in the hash table
     for (int i = 0; i < MAXHASH; i++) {
-        int hash = ((jsHash(key) % MAXHASH) + currentProbe) % MAXHASH;
-        int currentKey = slots[hash].getKey();
+        hash = ((jsHash(key) % MAXHASH) + currentProbe) % MAXHASH;
+        currentKey = slots[hash].getKey();
 
+        // if the slot at index "hash" of the hash table already contains a key/index pair
+        // and the key currently in the slot at index "hash" is the same as the provided key,
+        // removes the key/index pair from the hash table
         if (key == currentKey && slots[hash].isNormal()) {
             slots[hash].kill();
             usedSlots--;
             return true;
         }
 
+        // if the slot at index "hash" of the hash table has always been empty,
+        // determines that key/index pair is not in the hash table
         else if (slots[hash].isEmptySinceStart()) {
             return false;
         }
 
-        // else if (key == currentKey && slots[hash]->isNormal() == false) {
-        //     return false;
-        // }
-
+        // otherwise, probes the hash table
         else {
             currentProbe = offsets[i];
         }
@@ -114,23 +119,43 @@ bool HashTable::remove(int key) {
     return false;
 }
 
+//-------------------------------------------------------------------------------------------------------------------------------
+// find: determines whether an entry in the hash table that corresponds to a student record with the provided UID exists
+//      Returns: true if such an entry is found and false otherwise
+//      Parameters:
+//          key (int) - the UID of the student record corresponding to the hash table entry to be found
+//          index (int&) - a reference to an integer holding the index of the the student record in the vector of student records
+//          collisions (int&) - a reference to an integer holding the number of times the hash table must be probed
+//-------------------------------------------------------------------------------------------------------------------------------
 bool HashTable::find(int key, int& index, int& collisions) {
+    // Local variables
+    int currentProbe;   // the offset being used for probing
+    int hash;           // the hash of the key with the offset
+    int currentKey;     // the key currently in the slot at index "hash" of the hash table
+
     collisions = 0;
-    int currentProbe = 0;
+    currentProbe = 0;
 
+    // loops for each of the slots in the hash table
     for (int i = 0; i < MAXHASH; i++) {
-        int hash = ((jsHash(key) % MAXHASH) + currentProbe) % MAXHASH;
-        int currentKey = slots[hash].getKey();
+        hash = ((jsHash(key) % MAXHASH) + currentProbe) % MAXHASH;
+        currentKey = slots[hash].getKey();
 
+        // if the slot at index "hash" of the hash table already contains a key/index pair
+        // and the key currently in the slot at index "hash" is the same as the provided key,
+        // determines that an entry with the provided key already exists in the hash table
         if (key == currentKey && slots[hash].isNormal()) {
             index = slots[hash].getIndex();
             return true;
         }
 
+        // if the slot at index "hash" of the hash table has always been empty,
+        // determines that an entry with the provided key is not in the hash table
         else if (slots[hash].isEmptySinceStart()) {
             return false;
         }
 
+        // otherwise, probes the hash table
         else {
             collisions++;
             currentProbe = offsets[i];
@@ -140,40 +165,78 @@ bool HashTable::find(int key, int& index, int& collisions) {
     return false;
 }
 
+//----------------------------------------------------
+// alpha: calculates the load factor of the hash table
+//      Returns: the load factor of the hash table
+//      Parameters: none
+//----------------------------------------------------
 float HashTable::alpha() {
     return (usedSlots * 1.00) / MAXHASH;
 }
 
+//-----------------------------------------------------------------------
+// operator<<: prints out the hash table
+//      Returns: the output stream
+//      Parameters:
+//          os (ostream&) - a reference to the output stream
+//          me (HashTable&) - a reference to the hash table being printed
+//-----------------------------------------------------------------------
 ostream& operator<<(ostream& os, const HashTable& me) {
     os << "HashTable contents:" << endl;
+    // prints each filled slot in the hash table
     for (int i = MAXHASH - 1; i >= 0; i--) {
         if (me.slots[i].isNormal()) {
-            os << "HashTable Slot " << i << ": Key = " << me.slots[i].getKey() << ", Index = " << me.slots[i].getIndex() << endl; 
+            os << "HashTable Slot " << i << ": " << me.slots[i] << endl;
         }
     }
     return os;
 }
 
+//---------------------------------------------------------------------------------
+// getSlot: returns a reference to the slot in the hash table at the provided index
+//      Returns: a reference to the slot in the hash table at the provided index
+//      Parameters:
+//          slot (int) - the index of the desired slot in the hash table
+//---------------------------------------------------------------------------------
 Slot& HashTable::getSlot(int slot) {
     return slots[slot];
 }
 
+//---------------------------------------------------------------------------------------------------------------------------------------
+// findSlot: finds the slot in the hash table containing the provided UID
+//      Returns: true if an entry in the hash table that corresponds to a student record with the provided UID exists and false otherwise
+//      Parameters:
+//          key (int) - the UID of the student record corresponding to the hash table slot to be found
+//          slot (int&) - a reference to an integer holding the index of the slot in the hash table with the provided UID
+//---------------------------------------------------------------------------------------------------------------------------------------
 bool HashTable::findSlot(int key, int& slot) {
-    int currentProbe = 0;
+    // Local variables
+    int currentProbe;   // the offset being used for probing
+    int hash;           // the hash of the key with the offset
+    int currentKey;     // the key currently in the slot at index "hash" of the hash table
 
+    currentProbe = 0;
+
+    // loops for each of the slots in the hash table
     for (int i = 0; i < MAXHASH; i++) {
-        int hash = ((jsHash(key) % MAXHASH) + currentProbe) % MAXHASH;
-        int currentKey = slots[hash].getKey();
+        hash = ((jsHash(key) % MAXHASH) + currentProbe) % MAXHASH;
+        currentKey = slots[hash].getKey();
 
+        // if the slot at index "hash" of the hash table already contains a key/index pair
+        // and the key currently in the slot at index "hash" is the same as the provided key,
+        // records the index of the slot in the hash table containing the provided UID
         if (key == currentKey && slots[hash].isNormal()) {
             slot = hash;
             return true;
         }
 
+        // if the slot at index "hash" of the hash table has always been empty,
+        // determines that an entry with the provided key is not in the hash table
         else if (slots[hash].isEmptySinceStart()) {
             return false;
         }
 
+        // otherwise, probes the hash table
         else {
             currentProbe = offsets[i];
         }
@@ -181,12 +244,3 @@ bool HashTable::findSlot(int key, int& slot) {
 
     return false;
 }
-
-// int HashTable::setIndex(int) {
-//     sl
-// }
-
-// 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 | 20
-// 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 | 19
-
-// what if key is inserted on second probe, first probe key is removed, and key is reinserted at first probe position (solved, potentially)

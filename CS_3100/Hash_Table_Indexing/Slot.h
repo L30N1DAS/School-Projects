@@ -90,7 +90,7 @@ public:
 		else if (me.isEmptySinceStart())
 			os << "<<Empty>>";
 		else
-			os << "Key: " << me.key << ", Index: " << me.index;
+			os << "Key = " << me.key << ", Index = " << me.index;
 		return os;
 	}
 
