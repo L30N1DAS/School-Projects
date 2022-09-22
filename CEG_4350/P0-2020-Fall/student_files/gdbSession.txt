@@ -1,0 +1,468 @@
+Script started on 2022-09-21 17:11:00-04:00 [TERM="xterm-256color" TTY="/dev/pts/1" COLUMNS="80" LINES="24"]
+[?2004h(base) ]0;anmolsaini@pop-os: ~/git/School-Projects/CEG_4350/P0-2020-Fall[01;32manmolsaini@pop-os[00m:[01;34m~/git/School-Projects/CEG_4350/P0-2020-Fall[00m$ conda deac tivate
+[?2004l[?2004h]0;anmolsaini@pop-os: ~/git/School-Projects/CEG_4350/P0-2020-Fall[01;32manmolsaini@pop-os[00m:[01;34m~/git/School-Projects/CEG_4350/P0-2020-Fall[00m$ make
+[?2004lg++ -g -Wall -ansi -pedantic -Wno-write-strings -Wno-parentheses -c simdisk.cpp
+g++ -g -Wall -ansi -pedantic -Wno-write-strings -Wno-parentheses -c bitvector.cpp
+g++ -g -Wall -ansi -pedantic -Wno-write-strings -Wno-parentheses -c directory.cpp
+g++ -g -Wall -ansi -pedantic -Wno-write-strings -Wno-parentheses -c file.cpp
+g++ -g -Wall -ansi -pedantic -Wno-write-strings -Wno-parentheses -c inodes.cpp
+g++ -g -Wall -ansi -pedantic -Wno-write-strings -Wno-parentheses -c volume.cpp
+g++ -g -Wall -ansi -pedantic -Wno-write-strings -Wno-parentheses -c mount.cpp
+g++ -g -Wall -ansi -pedantic -Wno-write-strings -Wno-parentheses -c shell.cpp
+g++ -o P0 -g -Wall -ansi -pedantic -Wno-write-strings -Wno-parentheses simdisk.o bitvector.o directory.o file.o inodes.o volume.o mount.o shell.o
+[?2004h]0;anmolsaini@pop-os: ~/git/School-Projects/CEG_4350/P0-2020-Fall[01;32manmolsaini@pop-os[00m:[01;34m~/git/School-Projects/CEG_4350/P0-2020-Fall[00m$ gdb P0
+[?2004l[35;1mGNU gdb (Ubuntu 12.0.90-0ubuntu1) 12.0.90[m
+Copyright (C) 2022 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+Type "show copying" and "show warranty" for details.
+This GDB was configured as "x86_64-linux-gnu".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<https://www.gnu.org/software/gdb/bugs/>.
+Find the GDB manual and other documentation resources online at:
+    <http://www.gnu.org/software/gdb/documentation/>.
+
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
+Reading symbols from [32mP0[m...
+[?2004h(gdb) break shell.cpp:main() 
+[?2004lBreakpoint 1 at [34m0x68d6[m: file [32mshell.cpp[m, line 356.
+[?2004h(gdb) run
+[?2004lStarting program: [32m/home/anmolsaini/git/School-Projects/CEG_4350/P0-2020-Fall/P0[m 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "[32m/lib/x86_64-linux-gnu/libthread_db.so.1[m".
+
+Breakpoint 1, [33mmain[m () at [32mshell.cpp[m:356
+356	[31m{[m
+[?2004h[?2004l[?2004h(gdb) next[K[K[K[Kprint buf
+[?2004l$1 = "\b9\374\367\377\177\000\000\360\332\377\367\377\177\000\000p\261\373\367\377\177\000\000\bg\342\367\377\177\000\000(\337\377\377\377\177\000\000\070\271\341\367\377\177\000\000\000\000\000\000\000\000\000\000q_\375\367\377\177\000\000\001\000\000\000\000\000\000\000\r\000\000\000\000\000\000\000\240\273\373\367\377\177\000\000\270\221\241\367\377\177\000\000ǨUUUU\000\000\300\354UUUU\000\000@\320\377\367\377\177\000\000q_\375\367\377\177\000\000\001", '\000' <repeats 15 times>, "\b9\374\367\377\177\000\000\200\346\375\367\377\177\000\000(\337\377\377\377\177\000\000\220\336\377\377\377\177\000\000\001\000\000\000\000\000\000\000\030\337\377\377\377\177\000\000ǨUUUU\000\000\256\215"...
+[?2004h(gdb) print *buf
+[?2004l$2 = 8 '\b'
+[?2004h(gdb) print art[Kg
+[?2004l$3 = {{[36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {
+    [36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {
+    [36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}}
+[?2004h(gdb) print *arg
+[?2004l$4 = {[36ms[m = [34m0x0[m, [36mu[m = 0}
+[?2004h(gdb) ff[K[Kprint types
+[?2004l$5 = "\000\000\000\000\000\000\000\000\000\000"
+[?2004h(gdb) print *types
+[?2004l$6 = 0 '\000'
+[?2004h(gdb) print nArgs
+[?2004l$7 = 0
+[?2004h(gdb) next
+[?2004l359	  [01musage[m[31m();[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004lThe shell has only the following cmds:
+	cd	s
+	cp	ss
+	echo	ssss
+	inode	u
+	ls	
+	lslong	
+	mkdir	s
+	mkdisk	s
+	mkfs	s
+	mount	us
+	mount	
+	mv	ss
+	rddisk	su
+	rmdir	s
+	rm	s
+	pwd	
+	q	
+	quit	
+	umount	u
+	wrdisk	sus
+Start with ! to invoke a Unix shell cmd
+361	    [31m*[mbuf [31m=[m [35m0[m[31m;[m			[36m// clear old input[m
+[?2004h[?2004l[?2004h(gdb) print [K[K[K[K[K[Knext
+[?2004l362	    [01mprintf[m[31m([m[31m"%s"[m[31m,[m [31m"sh33% "[m[31m);[m	[36m// prompt[m
+[?2004h[?2004l[?2004h(gdb) print *buf
+[?2004l$8 = 0 '\000'
+[?2004h(gdb) next
+[?2004l363	    [01mourgets[m[31m([mbuf[31m);[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004lsh33% mkfs Dq 1
+364	    [01mprintf[m[31m([m[31m"cmd [%s][m[35m\n[m[31m"[m[31m,[m buf[31m);[m	[36m// just print out what we got as-is[m
+[?2004h[?2004l[?2004h(gdb) print buf
+[?2004l$9 = "mkfs D1\000\000\332\377\367\377\177\000\000p\261\373\367\377\177\000\000\bg\342\367\377\177\000\000(\337\377\377\377\177\000\000\070\271\341\367\377\177\000\000\000\000\000\000\000\000\000\000q_\375\367\377\177\000\000\001\000\000\000\000\000\000\000\r\000\000\000\000\000\000\000\240\273\373\367\377\177\000\000\270\221\241\367\377\177\000\000ǨUUUU\000\000\300\354UUUU\000\000@\320\377\367\377\177\000\000q_\375\367\377\177\000\000\001", '\000' <repeats 15 times>, "\b9\374\367\377\177\000\000\200\346\375\367\377\177\000\000(\337\377\377\377\177\000\000\220\336\377\377\377\177\000\000\001\000\000\000\000\000\000\000\030\337\377\377\377\177\000\000ǨUUUU\000\000\256\215"...
+[?2004h(gdb) print *buf
+[?2004l$10 = 109 'm'
+[?2004h(gdb) next
+[?2004lcmd [mkfs D1]
+365	    [01;34mif[m [31m([mbuf[31m[[m[35m0[m[31m][m [31m==[m [35m0[m[31m)[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l367	    [01;34mif[m [31m([mbuf[31m[[m[35m0[m[31m][m [31m==[m [31m'#'[m[31m)[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l369	    [01;34mif[m [31m([mbuf[31m[[m[35m0[m[31m][m [31m==[m [31m'!'[m[31m)[m		[36m// begins with !, execute it as[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l372	      [01msetArgsGiven[m[31m([mbuf[31m,[m arg[31m,[m types[31m,[m nArgsMax[31m);[m
+[?2004h[?2004l[?2004h(gdb) print buf[Kb[Kf[Kf[Kf
+[?2004l$11 = "mkfs D1\000\000\332\377\367\377\177\000\000p\261\373\367\377\177\000\000\bg\342\367\377\177\000\000(\337\377\377\377\177\000\000\070\271\341\367\377\177\000\000\000\000\000\000\000\000\000\000q_\375\367\377\177\000\000\001\000\000\000\000\000\000\000\r\000\000\000\000\000\000\000\240\273\373\367\377\177\000\000\270\221\241\367\377\177\000\000ǨUUUU\000\000\300\354UUUU\000\000@\320\377\367\377\177\000\000q_\375\367\377\177\000\000\001", '\000' <repeats 15 times>, "\b9\374\367\377\177\000\000\200\346\375\367\377\177\000\000(\337\377\377\377\177\000\000\220\336\377\377\377\177\000\000\001\000\000\000\000\000\000\000\030\337\377\377\377\177\000\000ǨUUUU\000\000\256\215"...
+[?2004h(gdb) print arg
+[?2004l$12 = {{[36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, 
+  {[36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {
+    [36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}}
+[?2004h(gdb) print types
+[?2004l$13 = "\000\000\000\000\000\000\000\000\000\000"
+[?2004h(gdb) print nArgsMax
+[?2004lNo symbol "nArgsMax" in current context.
+[?2004h(gdb) step
+[?2004l[33msetArgsGiven[m ([36mbuf[m=0x7fffffffd9f0 "mkfs D1", [36marg[m=0x55555555f2e0 <arg>, [36mtypes[m=0x55555555f2d0 <types> "", [36mnMax[m=10) at [32mshell.cpp[m:315
+315	  [01;34mfor[m [31m([muint i [31m=[m [35m0[m[31m;[m i [31m<[m nMax[31m;[m i[31m++)[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) print buf
+[?2004l$14 = [34m0x7fffffffd9f0[m "mkfs D1"
+[?2004h(gdb) print a[K*arg
+[?2004l$15 = {[36ms[m = [34m0x0[m, [36mu[m = 0}
+[?2004h(gdb) print *types[Ks
+[?2004l$16 = 0 '\000'
+[?2004h(gdb) print nMax
+[?2004l$17 = 10
+[?2004h(gdb) step
+[?2004l316	    arg[31m[[mi[31m].[ms [31m=[m [35m0[m[31m;[m
+[?2004h[?2004l[?2004h(gdb) print arg[i].s
+[?2004l$18 = [34m0x0[m
+[?2004h(gdb) next
+[?2004l317	    types[31m[[mi[31m][m [31m=[m [35m0[m[31m;[m
+[?2004h[?2004l[?2004h(gdb) nextprint arg[i].s
+[?2004l$19 = [34m0x0[m
+[?2004h(gdb) print types[i]
+[?2004l$20 = 0 '\000'
+[?2004h(gdb) next
+[?2004l315	  [01;34mfor[m [31m([muint i [31m=[m [35m0[m[31m;[m i [31m<[m nMax[31m;[m i[31m++)[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) nextprint types[i]
+[?2004l$21 = 0 '\000'
+[?2004h(gdb) print types[i][C[C[C[C[C[Cnext[K
+[?2004l316	    arg[31m[[mi[31m].[ms [31m=[m [35m0[m[31m;[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l317	    types[31m[[mi[31m][m [31m=[m [35m0[m[31m;[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l315	  [01;34mfor[m [31m([muint i [31m=[m [35m0[m[31m;[m i [31m<[m nMax[31m;[m i[31m++)[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l316	    arg[31m[[mi[31m].[ms [31m=[m [35m0[m[31m;[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l317	    types[31m[[mi[31m][m [31m=[m [35m0[m[31m;[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l315	  [01;34mfor[m [31m([muint i [31m=[m [35m0[m[31m;[m i [31m<[m nMax[31m;[m i[31m++)[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l316	    arg[31m[[mi[31m].[ms [31m=[m [35m0[m[31m;[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l317	    types[31m[[mi[31m][m [31m=[m [35m0[m[31m;[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l315	  [01;34mfor[m [31m([muint i [31m=[m [35m0[m[31m;[m i [31m<[m nMax[31m;[m i[31m++)[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l316	    arg[31m[[mi[31m].[ms [31m=[m [35m0[m[31m;[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l317	    types[31m[[mi[31m][m [31m=[m [35m0[m[31m;[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l315	  [01;34mfor[m [31m([muint i [31m=[m [35m0[m[31m;[m i [31m<[m nMax[31m;[m i[31m++)[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l316	    arg[31m[[mi[31m].[ms [31m=[m [35m0[m[31m;[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l317	    types[31m[[mi[31m][m [31m=[m [35m0[m[31m;[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l315	  [01;34mfor[m [31m([muint i [31m=[m [35m0[m[31m;[m i [31m<[m nMax[31m;[m i[31m++)[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l316	    arg[31m[[mi[31m].[ms [31m=[m [35m0[m[31m;[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l317	    types[31m[[mi[31m][m [31m=[m [35m0[m[31m;[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l315	  [01;34mfor[m [31m([muint i [31m=[m [35m0[m[31m;[m i [31m<[m nMax[31m;[m i[31m++)[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l316	    arg[31m[[mi[31m].[ms [31m=[m [35m0[m[31m;[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l317	    types[31m[[mi[31m][m [31m=[m [35m0[m[31m;[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l315	  [01;34mfor[m [31m([muint i [31m=[m [35m0[m[31m;[m i [31m<[m nMax[31m;[m i[31m++)[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l316	    arg[31m[[mi[31m].[ms [31m=[m [35m0[m[31m;[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l317	    types[31m[[mi[31m][m [31m=[m [35m0[m[31m;[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l315	  [01;34mfor[m [31m([muint i [31m=[m [35m0[m[31m;[m i [31m<[m nMax[31m;[m i[31m++)[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l316	    arg[31m[[mi[31m].[ms [31m=[m [35m0[m[31m;[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l317	    types[31m[[mi[31m][m [31m=[m [35m0[m[31m;[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l315	  [01;34mfor[m [31m([muint i [31m=[m [35m0[m[31m;[m i [31m<[m nMax[31m;[m i[31m++)[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l319	  types[31m[[mnMax[31m][m [31m=[m [35m0[m[31m;[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l321	  [01mstrtok[m[31m([mbuf[31m,[m [31m" [m[35m\t\n[m[31m"[m[31m);[m		[36m// terminates the cmd name with a \0[m
+[?2004h[?2004l[?2004h(gdb) print buf
+[?2004l$22 = [34m0x7fffffffd9f0[m "mkfs D1"
+[?2004h(gdb) next
+[?2004l323	  [01;34mfor[m [31m([muint i [31m=[m [35m0[m[31m;[m i [31m<[m nMax[31m;)[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) [[Kpritn[K[Knt buf
+[?2004l$23 = [34m0x7fffffffd9f0[m "mkfs"
+[?2004h(gdb) step
+[?2004l324	      [32mchar[m [31m*[mq [31m=[m [01mstrtok[m[31m([m[35m0[m[31m,[m [31m" [m[35m\t[m[31m"[m[31m);[m
+[?2004h[?2004l[?2004h(gdb) print *q
+[?2004l$24 = 0 '\000'
+[?2004h(gdb) next
+[?2004l325	      [01;34mif[m [31m([mq [31m==[m [35m0[m [31m||[m [31m*[mq [31m==[m [35m0[m[31m)[m [01;34mbreak[m[31m;[m
+[?2004h[?2004l[?2004h(gdb) pritn [K[K[Knt *q
+[?2004l$25 = 68 'D'
+[?2004h(gdb) print q
+[?2004l$26 = [34m0x7fffffffd9f5[m "D1"
+[?2004h(gdb) nm[Kext
+[?2004l326	      arg[31m[[mi[31m].[ms [31m=[m q[31m;[m
+[?2004h[?2004l[?2004h(gdb) print arg[i].s
+[?2004l$27 = [34m0x0[m
+[?2004h(gdb) next
+[?2004l327	      arg[31m[[mi[31m].[mu [31m=[m [01mtoNum[m[31m([mq[31m);[m
+[?2004h[?2004l[?2004h(gdb) print arg[i].s
+[?2004l$28 = [34m0x7fffffffd9f5[m "D1"
+[?2004h(gdb) print argi[K[i].u
+[?2004l$29 = 0
+[?2004h(gdb) step
+[?2004l[33mtoNum[m ([36mp[m=0x7fffffffd9f5 "D1") at [32mshell.cpp[m:53
+53	  [01;34mreturn[m [31m([mp [31m!=[m [35m0[m [31m&&[m [31m'0'[m [31m<=[m [31m*[mp [31m&&[m [31m*[mp [31m<=[m [31m'9'[m [31m?[m [01matoi[m[31m([mp[31m)[m [31m:[m [35m0[m[31m);[m
+[?2004h[?2004l[?2004h(gdb) next[K[K[K[Kprint p
+[?2004l$30 = [34m0x7fffffffd9f5[m "D1"
+[?2004h(gdb) next
+[?2004l54	[31m}[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l[33msetArgsGiven[m ([36mbuf[m=0x7fffffffd9f0 "mkfs", [36marg[m=0x55555555f2e0 <arg>, [36mtypes[m=0x55555555f2d0 <types> "", [36mnMax[m=10) at [32mshell.cpp[m:327
+327	      arg[31m[[mi[31m].[mu [31m=[m [01mtoNum[m[31m([mq[31m);[m
+[?2004h[?2004l[?2004h(gdb) pri[K[K[Knextprint p[3Pstepprint arg[i].u
+[?2004l$31 = 0
+[?2004h(gdb) next
+[?2004l328	      types[31m[[mi[31m][m [31m=[m [01misDigit[m[31m(*[mq[31m)?[m [31m'u'[m [31m:[m [31m's'[m[31m;[m
+[?2004h[?2004l[?2004h(gdb) nextprint arg[i].u
+[?2004l$32 = 0
+[?2004h(gdb) print types[i]
+[?2004l$33 = 0 '\000'
+[?2004h(gdb) step
+[?2004l[33misDigit[m ([36mc[m=68 'D') at [32mshell.cpp[m:42
+42	  [01;34mreturn[m [31m'0'[m [31m<=[m c [31m&&[m c [31m<=[m [31m'9'[m[31m;[m
+[?2004h[?2004l[?2004h(gdb) print c
+[?2004l$34 = 68 'D'
+[?2004h(gdb) next
+[?2004l43	[31m}[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l[33msetArgsGiven[m ([36mbuf[m=0x7fffffffd9f0 "mkfs", [36marg[m=0x55555555f2e0 <arg>, [36mtypes[m=0x55555555f2d0 <types> "", [36mnMax[m=10) at [32mshell.cpp[m:328
+328	      types[31m[[mi[31m][m [31m=[m [01misDigit[m[31m(*[mq[31m)?[m [31m'u'[m [31m:[m [31m's'[m[31m;[m
+[?2004h[?2004l[?2004h(gdb) p[Knext
+[?2004l329	      nArgs [31m=[m [31m++[mi[31m;[m
+[?2004h[?2004l[?2004h(gdb) print typespi][K[K[K[i]
+[?2004l$35 = 115 's'
+[?2004h(gdb) print nArgs
+[?2004l$36 = 0
+[?2004h(gdb) next
+[?2004l323	  [01;34mfor[m [31m([muint i [31m=[m [35m0[m[31m;[m i [31m<[m nMax[31m;)[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) print nArgs
+[?2004l$37 = 1
+[?2004h(gdb) step
+[?2004l324	      [32mchar[m [31m*[mq [31m=[m [01mstrtok[m[31m([m[35m0[m[31m,[m [31m" [m[35m\t[m[31m"[m[31m);[m
+[?2004h[?2004l[?2004h(gdb) print *q
+[?2004l$38 = 68 'D'
+[?2004h(gdb) next[K[K[K[Kprint q
+[?2004l$39 = [34m0x7fffffffd9f5[m "D1"
+[?2004h(gdb) nextyt[K[Kt[K
+[?2004l325	      [01;34mif[m [31m([mq [31m==[m [35m0[m [31m||[m [31m*[mq [31m==[m [35m0[m[31m)[m [01;34mbreak[m[31m;[m
+[?2004h[?2004l[?2004h(gdb) print *[Kq
+[?2004l$40 = [34m0x0[m
+[?2004h(gdb) next
+[?2004l331	[31m}[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l[33mmain[m () at [32mshell.cpp[m:373
+373	      [32mint[m k [31m=[m [01mfindCmd[m[31m([mbuf[31m,[m types[31m);[m
+[?2004h[?2004l[?2004h(gdb) print buf
+[?2004l$41 = "mkfs\000D1\000\000\332\377\367\377\177\000\000p\261\373\367\377\177\000\000\bg\342\367\377\177\000\000(\337\377\377\377\177\000\000\070\271\341\367\377\177\000\000\000\000\000\000\000\000\000\000q_\375\367\377\177\000\000\001\000\000\000\000\000\000\000\r\000\000\000\000\000\000\000\240\273\373\367\377\177\000\000\270\221\241\367\377\177\000\000ǨUUUU\000\000\300\354UUUU\000\000@\320\377\367\377\177\000\000q_\375\367\377\177\000\000\001", '\000' <repeats 15 times>, "\b9\374\367\377\177\000\000\200\346\375\367\377\177\000\000(\337\377\377\377\177\000\000\220\336\377\377\377\177\000\000\001\000\000\000\000\000\000\000\030\337\377\377\377\177\000\000ǨUUUU\000\000\256\215"...
+[?2004h(gdb) print arg
+[?2004l$42 = {{[36ms[m = [34m0x7fffffffd9f5[m "D1", [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {
+    [36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {
+    [36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}}
+[?2004h(gdb) pritn ty[K[K[K[K[Knt types
+[?2004l$43 = "s\000\000\000\000\000\000\000\000\000"
+[?2004h(gdb) step
+[?2004l[33mfindCmd[m ([36mname[m=0x7fffffffd9f0 "mkfs", [36margtypes[m=0x55555555f2d0 <types> "s") at [32mshell.cpp[m:340
+340	  [01;34mfor[m [31m([muint i [31m=[m [35m0[m[31m;[m i [31m<[m ncmds[31m;[m i[31m++)[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) p[Kprint ncmds
+[?2004l$44 = 20
+[?2004h(gdb) next
+[?2004l341	    [01;34mif[m [31m([m[01mstrcmp[m[31m([mname[31m,[m cmdTable[31m[[mi[31m].[mcmdName[31m)[m [31m==[m [35m0[m
+[?2004h[?2004l[?2004h(gdb) print mc[K[KcmdTable[i].cmdName [K
+[?2004l$45 = [34m0x55555555b576[m "cd"
+[?2004h(gdb) next
+[?2004l340	  [01;34mfor[m [31m([muint i [31m=[m [35m0[m[31m;[m i [31m<[m ncmds[31m;[m i[31m++)[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l341	    [01;34mif[m [31m([m[01mstrcmp[m[31m([mname[31m,[m cmdTable[31m[[mi[31m].[mcmdName[31m)[m [31m==[m [35m0[m
+[?2004h[?2004l[?2004h(gdb) nextprint cmdTable[i].cmdName
+[?2004l$46 = [34m0x55555555b57d[m "cp"
+[?2004h(gdb) nexxt[K[Kt
+[?2004l340	  [01;34mfor[m [31m([muint i [31m=[m [35m0[m[31m;[m i [31m<[m ncmds[31m;[m i[31m++)[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l341	    [01;34mif[m [31m([m[01mstrcmp[m[31m([mname[31m,[m cmdTable[31m[[mi[31m].[mcmdName[31m)[m [31m==[m [35m0[m
+[?2004h[?2004l[?2004h(gdb) nextprint cmdTable[i].cmdName
+[?2004l$47 = [34m0x55555555b583[m "echo"
+[?2004h(gdb) print cmdTable[i].cmdName[C[C[C[C[C[Cnext[K
+[?2004l340	  [01;34mfor[m [31m([muint i [31m=[m [35m0[m[31m;[m i [31m<[m ncmds[31m;[m i[31m++)[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) nextprint cmdTable[i].cmdName[C[C[C[C[C[Cnext[K[Knext
+[?2004l341	    [01;34mif[m [31m([m[01mstrcmp[m[31m([mname[31m,[m cmdTable[31m[[mi[31m].[mcmdName[31m)[m [31m==[m [35m0[m
+[?2004h[?2004l[?2004h(gdb) nextprint cmdTable[i].cmdName
+[?2004l$48 = [34m0x55555555b58e[m "inode"
+[?2004h(gdb) print cmdTable[i].cmdName[C[C[C[C[C[Cnext[K
+[?2004l340	  [01;34mfor[m [31m([muint i [31m=[m [35m0[m[31m;[m i [31m<[m ncmds[31m;[m i[31m++)[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l341	    [01;34mif[m [31m([m[01mstrcmp[m[31m([mname[31m,[m cmdTable[31m[[mi[31m].[mcmdName[31m)[m [31m==[m [35m0[m
+[?2004h[?2004l[?2004h(gdb) nextprint cmdTable[i].cmdName
+[?2004l$49 = [34m0x55555555b596[m "ls"
+[?2004h(gdb) print cmdTable[i].cmdName[C[C[C[C[C[Cnext[K
+[?2004l340	  [01;34mfor[m [31m([muint i [31m=[m [35m0[m[31m;[m i [31m<[m ncmds[31m;[m i[31m++)[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) nextprint cmdTable[i].cmdName[C[C[C[C[C[Cnext[K
+[?2004l341	    [01;34mif[m [31m([m[01mstrcmp[m[31m([mname[31m,[m cmdTable[31m[[mi[31m].[mcmdName[31m)[m [31m==[m [35m0[m
+[?2004h[?2004l[?2004h(gdb) nextprint cmdTable[i].cmdName
+[?2004l$50 = [34m0x55555555b599[m "lslong"
+[?2004h(gdb) print cmdTable[i].cmdName[C[C[C[C[C[Cnext[K
+[?2004l340	  [01;34mfor[m [31m([muint i [31m=[m [35m0[m[31m;[m i [31m<[m ncmds[31m;[m i[31m++)[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) nextprint cmdTable[i].cmdName[C[C[C[C[C[Cnext[K
+[?2004l341	    [01;34mif[m [31m([m[01mstrcmp[m[31m([mname[31m,[m cmdTable[31m[[mi[31m].[mcmdName[31m)[m [31m==[m [35m0[m
+[?2004h[?2004l[?2004h(gdb) nextprint cmdTable[i].cmdName
+[?2004l$51 = [34m0x55555555b5a0[m "mkdir"
+[?2004h(gdb) print cmdTable[i].cmdName[C[C[C[C[C[Cnext[K
+[?2004l340	  [01;34mfor[m [31m([muint i [31m=[m [35m0[m[31m;[m i [31m<[m ncmds[31m;[m i[31m++)[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) nextprint cmdTable[i].cmdName[C[C[C[C[C[Cnext[K
+[?2004l341	    [01;34mif[m [31m([m[01mstrcmp[m[31m([mname[31m,[m cmdTable[31m[[mi[31m].[mcmdName[31m)[m [31m==[m [35m0[m
+[?2004h[?2004l[?2004h(gdb) nextprint cmdTable[i].cmdName
+[?2004l$52 = [34m0x55555555b5a6[m "mkdisk"
+[?2004h(gdb) print cmdTable[i].cmdName[C[C[C[C[C[Cnext[K
+[?2004l340	  [01;34mfor[m [31m([muint i [31m=[m [35m0[m[31m;[m i [31m<[m ncmds[31m;[m i[31m++)[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l341	    [01;34mif[m [31m([m[01mstrcmp[m[31m([mname[31m,[m cmdTable[31m[[mi[31m].[mcmdName[31m)[m [31m==[m [35m0[m
+[?2004h[?2004l[?2004h(gdb) nextprint cmdTable[i].cmdName
+[?2004l$53 = [34m0x55555555b5ad[m "mkfs"
+[?2004h(gdb) next
+[?2004l342		[31m&&[m [01mstrcmp[m[31m([margtypes[31m,[m cmdTable[31m[[mi[31m].[margsRequired[31m)[m [31m==[m [35m0[m[31m)[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) nextprint cmdTable[i].cmdName[K[K[K[K[K[K[K[K[K].argsRequired [K
+[?2004l$54 = [34m0x55555555b579[m "s"
+[?2004h(gdb) next
+[?2004l343	      [01;34mreturn[m i[31m;[m
+[?2004h[?2004l[?2004h(gdb) print i
+[?2004l$55 = 8
+[?2004h(gdb) next
+[?2004l347	[31m}[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l[33mmain[m () at [32mshell.cpp[m:374
+374	      [01;34mif[m [31m([mk [31m>=[m [35m0[m[31m)[m
+[?2004h[?2004l[?2004h(gdb) print k
+[?2004l$56 = 8
+[?2004h(gdb) step
+[?2004l375		[01minvokeCmd[m[31m([mk[31m,[m arg[31m);[m
+[?2004h[?2004l[?2004h(gdb) print arg
+[?2004l$57 = {{[36ms[m = [34m0x7fffffffd9f5[m "D1", [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {
+    [36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {
+    [36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}}
+[?2004h(gdb) step
+[?2004l[33minvokeCmd[m ([36mk[m=8, [36marg[m=0x55555555f2e0 <arg>) at [32mshell.cpp[m:282
+282	  uint ok [31m=[m [35m1[m[31m;[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l283	  [01;34mif[m [31m([mcmdTable[31m[[mk[31m].[mglobalsNeeded[31m[[m[35m0[m[31m][m [31m==[m [31m'v'[m [31m&&[m cwdVNIN [31m==[m [35m0[m[31m)[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) prt[King cmdTable[k].globalsNeeded[0]
+[?2004lUndefined command: "pring".  Try "help".
+[?2004h(gdb) pring cmdTable[k].globalsNeeded[0][C[C[1P cmdTable[k].globalsNeeded[0][C[C[C[C[C[C[C[C[C[Ct cmdTable[k].globalsNeeded[0][C[C[C[C[C[C[C[C[C[C[C
+[?2004l$58 = 0 '\000'
+[?2004h(gdb) next
+[?2004l287	  [01;34melse[m [01;34mif[m [31m([mcmdTable[31m[[mk[31m].[mglobalsNeeded[31m[[m[35m0[m[31m][m [31m==[m [31m'm'[m [31m&&[m mtab [31m==[m [35m0[m[31m)[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l292	  [32mchar[m [31m*[mreq [31m=[m cmdTable[31m[[mk[31m].[margsRequired[31m;[m
+[?2004h[?2004l[?2004h(gdb) print m[K[K[K[K[K[K[Knext
+[?2004l293	  uint na [31m=[m [01mstrlen[m[31m([mreq[31m);[m
+[?2004h[?2004l[?2004h(gdb) print req
+[?2004l$59 = [34m0x55555555b579[m "s"
+[?2004h(gdb) next
+[?2004l294	  [01;34mfor[m [31m([muint i [31m=[m [35m0[m[31m;[m i [31m<[m na[31m;[m i[31m++)[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) print na
+[?2004l$60 = 1
+[?2004h(gdb) step
+[?2004l295	    [01;34mif[m [31m([mreq[31m[[mi[31m][m [31m==[m [31m's'[m [31m&&[m [31m([marg[31m[[mi[31m].[ms [31m==[m [35m0[m [31m||[m arg[31m[[mi[31m].[ms[31m[[m[35m0[m[31m][m [31m==[m [35m0[m[31m))[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) print arg[i[[K].s
+[?2004l$61 = [34m0x7fffffffd9f5[m "D1"
+[?2004h(gdb) next
+[?2004l299	    [01;34mif[m [31m(([mreq[31m[[mi[31m][m [31m==[m [31m'u'[m[31m)[m [31m&&[m [31m([marg[31m[[mi[31m].[ms [31m==[m [35m0[m [31m||[m [31m![m[01misDigit[m[31m([marg[31m[[mi[31m].[ms[31m[[m[35m0[m[31m])))[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) print [K[K[K[K[K[Knext
+[?2004l294	  [01;34mfor[m [31m([muint i [31m=[m [35m0[m[31m;[m i [31m<[m na[31m;[m i[31m++)[m [31m{[m
+[?2004h[?2004l[?2004h(gdb) print i
+[?2004l$62 = 0
+[?2004h(gdb) print na
+[?2004l$63 = 1
+[?2004h(gdb) next
+[?2004l304	  [01;34mif[m [31m([mok[31m)[m
+[?2004h[?2004l[?2004h(gdb) step
+[?2004l305	    [31m(*[mcmdTable[31m[[mk[31m].[mfunc[31m)[m [31m([marg[31m);[m
+[?2004h[?2004l[?2004h(gdb) print *cmdTable -k[K[K[K[k].func
+[?2004l$64 = {void [33m[m(Arg *[36m[m)} [34m0x555555559f48[m <[33mdoMakeFV(Arg*)[m>
+[?2004h(gdb) print arg
+[?2004l$65 = (Arg *[36m[m) [34m0x55555555f2e0[m <[33marg[m>
+[?2004h(gdb) print *arg
+[?2004l$66 = {[36ms[m = [34m0x7fffffffd9f5[m "D1", [36mu[m = 0}
+[?2004h(gdb) next
+[?2004lmake33fv() = 0x555555572af0, Name == D1, Disk# == 2
+306	[31m}[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l[33mmain[m () at [32mshell.cpp[m:361
+361	    [31m*[mbuf [31m=[m [35m0[m[31m;[m			[36m// clear old input[m
+[?2004h[?2004l[?2004h(gdb) print buf
+[?2004l$67 = "mkfs\000D1\000\000\332\377\367\377\177\000\000p\261\373\367\377\177\000\000\bg\342\367\377\177\000\000(\337\377\377\377\177\000\000\070\271\341\367\377\177\000\000\000\000\000\000\000\000\000\000q_\375\367\377\177\000\000\001\000\000\000\000\000\000\000\r\000\000\000\000\000\000\000\240\273\373\367\377\177\000\000\270\221\241\367\377\177\000\000ǨUUUU\000\000\300\354UUUU\000\000@\320\377\367\377\177\000\000q_\375\367\377\177\000\000\001", '\000' <repeats 15 times>, "\b9\374\367\377\177\000\000\200\346\375\367\377\177\000\000(\337\377\377\377\177\000\000\220\336\377\377\377\177\000\000\001\000\000\000\000\000\000\000\030\337\377\377\377\177\000\000ǨUUUU\000\000\256\215"...
+[?2004h(gdb) next
+[?2004l362	    [01mprintf[m[31m([m[31m"%s"[m[31m,[m [31m"sh33% "[m[31m);[m	[36m// prompt[m
+[?2004h[?2004l[?2004h(gdb) print buf
+[?2004l$68 = "\000kfs\000D1\000\000\332\377\367\377\177\000\000p\261\373\367\377\177\000\000\bg\342\367\377\177\000\000(\337\377\377\377\177\000\000\070\271\341\367\377\177\000\000\000\000\000\000\000\000\000\000q_\375\367\377\177\000\000\001\000\000\000\000\000\000\000\r\000\000\000\000\000\000\000\240\273\373\367\377\177\000\000\270\221\241\367\377\177\000\000ǨUUUU\000\000\300\354UUUU\000\000@\320\377\367\377\177\000\000q_\375\367\377\177\000\000\001", '\000' <repeats 15 times>, "\b9\374\367\377\177\000\000\200\346\375\367\377\177\000\000(\337\377\377\377\177\000\000\220\336\377\377\377\177\000\000\001\000\000\000\000\000\000\000\030\337\377\377\377\177\000\000ǨUUUU\000\000\256\215"...
+[?2004h(gdb) next
+[?2004l363	    [01mourgets[m[31m([mbuf[31m);[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004lsh33% !ls
+364	    [01mprintf[m[31m([m[31m"cmd [%s][m[35m\n[m[31m"[m[31m,[m buf[31m);[m	[36m// just print out what we got as-is[m
+[?2004h[?2004l[?2004h(gdb) print buf
+[?2004l$69 = "!ls\000\000D1\000\000\332\377\367\377\177\000\000p\261\373\367\377\177\000\000\bg\342\367\377\177\000\000(\337\377\377\377\177\000\000\070\271\341\367\377\177\000\000\000\000\000\000\000\000\000\000q_\375\367\377\177\000\000\001\000\000\000\000\000\000\000\r\000\000\000\000\000\000\000\240\273\373\367\377\177\000\000\270\221\241\367\377\177\000\000ǨUUUU\000\000\300\354UUUU\000\000@\320\377\367\377\177\000\000q_\375\367\377\177\000\000\001", '\000' <repeats 15 times>, "\b9\374\367\377\177\000\000\200\346\375\367\377\177\000\000(\337\377\377\377\177\000\000\220\336\377\377\377\177\000\000\001\000\000\000\000\000\000\000\030\337\377\377\377\177\000\000ǨUUUU\000\000\256\215"...
+[?2004h(gdb) next
+[?2004lcmd [!ls]
+365	    [01;34mif[m [31m([mbuf[31m[[m[35m0[m[31m][m [31m==[m [35m0[m[31m)[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l367	    [01;34mif[m [31m([mbuf[31m[[m[35m0[m[31m][m [31m==[m [31m'#'[m[31m)[m
+[?2004h[?2004l[?2004h(gdb) next
+[?2004l369	    [01;34mif[m [31m([mbuf[31m[[m[35m0[m[31m][m [31m==[m [31m'!'[m[31m)[m		[36m// begins with !, execute it as[m
+[?2004h[?2004l[?2004h(gdb) print buf[0]
+[?2004l$70 = 33 '!'
+[?2004h(gdb) step
+[?2004l370	      [01msystem[m[31m([mbuf [31m+[m [35m1[m[31m);[m		[36m// a normal shell cmd[m
+[?2004h[?2004l[?2004h(gdb) j[Knex[K[K[Kprint buf+1
+[?2004l$71 = [34m0x7fffffffd9f1[m "ls"
+[?2004h(gdb) print args
+[?2004lNo symbol "args" in current context.
+[?2004h(gdb) print arg
+[?2004l$72 = {{[36ms[m = [34m0x7fffffffd9f5[m "D1", [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {
+    [36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {
+    [36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}}
+[?2004h(gdb) print types
+[?2004l$73 = "s\000\000\000\000\000\000\000\000\000"
+[?2004h(gdb) next
+[?2004l[Detaching after vfork from child process 51249]
+bitvector.cpp  diskParams.dat  inodes.cpp  P0		student_files
+bitvector.o    file.cpp        inodes.o    shell.cpp	typescript
+D1.dsk	       file.o	       Makefile    shell.o	user.cpp
+directory.cpp  fs33types.hpp   mount.cpp   simdisk.cpp	volume.cpp
+directory.o    gdbSession.txt  mount.o	   simdisk.o	volume.o
+361	    [31m*[mbuf [31m=[m [35m0[m[31m;[m			[36m// clear old input[m
+[?2004h[?2004l[?2004h(gdb) e[Kexit
+[?2004l[?2004hA debugging session is active.
+
+	Inferior 1 [process 47657] will be killed.
+
+Quit anyway? (y or n) n
+[?2004lNot confirmed.
+[?2004h(gdb) continue
+[?2004lContinuing.
+sh33% q
+cmd [q]
+[Inferior 1 (process 47657) exited normally]
+[?2004h[?2004l[?2004h(gdb) exit
+[?2004l[?2004h]0;anmolsaini@pop-os: ~/git/School-Projects/CEG_4350/P0-2020-Fall[01;32manmolsaini@pop-os[00m:[01;34m~/git/School-Projects/CEG_4350/P0-2020-Fall[00m$ exit
+[?2004lexit
+
+Script done on 2022-09-21 21:07:39-04:00 [COMMAND_EXIT_CODE="0"]
