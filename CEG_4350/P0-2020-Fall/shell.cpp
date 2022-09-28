@@ -355,9 +355,11 @@ void ourgets(char *buf) {
 int main()
 {
   char buf[1024];		// better not type longer than 1023 chars
+  int stdOut = dup(STDOUT_FILENO); // https://stackoverflow.com/questions/12902627/the-difference-between-stdout-and-stdout-fileno
 
   usage();
   for (;;) {
+    bool resetStdOut = false;
     *buf = 0;			// clear old input
     printf("%s", "sh33% ");	// prompt
     ourgets(buf);
@@ -366,6 +368,19 @@ int main()
       continue;
     if (buf[0] == '#')
       continue;			// this is a comment line, do nothing
+    //while(buf[i])
+    // char* token = strtok(buf, ">");
+    // char* fileName;
+    if (strchr(buf, '>') != NULL) {
+      strtok(buf, ">");
+      char* fileName = strtok(0, " \t");
+      int fd = creat(fileName, S_IRUSR | S_IWUSR | S_IWGRP | S_IWOTH); // https://www.gnu.org/software/libc/manual/html_node/Permission-Bits.html
+      if (fd != -1) {
+        dup2(fd, STDOUT_FILENO);
+        close(fd);
+        resetStdOut = true;
+      }
+    }
     if (buf[0] == '!')		// begins with !, execute it as
       system(buf + 1);		// a normal shell cmd
     else {
@@ -375,6 +390,9 @@ int main()
 	invokeCmd(k, arg);
       else
 	usage();
+    }
+    if (resetStdOut) {
+      dup2(stdOut, STDOUT_FILENO);
     }
   }
 }
