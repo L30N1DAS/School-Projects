@@ -360,6 +360,7 @@ int main()
   usage();
   for (;;) {
     bool resetStdOut = false;
+    bool inChild = false;
     *buf = 0;			// clear old input
     printf("%s", "sh33% ");	// prompt
     ourgets(buf);
@@ -371,6 +372,20 @@ int main()
     //while(buf[i])
     // char* token = strtok(buf, ">");
     // char* fileName;
+    if (strchr(buf, '&') != NULL) {
+      strtok(buf, "&");
+      int pid = fork();
+      if (pid < 0) {
+        printf("Unable to execute in the background");
+      }
+      else if (pid == 0) {
+        inChild = true;
+      }
+      else {
+        // wait(NULL); don't need to wait according to Wischgoll, may be a better soln that waits without hanging, include in fs33types.hpp
+        continue;
+      }
+    }
     if (strchr(buf, '>') != NULL) {
       strtok(buf, ">");
       char* fileName = strtok(0, " \t");
@@ -393,6 +408,9 @@ int main()
     }
     if (resetStdOut) {
       dup2(stdOut, STDOUT_FILENO);
+    }
+    if (inChild) {
+      exit(0);
     }
   }
 }
