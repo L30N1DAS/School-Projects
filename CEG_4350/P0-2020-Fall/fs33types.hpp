@@ -8,7 +8,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <fcntl.h>
-// #include <sys/wait.h>
+#include <sys/wait.h>
+#include <string>
 
 typedef unsigned char byte;
 typedef unsigned short int ushort;

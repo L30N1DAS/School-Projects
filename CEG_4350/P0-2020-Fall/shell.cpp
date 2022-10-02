@@ -356,11 +356,15 @@ int main()
 {
   char buf[1024];		// better not type longer than 1023 chars
   int stdOut = dup(STDOUT_FILENO); // https://stackoverflow.com/questions/12902627/the-difference-between-stdout-and-stdout-fileno
+  int stdIn = dup(STDIN_FILENO);
 
   usage();
   for (;;) {
     bool resetStdOut = false;
+    bool resetStdIn = false;
     bool inChild = false;
+    bool failedPipe = false;
+
     *buf = 0;			// clear old input
     printf("%s", "sh33% ");	// prompt
     ourgets(buf);
@@ -372,11 +376,13 @@ int main()
     //while(buf[i])
     // char* token = strtok(buf, ">");
     // char* fileName;
+
     if (strchr(buf, '&') != NULL) {
       strtok(buf, "&");
       int pid = fork();
       if (pid < 0) {
-        printf("Unable to execute in the background");
+        printf("Background execution failed.");
+        continue;
       }
       else if (pid == 0) {
         inChild = true;
@@ -386,7 +392,73 @@ int main()
         continue;
       }
     }
-    if (strchr(buf, '>') != NULL) {
+
+    while (strchr(buf, '|') != NULL && !inChild) {
+      strtok(buf, "|");
+      char* nextComToken = strtok(0, " \t");
+      bool startSpace = false;
+      // std::string nextCom(nextComToken); // https://www.geeksforgeeks.org/convert-character-array-to-string-in-c/
+      std::string nextCom;
+      while (nextComToken != 0) {
+        if (startSpace) {
+          nextCom = nextCom + " ";
+        }
+        for (long unsigned int i = 0; i < strlen(nextComToken); i++) {
+          nextCom = nextCom + nextComToken[i];
+        }
+        nextComToken = strtok(0, " \t");
+        startSpace = true;
+      }
+      int p[2];
+      if (pipe(p) < 0) { // https://www.geeksforgeeks.org/pipe-system-call/
+        printf("Piping failed upon creation of pipe.");
+        failedPipe = true;
+        break;
+      }
+      int pid = fork();
+      if (pid < 0) {
+        failedPipe = true;
+        printf("Piping failed upon creation of child process.");
+        break;
+      }
+      else if (pid == 0) {
+        inChild = true;
+        // https://stackoverflow.com/questions/50669417/piping-to-stdout
+        dup2(p[1], STDOUT_FILENO);      // stdout out to write end of pipe
+        // Close both ends of the pipe!
+        close(p[0]);
+        close(p[1]);
+        // end citation
+      }
+      else {
+        // printf ("found at %d\n",nextCom-buf);
+        for (long unsigned int i = 0; i < nextCom.length(); i++) {
+          buf[i] = nextCom[i];
+        }
+        buf[nextCom.length()] = '\0';
+        // strtok(buf, " \t\n");
+        // buf += (nextCom - buf);
+
+        //char* pch = strchr(buf, nextCom[0]);
+        
+        // buf = nextCom;
+        // https://stackoverflow.com/questions/50669417/piping-to-stdout
+        dup2(p[0], STDIN_FILENO);     // stdin from from read end of pipe
+        // Close both ends of the pipe!
+        close(p[0]);
+        close(p[1]);
+        // end citation
+        resetStdIn = true;
+        wait(NULL);
+        // continue;
+      }
+    }
+
+    if (failedPipe) {
+      continue;
+    }
+
+    if (strchr(buf, '>') != NULL) { // nested coms don't work
       strtok(buf, ">");
       char* fileName = strtok(0, " \t");
       int fd = creat(fileName, S_IRUSR | S_IWUSR | S_IWGRP | S_IWOTH); // https://www.gnu.org/software/libc/manual/html_node/Permission-Bits.html
@@ -396,18 +468,26 @@ int main()
         resetStdOut = true;
       }
     }
-    if (buf[0] == '!')		// begins with !, execute it as
+
+    if (buf[0] == '!') {		// begins with !, execute it as
       system(buf + 1);		// a normal shell cmd
+    }
+    
     else {
       setArgsGiven(buf, arg, types, nArgsMax);
       int k = findCmd(buf, types);
-      if (k >= 0)
-	invokeCmd(k, arg);
-      else
-	usage();
+      if (k >= 0) {
+	      invokeCmd(k, arg);
+      } else {
+	      usage();
+      }
     }
+
     if (resetStdOut) {
       dup2(stdOut, STDOUT_FILENO);
+    }
+    if (resetStdIn) {
+      dup2(stdIn, STDIN_FILENO);
     }
     if (inChild) {
       exit(0);
