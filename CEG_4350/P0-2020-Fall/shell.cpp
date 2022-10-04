@@ -352,13 +352,6 @@ void ourgets(char *buf) {
   if (p) *p = 0;
 }
 
-void updateBufChar(char* buf, char* newBuf) {
-  for (long unsigned int i = 0; i < strlen(newBuf); i++) {
-    buf[i] = newBuf[i];
-  }
-  buf[strlen(newBuf)] = '\0';
-}
-
 void updateBufStr(char* buf, std::string newBuf) {
   for (long unsigned int i = 0; i < newBuf.length(); i++) {
     buf[i] = newBuf[i];
@@ -368,8 +361,8 @@ void updateBufStr(char* buf, std::string newBuf) {
 
 std::string getNextCom(char* nextComToken) {
   bool startSpace = false;
-  // std::string nextCom(nextComToken); // https://www.geeksforgeeks.org/convert-character-array-to-string-in-c/
   std::string nextCom;
+
   while (nextComToken != 0) {
     if (startSpace) {
       nextCom = nextCom + " ";
@@ -404,24 +397,18 @@ int main()
       continue;
     if (buf[0] == '#')
       continue;			// this is a comment line, do nothing
-    //while(buf[i])
-    // char* token = strtok(buf, ">");
-    // char* fileName;
 
-    // char arr[] = {'a','b','c','\0'};
-    // updateBuf(buf, arr);
     if (strchr(buf, '&') != NULL) {
       strtok(buf, "&");
       int pid = fork();
       if (pid < 0) {
-        printf("Background execution failed.");
+        printf("Background execution failed.\n");
         continue;
       }
       else if (pid == 0) {
         inChild = true;
       }
       else {
-        // wait(NULL); don't need to wait according to Wischgoll, may be a better soln that waits without hanging, include in fs33types.hpp
         continue;
       }
     }
@@ -439,47 +426,25 @@ int main()
 
       std::string commands[numPipes+1]; // https://www.tutorialspoint.com/c_standard_library/c_function_strtok.htm N/A
 
-      // while (strchr(buf, '|') != NULL && !inChild) {
       for (int i = 0; i <= numPipes; i++) {
-        // int j = 0;
-        // // char 
-        // while (buf[j] != 0) {
-
-        // }
         commands[i] = strtok(buf, "|");
         char* nextComToken = strtok(0, " \t");
         std::string nextCom = getNextCom(nextComToken);
-        // commands[i] = buf;
         updateBufStr(buf, nextCom);
-        // bool startSpace = false;
-        // // std::string nextCom(nextComToken); // https://www.geeksforgeeks.org/convert-character-array-to-string-in-c/
-        // std::string nextCom;
-        // while (nextComToken != 0) {
-        //   if (startSpace) {
-        //     nextCom = nextCom + " ";
-        //   }
-        //   for (long unsigned int i = 0; i < strlen(nextComToken); i++) {
-        //     nextCom = nextCom + nextComToken[i];
-        //   }
-        //   nextComToken = strtok(0, " \t");
-        //   startSpace = true;
-        // }
       }
-      
-      // bool willFork = true;
 
       if (numPipes == 1) {
         int p[2];
         if (pipe(p) < 0) { // https://www.geeksforgeeks.org/pipe-system-call/
-          printf("Piping failed upon creation of pipe.");
+          printf("Piping failed upon creation of pipe.\n");
           failedPipe = true;
-          break;
+          continue;
         }
         int pid = fork();
         if (pid < 0) {
           failedPipe = true;
-          printf("Piping failed upon creation of child process.");
-          // break;
+          printf("Piping failed upon creation of child process.\n");
+          continue;
         }
         else if (pid == 0) {
           inChild = true;
@@ -489,117 +454,36 @@ int main()
           close(p[0]);
           close(p[1]);
           // end citation
-          // continue;
+
           updateBufStr(buf, commands[0]);
         }
         else {
-          // printf ("found at %d\n",nextCom-buf);
-          // for (long unsigned int i = 0; i < nextCom.length(); i++) {
-          //   buf[i] = nextCom[i];
-          // }
-          // buf[nextCom.length()] = '\0';
-          updateBufStr(buf, commands[1]);
-          // strtok(buf, " \t\n");
-          // buf += (nextCom - buf);
-
-          //char* pch = strchr(buf, nextCom[0]);
-          
-          // buf = nextCom;
           // https://stackoverflow.com/questions/50669417/piping-to-stdout
-          dup2(p[0], STDIN_FILENO);     // stdin from from read end of pipe
+          dup2(p[0], STDIN_FILENO);     // stdin from read end of pipe
+
           // Close both ends of the pipe!
           close(p[0]);
           close(p[1]);
           // end citation
+
+          updateBufStr(buf, commands[1]);
           resetStdIn = true;
           wait(NULL);
-          // continue;
-          // break;
         }
       }
-      // above and under are alternatives
-
-
-
-      // else {
-      //   for (int i = numPipes; i > 0; i--) { // assuming 2 pipes
-      //   // if (numPipes == 2) {
-      //     int p[2];
-      //     int np[2];
-      //     if (pipe(p) < 0 || pipe(np) < 0) { // https://www.geeksforgeeks.org/pipe-system-call/
-      //       printf("Piping failed upon creation of pipe.");
-      //       failedPipe = true;
-      //       break;
-      //     }
-      //     int pid = fork();
-      //     if (pid < 0) {
-      //       failedPipe = true;
-      //       printf("Piping failed upon creation of child process.");
-      //       break;
-      //     }
-      //     else if (pid == 0) {
-      //       if (inChild) {
-      //         dup2(np[1], STDOUT_FILENO);
-      //       }
-      //       else {
-      //         inChild = true;
-      //         // https://stackoverflow.com/questions/50669417/piping-to-stdout
-      //         dup2(p[1], STDOUT_FILENO);      // stdout out to write end of pipe
-      //         dup2(np[0], STDIN_FILENO);
-      //       }
-      //       // Close both ends of the pipe!
-      //       close(p[0]);
-      //       close(p[1]);
-      //       close(np[0]);
-      //       close(np[1]);
-      //       // end citation
-      //       continue;
-      //     }
-      //     else {
-      //       if (!inChild) {
-      //         // printf ("found at %d\n",nextCom-buf);
-      //         // for (long unsigned int i = 0; i < nextCom.length(); i++) {
-      //         //   buf[i] = nextCom[i];
-      //         // }
-      //         // buf[nextCom.length()] = '\0';
-      //         updateBufStr(buf, commands[i]);
-      //         // strtok(buf, " \t\n");
-      //         // buf += (nextCom - buf);
-
-      //         //char* pch = strchr(buf, nextCom[0]);
-              
-      //         // buf = nextCom;
-      //         // https://stackoverflow.com/questions/50669417/piping-to-stdout
-      //         dup2(p[0], STDIN_FILENO);     // stdin from from read end of pipe
-      //         // Close both ends of the pipe!
-      //         close(p[0]);
-      //         close(p[1]);
-      //         close(np[0]);
-      //         close(np[1]);
-      //         // end citation
-      //         resetStdIn = true;
-      //         wait(NULL);
-      //         // continue;
-      //         break;
-      //       }
-      //     }
-      //   }
-      // }
-
-      
 
       else if (numPipes == 2) {
         int p[2];
         int np[2];
         if (pipe(p) < 0 || pipe(np) < 0) { // https://www.geeksforgeeks.org/pipe-system-call/
-          printf("Piping failed upon creation of pipe.");
+          printf("Piping failed upon creation of pipe.\n");
           failedPipe = true;
           continue;
         }
         int pid = fork();
         if (pid < 0) {
           failedPipe = true;
-          printf("Piping failed upon creation of child process.");
+          printf("Piping failed upon creation of child process.\n");
           continue;
         }
         else if (pid == 0) {
@@ -607,25 +491,28 @@ int main()
           int pid2 = fork();
           if (pid2 < 0) {
             failedPipe = true;
-            printf("Piping failed upon creation of child process.");
+            printf("Piping failed upon creation of grandchild process.\n");
             continue;
           }
           else if (pid2 == 0) {
-            dup2(np[1], STDOUT_FILENO);
+            // https://stackoverflow.com/questions/50669417/piping-to-stdout
+            dup2(np[1], STDOUT_FILENO);     // stdout out to write end of child-grandchild pipe
 
+            // Close both ends of each pipe!
             close(p[0]);
             close(p[1]);
             close(np[0]);
             close(np[1]);
+            // end citation
 
             updateBufStr(buf, commands[0]);
           }
           else {
             // https://stackoverflow.com/questions/50669417/piping-to-stdout
-            dup2(p[1], STDOUT_FILENO);      // stdout out to write end of pipe
-            dup2(np[0], STDIN_FILENO);
+            dup2(p[1], STDOUT_FILENO);      // stdout out to write end of parent-child pipe
+            dup2(np[0], STDIN_FILENO);      // stdin from read end of child-grandchild pipe
 
-            // Close both ends of the pipe!
+            // Close both ends of each pipe!
             close(p[0]);
             close(p[1]);
             close(np[0]);
@@ -638,9 +525,9 @@ int main()
         }
         else {
           // https://stackoverflow.com/questions/50669417/piping-to-stdout
-          dup2(p[0], STDIN_FILENO);     // stdin from from read end of pipe
+          dup2(p[0], STDIN_FILENO);     // stdin from read end of parent-child pipe
 
-          // Close both ends of the pipe!
+          // Close both ends of each pipe!
           close(p[0]);
           close(p[1]);
           close(np[0]);
@@ -652,13 +539,18 @@ int main()
           wait(NULL);
         }
       }
+
+      else {
+        printf("More than 2 pipes cannot be handled.\n");
+        continue;
+      }
+
+      if (failedPipe) {
+        continue;
+      }
     }
 
-    if (failedPipe) {
-      continue;
-    }
-
-    if (strchr(buf, '>') != NULL) { // nested coms don't work
+    if (strchr(buf, '>') != NULL) {
       strtok(buf, ">");
       char* fileName = strtok(0, " \t");
       int fd = creat(fileName, S_IRUSR | S_IWUSR | S_IWGRP | S_IWOTH); // https://www.gnu.org/software/libc/manual/html_node/Permission-Bits.html
@@ -671,9 +563,6 @@ int main()
 
     if (buf[0] == '!') {		// begins with !, execute it as
       system(buf + 1);		// a normal shell cmd
-      // if (inChild) {
-      //   exit(0);
-      // }
     }
     
     else {
