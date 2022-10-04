@@ -352,6 +352,7 @@ void ourgets(char *buf) {
   if (p) *p = 0;
 }
 
+// updates buf with a provide string
 void updateBufStr(char* buf, std::string newBuf) {
   for (long unsigned int i = 0; i < newBuf.length(); i++) {
     buf[i] = newBuf[i];
@@ -359,6 +360,7 @@ void updateBufStr(char* buf, std::string newBuf) {
   buf[newBuf.length()] = '\0';
 }
 
+// stores the tokens of the command after a pipe in a string
 std::string getNextCom(char* nextComToken) {
   bool startSpace = false;
   std::string nextCom;
@@ -374,6 +376,113 @@ std::string getNextCom(char* nextComToken) {
     startSpace = true;
   }
   return nextCom;
+}
+
+void singlePipe(char* buf, std::string commands[], bool& failedPipe, bool& inChild, bool& resetStdIn) {
+  int p[2];
+  if (pipe(p) < 0) { // https://www.geeksforgeeks.org/pipe-system-call/
+    printf("Piping failed upon creation of pipe.\n");
+    failedPipe = true;
+    return;
+  }
+  int pid = fork();
+  if (pid < 0) {
+    failedPipe = true;
+    printf("Piping failed upon creation of child process.\n");
+    return;
+  }
+  else if (pid == 0) {
+    inChild = true;
+    // https://stackoverflow.com/questions/50669417/piping-to-stdout
+    dup2(p[1], STDOUT_FILENO);      // stdout out to write end of pipe
+    // Close both ends of the pipe!
+    close(p[0]);
+    close(p[1]);
+    // end citation
+
+    updateBufStr(buf, commands[0]);
+  }
+  else {
+    // https://stackoverflow.com/questions/50669417/piping-to-stdout
+    dup2(p[0], STDIN_FILENO);     // stdin from read end of pipe
+
+    // Close both ends of the pipe!
+    close(p[0]);
+    close(p[1]);
+    // end citation
+
+    updateBufStr(buf, commands[1]);
+    resetStdIn = true;
+    wait(NULL);
+  }
+}
+
+void doublePipe(char* buf, std::string commands[], bool& failedPipe, bool& inChild, bool& resetStdIn) {
+  int p[2];
+  int np[2];
+  if (pipe(p) < 0 || pipe(np) < 0) { // https://www.geeksforgeeks.org/pipe-system-call/
+    printf("Piping failed upon creation of pipe.\n");
+    failedPipe = true;
+    return;
+  }
+  int pid = fork();
+  if (pid < 0) {
+    failedPipe = true;
+    printf("Piping failed upon creation of child process.\n");
+    return;
+  }
+  else if (pid == 0) {
+    inChild = true;
+    int pid2 = fork();
+    if (pid2 < 0) {
+      failedPipe = true;
+      printf("Piping failed upon creation of grandchild process.\n");
+      return;
+    }
+    else if (pid2 == 0) {
+      // https://stackoverflow.com/questions/50669417/piping-to-stdout
+      dup2(np[1], STDOUT_FILENO);     // stdout out to write end of child-grandchild pipe
+
+      // Close both ends of each pipe!
+      close(p[0]);
+      close(p[1]);
+      close(np[0]);
+      close(np[1]);
+      // end citation
+
+      updateBufStr(buf, commands[0]);
+    }
+    else {
+      // https://stackoverflow.com/questions/50669417/piping-to-stdout
+      dup2(p[1], STDOUT_FILENO);      // stdout out to write end of parent-child pipe
+      dup2(np[0], STDIN_FILENO);      // stdin from read end of child-grandchild pipe
+
+      // Close both ends of each pipe!
+      close(p[0]);
+      close(p[1]);
+      close(np[0]);
+      close(np[1]);
+      // end citation
+
+      updateBufStr(buf, commands[1]);
+      wait(NULL);
+    }
+  }
+  else {
+    // https://stackoverflow.com/questions/50669417/piping-to-stdout
+    dup2(p[0], STDIN_FILENO);     // stdin from read end of parent-child pipe
+
+    // Close both ends of each pipe!
+    close(p[0]);
+    close(p[1]);
+    close(np[0]);
+    close(np[1]);
+    // end citation
+
+    updateBufStr(buf, commands[2]);
+    resetStdIn = true;
+    wait(NULL);
+  }
 }
 
 int main()
@@ -434,117 +543,15 @@ int main()
       }
 
       if (numPipes == 1) {
-        int p[2];
-        if (pipe(p) < 0) { // https://www.geeksforgeeks.org/pipe-system-call/
-          printf("Piping failed upon creation of pipe.\n");
-          failedPipe = true;
-          continue;
-        }
-        int pid = fork();
-        if (pid < 0) {
-          failedPipe = true;
-          printf("Piping failed upon creation of child process.\n");
-          continue;
-        }
-        else if (pid == 0) {
-          inChild = true;
-          // https://stackoverflow.com/questions/50669417/piping-to-stdout
-          dup2(p[1], STDOUT_FILENO);      // stdout out to write end of pipe
-          // Close both ends of the pipe!
-          close(p[0]);
-          close(p[1]);
-          // end citation
-
-          updateBufStr(buf, commands[0]);
-        }
-        else {
-          // https://stackoverflow.com/questions/50669417/piping-to-stdout
-          dup2(p[0], STDIN_FILENO);     // stdin from read end of pipe
-
-          // Close both ends of the pipe!
-          close(p[0]);
-          close(p[1]);
-          // end citation
-
-          updateBufStr(buf, commands[1]);
-          resetStdIn = true;
-          wait(NULL);
-        }
+        singlePipe(buf, commands, failedPipe, inChild, resetStdIn);
       }
-
       else if (numPipes == 2) {
-        int p[2];
-        int np[2];
-        if (pipe(p) < 0 || pipe(np) < 0) { // https://www.geeksforgeeks.org/pipe-system-call/
-          printf("Piping failed upon creation of pipe.\n");
-          failedPipe = true;
-          continue;
-        }
-        int pid = fork();
-        if (pid < 0) {
-          failedPipe = true;
-          printf("Piping failed upon creation of child process.\n");
-          continue;
-        }
-        else if (pid == 0) {
-          inChild = true;
-          int pid2 = fork();
-          if (pid2 < 0) {
-            failedPipe = true;
-            printf("Piping failed upon creation of grandchild process.\n");
-            continue;
-          }
-          else if (pid2 == 0) {
-            // https://stackoverflow.com/questions/50669417/piping-to-stdout
-            dup2(np[1], STDOUT_FILENO);     // stdout out to write end of child-grandchild pipe
-
-            // Close both ends of each pipe!
-            close(p[0]);
-            close(p[1]);
-            close(np[0]);
-            close(np[1]);
-            // end citation
-
-            updateBufStr(buf, commands[0]);
-          }
-          else {
-            // https://stackoverflow.com/questions/50669417/piping-to-stdout
-            dup2(p[1], STDOUT_FILENO);      // stdout out to write end of parent-child pipe
-            dup2(np[0], STDIN_FILENO);      // stdin from read end of child-grandchild pipe
-
-            // Close both ends of each pipe!
-            close(p[0]);
-            close(p[1]);
-            close(np[0]);
-            close(np[1]);
-            // end citation
-
-            updateBufStr(buf, commands[1]);
-            wait(NULL);
-          }
-        }
-        else {
-          // https://stackoverflow.com/questions/50669417/piping-to-stdout
-          dup2(p[0], STDIN_FILENO);     // stdin from read end of parent-child pipe
-
-          // Close both ends of each pipe!
-          close(p[0]);
-          close(p[1]);
-          close(np[0]);
-          close(np[1]);
-          // end citation
-
-          updateBufStr(buf, commands[2]);
-          resetStdIn = true;
-          wait(NULL);
-        }
+        doublePipe(buf, commands, failedPipe, inChild, resetStdIn);
       }
-
       else {
         printf("More than 2 pipes cannot be handled.\n");
         continue;
       }
-
       if (failedPipe) {
         continue;
       }
