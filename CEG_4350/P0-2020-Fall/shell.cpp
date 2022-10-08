@@ -513,6 +513,7 @@ int main()
     if (buf[0] == '#')
       continue;			// this is a comment line, do nothing
 
+    // handles background execution
     if (strchr(buf, '&') != NULL) {
       if (buf[0] == '&') {
         printf("An & must be at the end of a command.\n");
@@ -533,6 +534,7 @@ int main()
       }
     }
 
+    // handles piping
     if (strchr(buf, '|')) {
       if (buf[0] == '|') {
         printf("A | must be between two commands.\n");
@@ -553,7 +555,6 @@ int main()
       // end citation
 
       std::string commands[numPipes+1];
-
       for (int i = 0; i <= numPipes; i++) {
         commands[i] = strtok(buf, "|");
         char* nextComToken = strtok(0, " \t");
@@ -597,6 +598,7 @@ int main()
       }
     }
 
+    // handles redirection
     if (strchr(buf, '>') != NULL) {
       strtok(buf, ">");
       char* fileName = strtok(0, " \t");

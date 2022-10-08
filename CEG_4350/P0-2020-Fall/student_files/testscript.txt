@@ -79,12 +79,7 @@ ls & > test6
 !cat test6
 ls > & test7
 !cat test7
-# !rm test
-# !rm test2
-# !rm test3
 !rm test4
 !rm test5
-# !rm test6
-# !rm test7
 !ps
 q

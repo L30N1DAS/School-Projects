@@ -27,13 +27,14 @@ my project entails indefinitely requesting input from the user using a simulated
 it is found in a command table with appropriate arguments. For the implementation of redirection, background execution, and
 piping, I used conditional statements to detect these symbols in the buffer and to potentially execute their functionality
 if found before setting the arguments of commands. By doing so, I did not have to modify any of the provided functions
-besides main(), making the overall implementation simpler as a result. Since other symbols were already being detected and
-providing special functionality in the base project, however, the order of symbol detection in my project is extremely
-important and had to be altered in some cases. The 0 and # symbols are detected first, as nothing is to be done if either is
-found, followed by the & operator, as any of the other symbols below can and should be capable of background execution,
-followed by the | operator, as a piped command can consist of redirection or a system command, followed by the > operator,
-as output from a system command can still be redirected, finally followed by the ! operator, as it does not rely on any of
-the above operators.
+besides main(), making the overall implementation simpler as a result. I did create some of my own functions, however,
+particularly in conjunction with piping to make main() shorter and the code more navigable. Since other symbols were already
+being detected and providing special functionality in the base project, however, the order of symbol detection in my project
+is extremely important and had to be altered in some cases. The 0 and # symbols are detected first, as nothing is to be done
+if either is found, followed by the & operator, as any of the other symbols below can and should be capable of background
+execution, followed by the | operator, as a piped command can consist of redirection or a system command, followed by the >
+operator, as output from a system command can still be redirected, finally followed by the ! operator, as it does not rely
+on any of the above operators.
 
 (iv)
 Redirection
