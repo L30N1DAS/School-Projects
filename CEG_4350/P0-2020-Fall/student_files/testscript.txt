@@ -1,0 +1,90 @@
+# Anmol Saini
+
+# Basic commands
+ls
+mkfs D1
+ls > test
+ls | !cat
+!cat test
+!sleep 15 &
+echo this
+echo this that these those
+!rm test
+
+# Single piping
+!ls | !grep shell
+!ls | !grep shell > test
+!cat test
+!rm test
+
+# Double piping
+!ls | !grep shell | !grep p
+!ls | !grep shell | !grep p > test
+!cat test
+!rm test
+
+# Piping and Redirection
+ls | !grep listing > test
+!cat test
+ls | !grep listing | !grep cwd > test
+!cat test
+!rm test
+
+# Intentionally/Potentially broken commands
+>
+ls >
+ls>
+ls  >
+> test
+>test
+>  test
+ls>test
+!cat test
+!rm test
+ls  >  test
+!cat test
+!rm test
+
+|
+ls |
+ls|
+ls  |
+| !grep D1
+|!grep D1
+|  !grep D1
+ls|!grep D1
+ls  |  !grep D1
+ls | | !grep D1
+ls !grep D1 | |
+ls !grep listing | !grep D1 |
+ls | !grep listing > test | !grep cwd > test2
+!cat test
+!cat test2
+!rm test
+!rm test2
+
+&
+echo & this that these those
+&ls > test
+!cat test
+& ls > test2
+!cat test2
+&  ls > test3
+!cat test3
+ls > test4&
+!cat test4
+ls > test5  &
+!cat test5
+ls & > test6
+!cat test6
+ls > & test7
+!cat test7
+# !rm test
+# !rm test2
+# !rm test3
+!rm test4
+!rm test5
+# !rm test6
+# !rm test7
+!ps
+q

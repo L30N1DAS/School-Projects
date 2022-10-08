@@ -271,6 +271,9 @@ void usage()
   for (uint i = 0; i < ncmds; i++)
     printf("\t%s\t%s\n", cmdTable[i].cmdName, cmdTable[i].argsRequired);
   printf("Start with ! to invoke a Unix shell cmd\n");
+  printf("Enter a > after a command but before a file name to achieve redirection\n");
+  printf("Enter a | between two commands to achieve piping (only up to and including two pipes/three commands supported\n");
+  printf("Enter a & at the end of a command to achieve background execution\n");
 }
 
 /* pre:: k >= 0, arg[] are set already;; post:: Check that args are
@@ -352,7 +355,7 @@ void ourgets(char *buf) {
   if (p) *p = 0;
 }
 
-// updates buf with a provide string
+// updates buf with a provided string
 void updateBufStr(char* buf, std::string newBuf) {
   for (long unsigned int i = 0; i < newBuf.length(); i++) {
     buf[i] = newBuf[i];
@@ -378,6 +381,7 @@ std::string getNextCom(char* nextComToken) {
   return nextCom;
 }
 
+// executes for situations involving a single pipe
 void singlePipe(char* buf, std::string commands[], bool& failedPipe, bool& inChild, bool& resetStdIn) {
   int p[2];
   if (pipe(p) < 0) { // https://www.geeksforgeeks.org/pipe-system-call/
@@ -395,6 +399,7 @@ void singlePipe(char* buf, std::string commands[], bool& failedPipe, bool& inChi
     inChild = true;
     // https://stackoverflow.com/questions/50669417/piping-to-stdout
     dup2(p[1], STDOUT_FILENO);      // stdout out to write end of pipe
+
     // Close both ends of the pipe!
     close(p[0]);
     close(p[1]);
@@ -417,6 +422,7 @@ void singlePipe(char* buf, std::string commands[], bool& failedPipe, bool& inChi
   }
 }
 
+// executes for situations involving two pipes
 void doublePipe(char* buf, std::string commands[], bool& failedPipe, bool& inChild, bool& resetStdIn) {
   int p[2];
   int np[2];
@@ -508,10 +514,15 @@ int main()
       continue;			// this is a comment line, do nothing
 
     if (strchr(buf, '&') != NULL) {
+      if (buf[0] == '&') {
+        printf("An & must be at the end of a command.\n");
+        usage();
+        continue;
+      }
       strtok(buf, "&");
       int pid = fork();
       if (pid < 0) {
-        printf("Background execution failed.\n");
+        printf("Background execution failed upon creation of child process.\n");
         continue;
       }
       else if (pid == 0) {
@@ -523,6 +534,14 @@ int main()
     }
 
     if (strchr(buf, '|')) {
+      if (buf[0] == '|') {
+        printf("A | must be between two commands.\n");
+        usage();
+        if (inChild) {
+          exit(0);
+        }
+        continue;
+      }
       // https://cplusplus.com/reference/cstring/strchr/
       char* findPipes;
       int numPipes = 0;
@@ -533,15 +552,28 @@ int main()
       }
       // end citation
 
-      std::string commands[numPipes+1]; // https://www.tutorialspoint.com/c_standard_library/c_function_strtok.htm N/A
+      std::string commands[numPipes+1];
 
       for (int i = 0; i <= numPipes; i++) {
         commands[i] = strtok(buf, "|");
         char* nextComToken = strtok(0, " \t");
         std::string nextCom = getNextCom(nextComToken);
+        if ((nextCom == "" || nextCom == "|") && i != numPipes) {
+          printf("The number of input commands must be one more than the number of pipes.\n");
+          printf("The pipes must also be located between commands.\n");
+          failedPipe = true;
+          break;
+        }
         updateBufStr(buf, nextCom);
       }
 
+      if (failedPipe) {
+        usage();
+        if (inChild) {
+          exit(0);
+        }
+        continue;
+      }
       if (numPipes == 1) {
         singlePipe(buf, commands, failedPipe, inChild, resetStdIn);
       }
@@ -550,9 +582,17 @@ int main()
       }
       else {
         printf("More than 2 pipes cannot be handled.\n");
+        usage();
+        if (inChild) {
+          exit(0);
+        }
         continue;
       }
       if (failedPipe) {
+        usage();
+        if (inChild) {
+          exit(0);
+        }
         continue;
       }
     }
@@ -560,12 +600,18 @@ int main()
     if (strchr(buf, '>') != NULL) {
       strtok(buf, ">");
       char* fileName = strtok(0, " \t");
-      int fd = creat(fileName, S_IRUSR | S_IWUSR | S_IWGRP | S_IWOTH); // https://www.gnu.org/software/libc/manual/html_node/Permission-Bits.html
-      if (fd != -1) {
-        dup2(fd, STDOUT_FILENO);
-        close(fd);
-        resetStdOut = true;
+      int fd = creat(fileName, S_IRUSR | S_IRGRP | S_IROTH | S_IWUSR | S_IWGRP); // https://www.gnu.org/software/libc/manual/html_node/Permission-Bits.html
+      if (fd == -1) {
+        printf("Redirection failed.\n");
+        usage();
+        if (inChild) {
+          exit(0);
+        }
+        continue;
       }
+      dup2(fd, STDOUT_FILENO);
+      close(fd);
+      resetStdOut = true;
     }
 
     if (buf[0] == '!') {		// begins with !, execute it as
