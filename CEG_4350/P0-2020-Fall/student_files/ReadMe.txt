@@ -4,6 +4,7 @@ Anmol Saini
 saini.25@wright.edu
 
 (ii)
+P0-2020-Fall
 -rw-rw-r-- 1 anmolsaini anmolsaini  2902 Sep 21 03:16 bitvector.cpp
 -rw-rw-r-- 1 anmolsaini anmolsaini  5352 Sep 21 03:16 directory.cpp
 -rw-rw-r-- 1 anmolsaini anmolsaini   174 Sep 21 03:16 diskParams.dat
@@ -18,6 +19,13 @@ drwxrwxr-x 2 anmolsaini anmolsaini  4096 Oct  4 15:29 student_files
 -rw-rw-r-- 1 anmolsaini anmolsaini  2718 Sep 21 03:16 typescript
 -rw-rw-r-- 1 anmolsaini anmolsaini   112 Sep 21 03:16 user.cpp
 -rw-rw-r-- 1 anmolsaini anmolsaini  6808 Sep 21 03:16 volume.cpp
+
+student_files
+-rw-rw-r-- 1 anmolsaini anmolsaini   1418 Sep 21 03:16 answers.txt
+-rw-rw-r-- 1 anmolsaini anmolsaini 263943 Sep 21 03:16 cmdsTried.txt
+-rw-rw-r-- 1 anmolsaini anmolsaini  33057 Sep 21 21:07 gdbSession.txt
+-rw-rw-r-- 1 anmolsaini anmolsaini   4589 Oct  7 23:34 ReadMe.txt
+-rw-rw-r-- 1 anmolsaini anmolsaini   1020 Oct  7 23:26 testscript.txt
 
 (iii)
 The files in this directory's parent constitute a simple implementation of a file system written in C++. This project
