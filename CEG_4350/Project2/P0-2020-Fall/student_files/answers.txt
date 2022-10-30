@@ -1,0 +1,17 @@
+1.
+
+fopen opens the file whose name is the string pointed to by the pathname argument in the manner specified by the mode argument, returning a FILE pointer upon successful completion and NULL otherwise.
+
+fclose flushes the stream pointed to by the stream argument and closes the underlying file descriptor, returning 0 upon successful completion and EOF otherwise.
+
+fread reads nmemb items of data, each size bytes long, from the stream pointed to by stream, storing them at the location given by ptr; and returns the number of items read.
+
+fwrite() writes nmemb items of data, each size bytes long, to the stream pointed to by stream, obtaining them from the location given by ptr; and returns the number of items written.
+
+fstat retrieves information about the file specified by the file descriptor fd, returning zero upon success and -1 otherwise.
+
+fscanf reads input from the stream pointer argument using a format argument consisting of a sequence of directives which describe how to process the sequence of input characters and returns the number of input items matched and assigned upon success and EOF otherwise.
+
+fprintf writes output to the given output stream, returning the number of characters printed upon success and a negative value otherwise.
+
+sprintf writes to the given character string str, returning the number of characters printed upon success and a negative value otherwise.
