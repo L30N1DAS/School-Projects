@@ -175,6 +175,18 @@ void doLsLong(Arg * a)
   printf("Directory listing ends.\n");
 }
 
+void doLsDir(Arg * a)
+{
+  Directory* curDir;
+  uint iNode = wd->iNumberOf((byte *) a[0].s);
+  if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeDirectory) {
+    curDir = wd;
+    wd = new Directory(fv, iNode, 0);
+    doLsLong(a);
+  }
+  wd = curDir;
+}
+
 void doRm(Arg * a)
 {
   uint in = wd->fv->deleteFile((byte *) a[0].s);
@@ -194,14 +206,6 @@ void doMkDir(Arg * a)
   // Directory* newDir = new Directory(fv, fv->inodes.getFree(), wd->iNumberOf()); // how to access iNumberOf in Dir class
 }
 
-void doChDir(Arg * a)
-{
-  uint iNode = wd->iNumberOf((byte *) a[0].s);
-  if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeDirectory) {
-    wd = new Directory(fv, iNode, 0);
-  }
-}
-
 void doPwd(Arg * a)
 {
   // public funct: nameOf()
@@ -216,7 +220,7 @@ void doPwd(Arg * a)
   Directory* parentDir;
   uint parentINode;
   std::vector<std::string> pathVec;
-  std::string path;
+  std::string path = "";
 
   while(parentINode != 1) {
     parentINode = curDir->iNumberOf((byte *) "..");
@@ -231,6 +235,15 @@ void doPwd(Arg * a)
 
   // printf("%s\n", path);
   std::cout << path << std::endl;
+}
+
+void doChDir(Arg * a)
+{
+  uint iNode = wd->iNumberOf((byte *) a[0].s);
+  if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeDirectory) {
+    wd = new Directory(fv, iNode, 0);
+  }
+  doPwd(a);
 }
 
 void doMv(Arg * a)
@@ -277,6 +290,7 @@ public:
   {"inode", "u", "v", doInode},
   {"ls", "", "v", doLsLong},
   {"lslong", "", "v", doLsLong},
+  {"ls", "s", "v", doLsDir},
   {"mkdir", "s", "v", doMkDir},
   {"mkdisk", "s", "", doMakeDisk},
   {"mkfs", "s", "", doMakeFV},
