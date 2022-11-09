@@ -190,17 +190,26 @@ void doInode(Arg * a)
 
 void doMkDir(Arg * a)
 {
-  TODO("doMkDir");
+  wd->createFile((byte *) a[0].s, 1); // iTypeDirectory
+  // Directory* newDir = new Directory(fv, fv->inodes.getFree(), wd->iNumberOf()); // how to access iNumberOf in Dir class
 }
 
 void doChDir(Arg * a)
 {
-  TODO("doChDir");
+  uint iNode = wd->iNumberOf((byte *) a[0].s);
+  if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeDirectory) {
+    wd = new Directory(fv, iNode, 0);
+  }
 }
 
 void doPwd(Arg * a)
 {
-  TODO("doPwd");
+  // public funct: nameOf()
+  // printf("%s", );
+  // wd->nInode; current dir's inode
+  uint parentINode = wd->iNumberOf((byte *) "..");
+  Directory* parentDir = new Directory(fv, parentINode, 0);
+  printf("%s\n", (char *) parentDir->nameOf(wd->nInode));
 }
 
 void doMv(Arg * a)
