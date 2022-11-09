@@ -207,9 +207,30 @@ void doPwd(Arg * a)
   // public funct: nameOf()
   // printf("%s", );
   // wd->nInode; current dir's inode
-  uint parentINode = wd->iNumberOf((byte *) "..");
-  Directory* parentDir = new Directory(fv, parentINode, 0);
-  printf("%s\n", (char *) parentDir->nameOf(wd->nInode));
+
+  // uint parentINode = wd->iNumberOf((byte *) "..");
+  // Directory* parentDir = new Directory(fv, parentINode, 0);
+  // printf("%s\n", (char *) parentDir->nameOf(wd->nInode));
+
+  Directory* curDir = wd;
+  Directory* parentDir;
+  uint parentINode;
+  std::vector<std::string> pathVec;
+  std::string path;
+
+  while(parentINode != 1) {
+    parentINode = curDir->iNumberOf((byte *) "..");
+    parentDir = new Directory(fv, parentINode, 0);
+    pathVec.push_back((char *) parentDir->nameOf(curDir->nInode));
+    curDir = parentDir;
+  }
+
+  for (int i = pathVec.size() - 1; i >= 0; i--) {
+    path = path + "/" + pathVec[i];
+  }
+
+  // printf("%s\n", path);
+  std::cout << path << std::endl;
 }
 
 void doMv(Arg * a)

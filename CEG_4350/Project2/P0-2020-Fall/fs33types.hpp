@@ -8,6 +8,9 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <fcntl.h>
+#include <vector>
+#include <string>
+#include <iostream>
 
 typedef unsigned char byte;
 typedef unsigned short int ushort;
