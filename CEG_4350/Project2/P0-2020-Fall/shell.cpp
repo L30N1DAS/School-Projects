@@ -175,7 +175,7 @@ void doLsLong(Arg * a)
   printf("Directory listing ends.\n");
 }
 
-void doLsDir(Arg * a)
+void doLsName(Arg * a)
 {
   Directory* curDir;
   uint iNode = wd->iNumberOf((byte *) a[0].s);
@@ -183,14 +183,27 @@ void doLsDir(Arg * a)
     curDir = wd;
     wd = new Directory(fv, iNode, 0);
     doLsLong(a);
+    wd = curDir;
   }
-  wd = curDir;
+  else if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeOrdinary) {
+    std::cout << a[0].s << std::endl;
+  }
 }
 
 void doRm(Arg * a)
 {
-  uint in = wd->fv->deleteFile((byte *) a[0].s);
-  printf("rm %s returns %d.\n", a[0].s, in);
+  // uint in = wd->fv->deleteFile((byte *) a[0].s);
+  uint numContents;
+  uint in = wd->iNumberOf((byte *) a[0].s);
+  if (wd->fv->inodes.getType(in) == iTypeDirectory) {
+    numContents = wd->lsInvis(in);
+  }
+  if (wd->fv->inodes.getType(in) == iTypeOrdinary || (wd->fv->inodes.getType(in) == iTypeDirectory && numContents == 0)) {
+    in = wd->deleteFile((byte *) a[0].s, 1);
+    printf("rm %s returns %d.\n", a[0].s, in);
+    return;
+  }
+  printf("Removal failed\n");
 }
 
 void doInode(Arg * a)
@@ -198,6 +211,14 @@ void doInode(Arg * a)
   uint ni = a[0].u;
 
   wd->fv->inodes.show(ni);
+}
+
+void doInodeName(Arg * a)
+{
+  uint iNode = wd->iNumberOf((byte *) a[0].s);
+  // doInode((Arg*) iNode);
+  // uint ni = a[0].u;
+  wd->fv->inodes.show(iNode);
 }
 
 void doMkDir(Arg * a)
@@ -242,6 +263,9 @@ void doChDir(Arg * a)
   uint iNode = wd->iNumberOf((byte *) a[0].s);
   if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeDirectory) {
     wd = new Directory(fv, iNode, 0);
+  }
+  else {
+    printf("Changing directory failed");
   }
   doPwd(a);
 }
@@ -288,9 +312,10 @@ public:
   {"cp", "ss", "v", doCopy},
   {"echo", "ssss", "", doEcho},
   {"inode", "u", "v", doInode},
+  {"inode", "s", "v", doInodeName},
   {"ls", "", "v", doLsLong},
   {"lslong", "", "v", doLsLong},
-  {"ls", "s", "v", doLsDir},
+  {"ls", "s", "v", doLsName},
   {"mkdir", "s", "v", doMkDir},
   {"mkdisk", "s", "", doMakeDisk},
   {"mkfs", "s", "", doMakeFV},

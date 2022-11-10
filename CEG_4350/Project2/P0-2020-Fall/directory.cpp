@@ -168,6 +168,11 @@ uint Directory::ls()
   return lsPrivate(nInode, 1);	// 1 ==> printf it
 }
 
+uint Directory::lsInvis(uint in)
+{
+  return lsPrivate(in, 0);
+}
+
 uint Directory::createFile(byte *leafnm, uint dirFlag)
 {
   uint in = iNumberOf(leafnm);
@@ -198,6 +203,7 @@ uint Directory::deleteFile(byte *leafnm, uint freeInodeFlag)
       (1 + strlen((char *) leafnm) + fv->superBlock.iWidth);
     if (freeInodeFlag) fv->inodes.setFree(in);
   }
+  namesEnd();
   return in;
 }
 

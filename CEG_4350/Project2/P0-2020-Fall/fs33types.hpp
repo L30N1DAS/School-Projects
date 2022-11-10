@@ -160,6 +160,7 @@ public:
   uint deleteFile(byte * leafnm, uint releaseFlag);
   uint moveFile(uint pn, byte * leafnm);
   uint ls();
+  uint lsInvis(uint in);
 
   FileVolume * fv;
 
