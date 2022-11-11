@@ -239,7 +239,7 @@ void doPwd(Arg * a)
 
   Directory* curDir = wd;
   Directory* parentDir;
-  uint parentINode;
+  uint parentINode = 0;
   std::vector<std::string> pathVec;
   std::string path = "";
 
@@ -258,16 +258,109 @@ void doPwd(Arg * a)
   std::cout << path << std::endl;
 }
 
+uint findNumSlashes(char* path) {
+  char* findSlashes;
+  uint numSlashes = 0;
+  findSlashes = strchr(path, '/');
+  while (findSlashes != NULL) {
+    numSlashes++;
+    findSlashes = strchr(findSlashes+1, '/');
+  }
+  return numSlashes;
+}
+
+std::string getNextPathStr(char* nextPathChar) {
+  bool startSpace = false;
+  std::string nextPathStr;
+
+  while (nextPathChar != 0) {
+    if (startSpace) {
+      nextPathStr = nextPathStr + " ";
+    }
+    for (long unsigned int i = 0; i < strlen(nextPathChar); i++) {
+      nextPathStr = nextPathStr + nextPathChar[i];
+    }
+    nextPathChar = strtok(0, " \t");
+    startSpace = true;
+  }
+  return nextPathStr;
+}
+
+void updatePath(char* path, std::string newPath) {
+  for (long unsigned int i = 0; i < newPath.length(); i++) {
+    path[i] = newPath[i];
+  }
+  path[newPath.length()] = '\0';
+}
+
+std::vector<std::string> getPathVec(char* path) {
+  uint numSlashes = findNumSlashes(path);
+  std::vector<std::string> pathVec;
+  for (uint i = 0; i < numSlashes; i++) {
+    // pathVec[i] = strtok(path, "/");
+    pathVec.push_back(strtok(path, "/"));
+    char* nextPathChar = strtok(0, " \t");
+    // std::string nextPathStr = getNextPathStr(nextPathChar);
+    if (nextPathChar == 0 && i == numSlashes - 1) {
+      break;
+    }
+    std::string nextPathStr = nextPathChar;
+    // if ((nextPathChar == "" || nextPathChar == "/") && i != numSlashes) {
+    //   printf("Invalid path.\n");
+    //   // failedPath = true;
+    //   break;
+    // }
+    // std::string nextPathStr = nextPathChar;
+    // pathVec[i] = nextPathStr;
+    // pathVec.push_back(nextPathStr);
+    nextPathStr = "/" + nextPathStr;
+    updatePath(path, nextPathStr);
+  }
+  return pathVec;
+}
+
 void doChDir(Arg * a)
 {
-  uint iNode = wd->iNumberOf((byte *) a[0].s);
-  if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeDirectory) {
-    wd = new Directory(fv, iNode, 0);
+  std::vector<std::string> pathVec = getPathVec(a[0].s);
+  Directory* startDir = wd;
+  uint iNode = 0;
+  if (a[0].s[0] == '/') {
+    //uint numSlashes = findNumSlashes[a[0].s];
+    //std::string path[];
+    Directory* childDir = wd;
+    const char* pathEntry;
+    uint rootINode = 0;
+    while(rootINode != 1) {
+      rootINode = childDir->iNumberOf((byte *) "..");
+      wd = new Directory(fv, rootINode, 0);
+      childDir = wd;
+    }
+    for (long unsigned int i = 0; i < pathVec.size(); i++) {
+      pathEntry = pathVec[i].c_str(); // https://stackoverflow.com/questions/347949/how-to-convert-a-stdstring-to-const-char-or-char
+      //char pathEntry[pathVec[i].length()];
+      // pathEntry[0] = pathVec[i];
+      iNode = wd->iNumberOf((byte *) pathEntry);
+      if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeDirectory) {
+        wd = new Directory(fv, iNode, 0);
+      }
+      else {
+        printf("Changing directory failed\n");
+        wd = startDir;
+        break;
+      }
+    }
+    doPwd(a);
   }
   else {
-    printf("Changing directory failed");
+    uint iNode = wd->iNumberOf((byte *) a[0].s);
+    if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeDirectory) {
+      wd = new Directory(fv, iNode, 0);
+    }
+    else {
+      printf("Changing directory failed\n");
+    }
+    doPwd(a);
   }
-  doPwd(a);
 }
 
 void doMv(Arg * a)
