@@ -11,7 +11,7 @@ FileVolume * fv;                // Suspicious!
 Directory * wd;                 // Suspicious!
 
 #define nArgsMax 10
-char types[1+nArgsMax];		// +1 for \0
+char types[1+nArgsMax];   // +1 for \0
 
 /* An Arg-ument for one of our commands is either a "word" (a null
  * terminated string), or an unsigned integer.  We store both
@@ -70,9 +70,9 @@ void doMakeDisk(Arg * a)
   if (simDisk == 0)
     return;
   printf("new SimDisk(%s) = %p, nSectorsPerDisk=%d,"
-	 "nBytesPerSector=%d, simDiskNum=%d)\n",
-	 simDisk->name, (void*) simDisk, simDisk->nSectorsPerDisk,
-	 simDisk->nBytesPerSector, simDisk->simDiskNum);
+         "nBytesPerSector=%d, simDiskNum=%d)\n",
+   simDisk->name, (void*) simDisk, simDisk->nSectorsPerDisk,
+         simDisk->nBytesPerSector, simDisk->simDiskNum);
   delete simDisk;
 }
 
@@ -81,12 +81,12 @@ void doWriteDisk(Arg * a)
   SimDisk * simDisk = mkSimDisk((byte *) a[0].s);
   if (simDisk == 0)
     return;
-  char *st = a[2].s;		// arbitrary word
-  if (st == 0)			// if it is NULL, we use ...
+  char *st = a[2].s;    // arbitrary word
+  if (st == 0)      // if it is NULL, we use ...
     st = "CEG433/633/Mateti";
-  char buf[1024];		// assuming nBytesPerSectorMAX < 1024
+  char buf[1024];   // assuming nBytesPerSectorMAX < 1024
   for (uint m = strlen(st), n = 0; n < 1024 - m; n += m)
-    memcpy(buf + n, st, m);	// fill with several copies of st
+    memcpy(buf + n, st, m); // fill with several copies of st
   uint r = simDisk->writeSector(a[1].u, (byte *) buf);
   printf("write433disk(%d, %s...) == %d to Disk %s\n", a[1].u, st, r, a[0].s);
   delete simDisk;
@@ -97,9 +97,9 @@ void doReadDisk(Arg * a)
   SimDisk * simDisk = mkSimDisk((byte *) a[0].s);
   if (simDisk == 0)
     return;
-  char buf[1024];		// assuming nBytesPerSectorMAX < 1024
+  char buf[1024];   // assuming nBytesPerSectorMAX < 1024
   uint r = simDisk->readSector(a[1].u, (byte *) buf);
-  buf[10] = 0;			// sentinel
+  buf[10] = 0;      // sentinel
   printf("read433disk(%d, %s...) = %d from Disk %s\n", a[1].u, buf, r, a[0].s);
   delete simDisk;
 }
@@ -112,7 +112,7 @@ void doQuit(Arg * a)
 void doEcho(Arg * a)
 {
   printf("%s#%d, %s#%d, %s#%d, %s#%d\n", a[0].s, a[0].u,
-	 a[1].s, a[1].u, a[2].s, a[2].u, a[3].s, a[3].u);
+         a[1].s, a[1].u, a[2].s, a[2].u, a[3].s, a[3].u);
 }
 
 void doMakeFV(Arg * a)
@@ -122,11 +122,11 @@ void doMakeFV(Arg * a)
     return;
   fv = simDisk->make33fv();
   printf("make33fv() = %p, Name == %s, Disk# == %d\n",
-	 (void*) fv, a[0].s, simDisk->simDiskNum);
+   (void*) fv, a[0].s, simDisk->simDiskNum);
 
   if (fv) {
-      wd = new Directory(fv, 1, 0);
-      cwdVNIN = mkVNIN(simDisk->simDiskNum, 1);
+    wd = new Directory(fv, 1, 0);
+    cwdVNIN = mkVNIN(simDisk->simDiskNum, 1);
   }
 }
 
@@ -170,7 +170,7 @@ void doCopy(Arg * a)
 void doLsLong(Arg * a)
 {
   printf("\nDirectory listing for disk %s, cwdVNIN == 0x%0lx begins:\n",
-	 wd->fv->simDisk->name, (ulong) cwdVNIN);
+   wd->fv->simDisk->name, (ulong) cwdVNIN);
   wd->ls();                     // Suspicious!
   printf("Directory listing ends.\n");
 }
@@ -243,7 +243,7 @@ void doPwd(Arg * a)
   std::vector<std::string> pathVec;
   std::string path = "";
 
-  while(parentINode != 1) {
+  while (parentINode != 1) {
     parentINode = curDir->iNumberOf((byte *) "..");
     parentDir = new Directory(fv, parentINode, 0);
     pathVec.push_back((char *) parentDir->nameOf(curDir->nInode));
@@ -269,21 +269,21 @@ uint findNumSlashes(char* path) {
   return numSlashes;
 }
 
-std::string getNextPathStr(char* nextPathChar) {
+std::string getRemPathStr(char* remPathChar) {
   bool startSpace = false;
-  std::string nextPathStr;
+  std::string remPathStr;
 
-  while (nextPathChar != 0) {
+  while (remPathChar != 0) {
     if (startSpace) {
-      nextPathStr = nextPathStr + " ";
+      remPathStr = remPathStr + " ";
     }
-    for (long unsigned int i = 0; i < strlen(nextPathChar); i++) {
-      nextPathStr = nextPathStr + nextPathChar[i];
+    for (long unsigned int i = 0; i < strlen(remPathChar); i++) {
+      remPathStr = remPathStr + remPathChar[i];
     }
-    nextPathChar = strtok(0, " \t");
+    remPathChar = strtok(0, " \t");
     startSpace = true;
   }
-  return nextPathStr;
+  return remPathStr;
 }
 
 void updatePath(char* path, std::string newPath) {
@@ -293,51 +293,110 @@ void updatePath(char* path, std::string newPath) {
   path[newPath.length()] = '\0';
 }
 
+bool fixPath (char* path) {
+  // int len = strlen(path);
+  for (int i = strlen(path) - 1; i >= 0; i--) {
+    if (path[i] == '/') {
+      path[i] = 0;
+    }
+    else {
+      break;
+    }
+  }
+  for (long unsigned int i = 0; i < strlen(path); i++) {
+    if (path[i] == '/' && path[i+1] == '/') {
+      return false;
+    }
+  }
+  return true;
+}
+
 std::vector<std::string> getPathVec(char* path) {
-  uint numSlashes = findNumSlashes(path);
+  // char *ogPath = new char(*path);
   std::vector<std::string> pathVec;
+  if (!fixPath(path)) {
+    printf("Changing directory failed\n");
+    return pathVec;
+  }
+  std::string remPathStr;
+  if (path[0] != '/') {
+    remPathStr = path;
+    remPathStr = "/" + remPathStr;
+    updatePath(path, remPathStr);
+  }
+  uint numSlashes = findNumSlashes(path);
+  // std::vector<std::string> pathVec;
   for (uint i = 0; i < numSlashes; i++) {
     // pathVec[i] = strtok(path, "/");
     pathVec.push_back(strtok(path, "/"));
-    char* nextPathChar = strtok(0, " \t");
-    // std::string nextPathStr = getNextPathStr(nextPathChar);
-    if (nextPathChar == 0 && i == numSlashes - 1) {
+    char* remPathChar = strtok(0, " \t");
+    // std::string remPathStr = getRemPathStr(remPathChar);
+    if (remPathChar == 0 && i == numSlashes - 1) {
       break;
     }
-    std::string nextPathStr = nextPathChar;
-    // if ((nextPathChar == "" || nextPathChar == "/") && i != numSlashes) {
+    remPathStr = remPathChar;
+    // if ((remPathChar == "" || remPathChar == "/") && i != numSlashes) {
     //   printf("Invalid path.\n");
     //   // failedPath = true;
     //   break;
     // }
-    // std::string nextPathStr = nextPathChar;
-    // pathVec[i] = nextPathStr;
-    // pathVec.push_back(nextPathStr);
-    nextPathStr = "/" + nextPathStr;
-    updatePath(path, nextPathStr);
+    // std::string remPathStr = remPathChar;
+    // pathVec[i] = remPathStr;
+    // pathVec.push_back(remPathStr);
+    remPathStr = "/" + remPathStr;
+    updatePath(path, remPathStr);
   }
+  // path = ogPath;
+  // delete ogPath;
   return pathVec;
 }
 
 void doChDir(Arg * a)
 {
-  std::vector<std::string> pathVec = getPathVec(a[0].s);
+  bool toRoot;
+  bool afterRoot = true;
   Directory* startDir = wd;
-  uint iNode = 0;
   if (a[0].s[0] == '/') {
-    //uint numSlashes = findNumSlashes[a[0].s];
-    //std::string path[];
+    toRoot = true;
+    if (a[0].s[1] == 0) {
+      afterRoot = false;
+      printf("Changing directory to root\n");
+    }
+    else if (a[0].s[1] == '/') {
+      afterRoot = false;
+      for (long unsigned int i = 0; i < strlen(a[0].s); i++) {
+        if (a[0].s[i] != '/') {
+          toRoot = false;
+          printf("Changing directory failed\n");
+          break;
+        }
+        else {
+          toRoot = true;
+        }
+      }
+      if (toRoot) {
+        printf("Changing directory to root\n");
+      }
+    }
+  }
+  if (toRoot) {
+    // uint numSlashes = findNumSlashes[a[0].s];
+    // std::string path[];
     Directory* childDir = wd;
-    const char* pathEntry;
     uint rootINode = 0;
-    while(rootINode != 1) {
+    while (rootINode != 1) {
       rootINode = childDir->iNumberOf((byte *) "..");
       wd = new Directory(fv, rootINode, 0);
       childDir = wd;
     }
+  }
+  if (afterRoot) {
+    std::vector<std::string> pathVec = getPathVec(a[0].s);
+    uint iNode = 0;
+    const char* pathEntry;
     for (long unsigned int i = 0; i < pathVec.size(); i++) {
       pathEntry = pathVec[i].c_str(); // https://stackoverflow.com/questions/347949/how-to-convert-a-stdstring-to-const-char-or-char
-      //char pathEntry[pathVec[i].length()];
+      // char pathEntry[pathVec[i].length()];
       // pathEntry[0] = pathVec[i];
       iNode = wd->iNumberOf((byte *) pathEntry);
       if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeDirectory) {
@@ -349,18 +408,22 @@ void doChDir(Arg * a)
         break;
       }
     }
-    doPwd(a);
-  }
-  else {
-    uint iNode = wd->iNumberOf((byte *) a[0].s);
-    if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeDirectory) {
-      wd = new Directory(fv, iNode, 0);
+    if (pathVec.size() == 0) {
+      wd = startDir;
     }
-    else {
-      printf("Changing directory failed\n");
-    }
-    doPwd(a);
   }
+  doPwd(a);
+
+  // else {
+  //   uint iNode = wd->iNumberOf((byte *) a[0].s);
+  //   if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeDirectory) {
+  //     wd = new Directory(fv, iNode, 0);
+  //   }
+  //   else {
+  //     printf("Changing directory failed\n");
+  //   }
+  //   doPwd(a);
+  // }
 }
 
 void doMv(Arg * a)
@@ -368,7 +431,7 @@ void doMv(Arg * a)
   TODO("doMv");
 }
 
-void doMountDF(Arg * a)		// arg a ignored
+void doMountDF(Arg * a)   // arg a ignored
 {
   TODO("doMountDF");
 }
@@ -398,31 +461,31 @@ class CmdTable {
 public:
   char *cmdName;
   char *argsRequired;
-  char *globalsNeeded;		// need d==simDisk, v==cfv, m=mtab
+  char *globalsNeeded;    // need d==simDisk, v==cfv, m=mtab
   void (*func) (Arg * a);
 } cmdTable[] = {
-  {"cd", "s", "v", doChDir},
-  {"cp", "ss", "v", doCopy},
-  {"echo", "ssss", "", doEcho},
-  {"inode", "u", "v", doInode},
-  {"inode", "s", "v", doInodeName},
-  {"ls", "", "v", doLsLong},
-  {"lslong", "", "v", doLsLong},
-  {"ls", "s", "v", doLsName},
-  {"mkdir", "s", "v", doMkDir},
-  {"mkdisk", "s", "", doMakeDisk},
-  {"mkfs", "s", "", doMakeFV},
-  {"mount", "us","", doMountUS},
-  {"mount", "", "", doMountDF},
-  {"mv", "ss", "v", doMv},
-  {"rddisk", "su", "", doReadDisk},
-  {"rmdir", "s", "v", doRm},
-  {"rm", "s", "v", doRm},
-  {"pwd", "", "v", doPwd},
-  {"q", "", "", doQuit},
-  {"quit", "", "", doQuit},
-  {"umount", "u", "m", doUmount},
-  {"wrdisk", "sus", "", doWriteDisk}
+    {"cd", "s", "v", doChDir},
+    {"cp", "ss", "v", doCopy},
+    {"echo", "ssss", "", doEcho},
+    {"inode", "u", "v", doInode},
+    {"inode", "s", "v", doInodeName},
+    {"ls", "", "v", doLsLong},
+    {"lslong", "", "v", doLsLong},
+    {"ls", "s", "v", doLsName},
+    {"mkdir", "s", "v", doMkDir},
+    {"mkdisk", "s", "", doMakeDisk},
+    {"mkfs", "s", "", doMakeFV},
+    {"mount", "us", "", doMountUS},
+    {"mount", "", "", doMountDF},
+    {"mv", "ss", "v", doMv},
+    {"rddisk", "su", "", doReadDisk},
+    {"rmdir", "s", "v", doRm},
+    {"rm", "s", "v", doRm},
+    {"pwd", "", "v", doPwd},
+    {"q", "", "", doQuit},
+    {"quit", "", "", doQuit},
+    {"umount", "u", "m", doUmount},
+    {"wrdisk", "sus", "", doWriteDisk}
 };
 
 uint ncmds = sizeof(cmdTable) / sizeof(CmdTable);
@@ -459,8 +522,8 @@ void invokeCmd(int k, Arg *arg)
       printf("arg #%d must be a non-empty string.\n", i);
     }
     if ((req[i] == 'u') && (arg[i].s == 0 || !isDigit(arg[i].s[0]))) {
-	ok = 0;
-	printf("arg #%d (%s) must be a number.\n", i, arg[i].s);
+      ok = 0;
+      printf("arg #%d (%s) must be a number.\n", i, arg[i].s);
     }
   }
   if (ok)
@@ -480,15 +543,15 @@ void setArgsGiven(char *buf, Arg *arg, char *types, uint nMax)
   }
   types[nMax] = 0;
 
-  strtok(buf, " \t\n");		// terminates the cmd name with a \0
+  strtok(buf, " \t\n");   // terminates the cmd name with a \0
 
   for (uint i = 0; i < nMax;) {
-      char *q = strtok(0, " \t");
-      if (q == 0 || *q == 0) break;
-      arg[i].s = q;
-      arg[i].u = toNum(q);
+    char *q = strtok(0, " \t");
+    if (q == 0 || *q == 0) break;
+    arg[i].s = q;
+    arg[i].u = toNum(q);
       types[i] = isDigit(*q)? 'u' : 's';
-      nArgs = ++i;
+    nArgs = ++i;
   }
 }
 
@@ -501,7 +564,7 @@ int findCmd(char *name, char *argtypes)
 {
   for (uint i = 0; i < ncmds; i++) {
     if (strcmp(name, cmdTable[i].cmdName) == 0
-	&& strcmp(argtypes, cmdTable[i].argsRequired) == 0) {
+  && strcmp(argtypes, cmdTable[i].argsRequired) == 0) {
       return i;
     }
   }
@@ -516,27 +579,27 @@ void ourgets(char *buf) {
 
 int main()
 {
-  char buf[1024];		// better not type longer than 1023 chars
+  char buf[1024];   // better not type longer than 1023 chars
 
   usage();
   for (;;) {
-    *buf = 0;			// clear old input
-    printf("%s", "sh33% ");	// prompt
+    *buf = 0;     // clear old input
+    printf("%s", "sh33% "); // prompt
     ourgets(buf);
-    printf("cmd [%s]\n", buf);	// just print out what we got as-is
+    printf("cmd [%s]\n", buf);  // just print out what we got as-is
     if (buf[0] == 0)
       continue;
     if (buf[0] == '#')
-      continue;			// this is a comment line, do nothing
-    if (buf[0] == '!')		// begins with !, execute it as
-      system(buf + 1);		// a normal shell cmd
+      continue;     // this is a comment line, do nothing
+    if (buf[0] == '!')    // begins with !, execute it as
+      system(buf + 1);    // a normal shell cmd
     else {
       setArgsGiven(buf, arg, types, nArgsMax);
       int k = findCmd(buf, types);
       if (k >= 0)
-	invokeCmd(k, arg);
+        invokeCmd(k, arg);
       else
-	usage();
+        usage();
     }
   }
 }
