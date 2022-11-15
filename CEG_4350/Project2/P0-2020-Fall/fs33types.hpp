@@ -161,6 +161,7 @@ public:
   uint moveFile(uint pn, byte * leafnm);
   uint ls();
   uint lsInvis(uint in);
+  std::vector<std::string> getEntries();
 
   FileVolume * fv;
 

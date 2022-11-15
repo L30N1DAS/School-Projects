@@ -190,20 +190,71 @@ void doLsName(Arg * a)
   }
 }
 
+void doLsNameRecursiveHelper(const char * name) {
+  uint iNode = wd->iNumberOf((byte *) name);
+  if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeDirectory) {
+    wd = new Directory(fv, iNode, 0);
+    printf("%s\n", name);
+    doLsLong((Arg *) name);
+  }
+  Directory * curDir = wd;
+  std::vector<std::string> entriesVec = wd->getEntries();
+  for (long unsigned int i = 0; i < entriesVec.size(); i++) {
+    const char * vecEntry = entriesVec[i].c_str();
+    iNode = wd->iNumberOf((byte *) vecEntry);
+    if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeDirectory) {
+      doLsNameRecursiveHelper(vecEntry);
+      wd = curDir;
+    }
+  }
+  //wd = curDir;
+}
+
+void doLsNameRecursive(Arg * a) {
+  if (strcmp(a[0].s, "-lR") != 0) {
+    printf("Incorrect flag for recursive ls");
+    return;
+  }
+  Directory * curDir = wd;
+  doLsNameRecursiveHelper(a[1].s);
+  wd = curDir;
+}
+
+uint getNumDirs(uint iNode) {
+  Directory * targetDir = new Directory(fv, iNode, 0);
+  std::vector<std::string> entriesVec = targetDir->getEntries();
+  uint numDirs = 0;
+  for (long unsigned int i = 0; i < entriesVec.size(); i++) {
+    const char * vecEntry = entriesVec[i].c_str();
+    iNode = targetDir->iNumberOf((byte *) vecEntry);
+    if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeDirectory) {
+      numDirs++;
+    }
+  }
+  return numDirs;
+}
+
 void doRm(Arg * a)
 {
   // uint in = wd->fv->deleteFile((byte *) a[0].s);
-  uint numContents;
   uint in = wd->iNumberOf((byte *) a[0].s);
+  if (in == 0) {
+    printf("File/Directory not found.\n");
+    return;
+  }
+  uint numContents = 0;
+  uint numDirs = 0;
   if (wd->fv->inodes.getType(in) == iTypeDirectory) {
     numContents = wd->lsInvis(in);
+    numDirs = getNumDirs(in);
   }
   if (wd->fv->inodes.getType(in) == iTypeOrdinary || (wd->fv->inodes.getType(in) == iTypeDirectory && numContents == 0)) {
     in = wd->deleteFile((byte *) a[0].s, 1);
-    printf("rm %s returns %d.\n", a[0].s, in);
+    printf("rm %s (contains %d directories) returns %d.\n", a[0].s, numDirs, in); // probably shouldn't say contains x dirs if a file
     return;
   }
-  printf("Removal failed\n");
+  printf("Removal failed.\n");
+  printf("%s contains %d directories.\n", a[0].s, numDirs);
 }
 
 void doInode(Arg * a)
@@ -472,6 +523,7 @@ public:
     {"ls", "", "v", doLsLong},
     {"lslong", "", "v", doLsLong},
     {"ls", "s", "v", doLsName},
+    {"ls", "ss", "v", doLsNameRecursive},
     {"mkdir", "s", "v", doMkDir},
     {"mkdisk", "s", "", doMakeDisk},
     {"mkfs", "s", "", doMakeFV},

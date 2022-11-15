@@ -83,6 +83,19 @@ byte * Directory::nameOf(uint in)
   return bp;
 }
 
+std::vector<std::string> Directory::getEntries()
+{
+  byte *bp = 0;
+  std::vector<std::string> entriesVec;
+  while ((bp = nextName()) != 0) {
+    if (strcmp((char *) bp, ".") != 0 && strcmp((char *) bp, "..") != 0) {
+      entriesVec.push_back((char *) bp);
+    }
+  }
+  namesEnd();
+  return entriesVec;
+}
+
 /* pre:: ;; post:: Search directory and set dirEntry matching with
  * leafnm.  Return inumber.  Callers wish to use dirf and dirEntry
  * further; do not do namesEnd(). */
