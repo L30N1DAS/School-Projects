@@ -186,7 +186,9 @@ void doLsName(Arg * a)
     wd = curDir;
   }
   else if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeOrdinary) {
-    std::cout << a[0].s << std::endl;
+    printf("%7d %crw-rw-rw-    1 yourName yourGroup %7d Jul 15 12:34 %s\n",
+	     iNode, '-', wd->fv->inodes.getFileSize(iNode), a[0].s);
+    //std::cout << a[0].s << std::endl;
   }
 }
 
@@ -196,6 +198,15 @@ void doLsNameRecursiveHelper(const char * name) {
     wd = new Directory(fv, iNode, 0);
     printf("%s\n", name);
     doLsLong((Arg *) name);
+  }
+  else if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeOrdinary) {
+    printf("%7d %crw-rw-rw-    1 yourName yourGroup %7d Jul 15 12:34 %s\n",
+	     iNode, '-', wd->fv->inodes.getFileSize(iNode), name);
+    return;
+  }
+  else if (iNode == 0) {
+    printf("File/Directory not found.\n");
+    return;
   }
   Directory * curDir = wd;
   std::vector<std::string> entriesVec = wd->getEntries();
@@ -255,6 +266,49 @@ void doRm(Arg * a)
   }
   printf("Removal failed.\n");
   printf("%s contains %d directories.\n", a[0].s, numDirs);
+}
+
+void doRmRecursiveHelper(const char * name) {
+  uint iNode = wd->iNumberOf((byte *) name);
+  if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeDirectory) {
+    wd = new Directory(fv, iNode, 0);
+    // printf("%s\n", name);
+    // doLsLong((Arg *) name);
+  }
+  else if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeOrdinary) {
+    //wd->deleteFile((byte *) name, 1);
+    // printf("%7d %crw-rw-rw-    1 yourName yourGroup %7d Jul 15 12:34 %s\n",
+	  //    iNode, '-', wd->fv->inodes.getFileSize(iNode), name);
+    return;
+  }
+  else if (iNode == 0) {
+    printf("File/Directory not found.\n"); // check what happens for `rm -fr .`; might just delete .; nvm, iNode = 1 for .
+    return;
+  }
+  Directory * curDir = wd;
+  std::vector<std::string> entriesVec = wd->getEntries();
+  for (long unsigned int i = 0; i < entriesVec.size(); i++) {
+    const char * vecEntry = entriesVec[i].c_str();
+    iNode = wd->iNumberOf((byte *) vecEntry);
+    if (iNode != 0 /*&& wd->fv->inodes.getType(iNode) == iTypeDirectory*/) {
+      doRmRecursiveHelper(vecEntry);
+      wd = curDir;
+      wd->deleteFile((byte *) vecEntry, 1);
+      // wd = curDir;
+    }
+  }
+  //wd = curDir;
+}
+
+void doRmRecursive(Arg * a) {
+  if (strcmp(a[0].s, "-fr") != 0) {
+    printf("Incorrect flag for recursive rm.\n");
+    return;
+  }
+  Directory * curDir = wd;
+  doRmRecursiveHelper(a[1].s);
+  wd = curDir;
+  wd->deleteFile((byte *) a[1].s, 1);
 }
 
 void doInode(Arg * a)
@@ -533,6 +587,7 @@ public:
     {"rddisk", "su", "", doReadDisk},
     {"rmdir", "s", "v", doRm},
     {"rm", "s", "v", doRm},
+    {"rm", "ss", "v", doRmRecursive},
     {"pwd", "", "v", doPwd},
     {"q", "", "", doQuit},
     {"quit", "", "", doQuit},
