@@ -178,7 +178,7 @@ void doPwd(Arg * a)
   // printf("%s\n", (char *) parentDir->nameOf(wd->nInode));
 
   Directory* curDir = wd;
-  Directory* parentDir = NULL;
+  Directory* parentDir;
   uint parentINode = 0;
   std::vector<std::string> pathVec;
   std::string path = "";
@@ -221,6 +221,7 @@ void doLsName(Arg * a)
     curDir = wd;
     wd = new Directory(fv, iNode, 0);
     doLsLong(a);
+    delete(wd);
     wd = curDir;
   }
   else if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeOrdinary) {
@@ -257,6 +258,7 @@ void doLsNameRecursiveHelper(const char * name) {
       wd = curDir;
     }
   }
+  delete(wd);
   //wd = curDir;
 }
 
