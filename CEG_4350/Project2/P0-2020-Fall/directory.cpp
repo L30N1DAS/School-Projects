@@ -202,6 +202,20 @@ uint Directory::createFile(byte *leafnm, uint dirFlag)
   return in;
 }
 
+uint Directory::customCreateFile(byte *leafnm, uint in, uint dirFlag)
+{
+  if (in > 0) {
+    addLeafName(leafnm, in);
+    if (dirFlag) {
+	    delete new Directory(fv, in, nInode);
+    }
+    else {
+	    fv->inodes.setType(in, iTypeOrdinary);
+    }
+  }
+  return in;
+}
+
 /* Do not delete if it is dot or dotdot.  Do not delete if it is a
  * non-empty dir. */
 

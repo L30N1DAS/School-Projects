@@ -162,6 +162,7 @@ public:
   uint ls();
   uint lsInvis(uint in);
   std::vector<std::string> getEntries();
+  uint customCreateFile(byte *leafnm, uint in, uint dirFlag);
 
   FileVolume * fv;
 
