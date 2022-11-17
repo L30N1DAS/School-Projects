@@ -178,17 +178,24 @@ void doPwd(Arg * a)
   // printf("%s\n", (char *) parentDir->nameOf(wd->nInode));
 
   Directory* curDir = wd;
-  Directory* parentDir;
+  Directory* parentDir = NULL;
   uint parentINode = 0;
   std::vector<std::string> pathVec;
   std::string path = "";
 
   while (parentINode != 1) {
     parentINode = curDir->iNumberOf((byte *) "..");
+    // if (parentDir != NULL) {
+    //   delete(parentDir);
+    // }
     parentDir = new Directory(fv, parentINode, 0);
     pathVec.push_back((char *) parentDir->nameOf(curDir->nInode));
+    if (curDir != wd) {
+      delete(curDir);
+    }
     curDir = parentDir;
   }
+  delete(parentDir);
 
   for (int i = pathVec.size() - 1; i >= 0; i--) {
     path = path + "/" + pathVec[i];
