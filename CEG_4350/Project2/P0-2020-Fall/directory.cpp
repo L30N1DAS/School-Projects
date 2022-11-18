@@ -115,7 +115,7 @@ uint Directory::setDirEntry(byte *leafnm)
   return result;
 }
 
-uint  Directory::iNumberOf(byte *leafnm)
+uint Directory::iNumberOf(byte *leafnm)
 {
   uint in = setDirEntry(leafnm);
   namesEnd();

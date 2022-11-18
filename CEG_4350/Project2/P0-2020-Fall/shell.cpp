@@ -263,7 +263,7 @@ void doLsNameRecursiveHelper(const char * name) {
 }
 
 void doLsNameRecursive(Arg * a) {
-  if (strcmp(a[0].s, "-lR") != 0) {
+  if (strcmp(a[0].s, "-lR") != 0 || strcmp(a[0].s, "-Rl") != 0) {
     printf("Incorrect flag for recursive ls");
     return;
   }
@@ -272,19 +272,19 @@ void doLsNameRecursive(Arg * a) {
   wd = curDir;
 }
 
-uint getNumDirs(uint iNode) {
-  Directory * targetDir = new Directory(fv, iNode, 0);
-  std::vector<std::string> entriesVec = targetDir->getEntries();
-  uint numDirs = 0;
-  for (long unsigned int i = 0; i < entriesVec.size(); i++) {
-    const char * vecEntry = entriesVec[i].c_str();
-    iNode = targetDir->iNumberOf((byte *) vecEntry);
-    if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeDirectory) {
-      numDirs++;
-    }
-  }
-  return numDirs;
-}
+// uint getNumDirs(uint iNode) {
+//   Directory * targetDir = new Directory(fv, iNode, 0);
+//   std::vector<std::string> entriesVec = targetDir->getEntries();
+//   uint numDirs = 0;
+//   for (long unsigned int i = 0; i < entriesVec.size(); i++) {
+//     const char * vecEntry = entriesVec[i].c_str();
+//     iNode = targetDir->iNumberOf((byte *) vecEntry);
+//     if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeDirectory) {
+//       numDirs++;
+//     }
+//   }
+//   return numDirs;
+// }
 
 void doRm(Arg * a)
 {
@@ -295,18 +295,29 @@ void doRm(Arg * a)
     return;
   }
   uint numContents = 0;
-  uint numDirs = 0;
+  // uint numDirs = 0;
   if (wd->fv->inodes.getType(in) == iTypeDirectory) {
     numContents = wd->lsInvis(in);
-    numDirs = getNumDirs(in);
+    // numDirs = getNumDirs(in);
   }
-  if (wd->fv->inodes.getType(in) == iTypeOrdinary || (wd->fv->inodes.getType(in) == iTypeDirectory && numContents == 0)) {
+  if (wd->fv->inodes.getType(in) == iTypeDirectory && numContents == 0) {
     in = wd->deleteFile((byte *) a[0].s, 1);
-    printf("rm %s (contains %d directories) returns %d.\n", a[0].s, numDirs, in); // probably shouldn't say contains x dirs if a file
+    // printf("rm %s (contains %d directories) returns %d.\n", a[0].s, numDirs, in); // probably shouldn't say contains x dirs if a file
+    printf("Successfully removed directory '%s' with inode %d and %d entries.\n", a[0].s, in, numContents);
     return;
   }
-  printf("Removal failed.\n");
-  printf("%s contains %d directories.\n", a[0].s, numDirs);
+  else if (wd->fv->inodes.getType(in) == iTypeDirectory && numContents != 0) {
+    printf("Unable to remove directory '%s' with inode %d and %d entries.\n", a[0].s, in, numContents);
+    return;
+  }
+  else if (wd->fv->inodes.getType(in) == iTypeOrdinary) {
+    in = wd->deleteFile((byte *) a[0].s, 1);
+    // printf("rm %s (contains %d directories) returns %d.\n", a[0].s, numDirs, in); // probably shouldn't say contains x dirs if a file
+    printf("Successfully removed file '%s' with inode %d.\n", a[0].s, in);
+    return;
+  }
+  // printf("Removal failed.\n");
+  // printf("%s contains %d directories.\n", a[0].s, numDirs);
 }
 
 void doRmRecursiveHelper(const char * name) {
@@ -343,7 +354,7 @@ void doRmRecursiveHelper(const char * name) {
 }
 
 void doRmRecursive(Arg * a) {
-  if (strcmp(a[0].s, "-fr") != 0) {
+  if (strcmp(a[0].s, "-fr") != 0 || strcmp(a[0].s, "-rf") != 0) {
     printf("Incorrect flag for recursive rm.\n");
     return;
   }
@@ -370,13 +381,23 @@ void doInodeName(Arg * a)
 
 void doMkDir(Arg * a)
 {
-  uint in = wd->createFile((byte *) a[0].s, 1); // iTypeDirectory
+  uint in = wd->iNumberOf((byte *) a[0].s);
+  if (in != 0) {
+    printf("%s already exists.\n", a[0].s);
+    return;
+  }
+  in = wd->createFile((byte *) a[0].s, 1); // iTypeDirectory
   printf("inode: %d\n", in);
   // Directory* newDir = new Directory(fv, fv->inodes.getFree(), wd->iNumberOf()); // how to access iNumberOf in Dir class
 }
 
 void doTouch(Arg * a) {
-  uint in = wd->createFile((byte *) a[0].s, 0);
+  uint in = wd->iNumberOf((byte *) a[0].s);
+  if (in != 0) {
+    printf("'%s' already exists.\n", a[0].s);
+    return;
+  }
+  in = wd->createFile((byte *) a[0].s, 0);
   printf("inode: %d\n", in);
 }
 
@@ -391,22 +412,22 @@ uint findNumSlashes(char* path) {
   return numSlashes;
 }
 
-std::string getRemPathStr(char* remPathChar) {
-  bool startSpace = false;
-  std::string remPathStr;
+// std::string getRemPathStr(char* remPathChar) {
+//   bool startSpace = false;
+//   std::string remPathStr;
 
-  while (remPathChar != 0) {
-    if (startSpace) {
-      remPathStr = remPathStr + " ";
-    }
-    for (long unsigned int i = 0; i < strlen(remPathChar); i++) {
-      remPathStr = remPathStr + remPathChar[i];
-    }
-    remPathChar = strtok(0, " \t");
-    startSpace = true;
-  }
-  return remPathStr;
-}
+//   while (remPathChar != 0) {
+//     if (startSpace) {
+//       remPathStr = remPathStr + " ";
+//     }
+//     for (long unsigned int i = 0; i < strlen(remPathChar); i++) {
+//       remPathStr = remPathStr + remPathChar[i];
+//     }
+//     remPathChar = strtok(0, " \t");
+//     startSpace = true;
+//   }
+//   return remPathStr;
+// }
 
 void updatePath(char* path, std::string newPath) {
   for (long unsigned int i = 0; i < newPath.length(); i++) {
@@ -553,7 +574,7 @@ void doChDir(Arg * a)
   }
   printf("Current working directory: ");
   doPwd(a);
-  printf("\n");
+  // printf("\n");
 
   // else {
   //   uint iNode = wd->iNumberOf((byte *) a[0].s);
@@ -934,7 +955,7 @@ int main()
 
 // -eof-
 
-// what happens for rm .
-// how to return 0
-// should rm print all entries or only entries that are directories
-// penalty for memory leaks
+// what happens for rm .                                              DONE
+// how to return 0                                                    DONE
+// should rm print all entries or only entries that are directories   DONE
+// penalty for memory leaks                                           DONE
