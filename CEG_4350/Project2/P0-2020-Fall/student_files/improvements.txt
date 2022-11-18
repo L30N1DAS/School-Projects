@@ -1,0 +1,10 @@
+1. Added a call to namesEnd() in directory.cpp's deleteFile() function
+
+This is necessary because deleteFile() makes a call to setDirEntry(), which in turn invokes nextName(). An invocation of
+nextName() must be followed by an invocation of namesEnd() so that any future calls to nextName() start at the beginning
+of a directory.
+
+2. Changed rm to not use volume.cpp's deleteFile() function by using directory.cpp's deleteFile() directly
+
+This is necessary because volume.cpp's deleteFile() invokes directory.cpp's deleteFile() function on the root directory,
+making it impossible to delete files and directories below root.
