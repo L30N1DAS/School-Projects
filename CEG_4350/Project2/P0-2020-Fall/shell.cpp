@@ -596,7 +596,7 @@ void doMv(Arg * a)
   bool destExists = true;
 
   if (a[0].s[0] == '.') {
-    printf("Cannot move '.'.\n");
+    printf("Cannot move '.' or '..'.\n");
     return;
   }
 
