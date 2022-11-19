@@ -1,0 +1,59 @@
+# Anmol Saini: Testscript
+
+mkfs D2
+mkdir dirA
+mkdir dirA
+ls
+pwd
+cd dirA
+mkdir dirB
+cd dirB
+touch fileB
+mkdir dirC
+touch fileB
+ls
+ls ..
+ls dirC
+ls fileB
+cd dirC
+touch fileC
+cd /dirA/dirB/fileB
+pwd
+cd /dirA/dirB
+pwd
+touch fileBB
+ls .
+inode 7
+inode fileBB
+rm fileBB
+cd /
+ls -lR .
+rm dirA
+mkdir dirAA
+cd /dirAA
+touch fileAA
+touch fileBB
+mkdir dirBB
+ls
+mv fileAA dirBB/fileBB
+ls
+ls dirBB
+mv fileBB dirBB
+ls
+ls dirBB
+cd dirBB
+mkdir dirCC
+cd dirCC
+mv /dirAA/fileBB /dirAA/dirBB/dirCC
+ls
+cd ..
+ls
+mv dirCC dirCCC
+ls
+mv /dirAA /dirA
+cd /
+ls -lR dirA
+rm -fr .
+pwd
+ls
+q
