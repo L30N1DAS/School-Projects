@@ -234,6 +234,20 @@ uint Directory::deleteFile(byte *leafnm, uint freeInodeFlag)
   return in;
 }
 
+uint Directory::customDeleteFile(byte *leafnm, uint freeInodeFlag)
+{
+  if (strcmp((char *) leafnm, ".") == 0) return 0;
+
+  uint in = setDirEntry(leafnm);
+  if (in > 0) {
+    dirf->deletePrecedingBytes
+      (1 + strlen((char *) leafnm) + fv->superBlock.iWidth);
+    if (freeInodeFlag) fv->inodes.setFree(in);
+  }
+  namesEnd();
+  return in;
+}
+
 /* pre:: pn is a dir inode, leafnm != 0, leafnm[0] != 0;; post:: Move
  * file named leafnm whose current parent is pn into this directory.;;
  */

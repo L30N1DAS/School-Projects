@@ -163,6 +163,7 @@ public:
   uint lsInvis(uint in);
   std::vector<std::string> getEntries();
   uint customCreateFile(byte *leafnm, uint in, uint dirFlag);
+  uint customDeleteFile(byte *leafnm, uint freeInodeFlag);
 
   FileVolume * fv;
 
