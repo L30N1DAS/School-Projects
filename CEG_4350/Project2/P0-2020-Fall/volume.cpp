@@ -113,7 +113,9 @@ File * FileVolume::findFile(byte * leafnm)
  * unixFilePath[0] != 0;; post:: Open a file named unixFilePath[],
  * read in some number of bytes from it into a block which is then
  * appended to a new file named fs33leaf[], and return the total
- * number of bytes written  */
+ * number of bytes written (writes from a file in the Linux current
+ * working directory to a file in the root directory of the current
+ * file volume)  */
 
 uint FileVolume::write33file(byte *unixFilePath, byte *fs33leaf)
 {
@@ -140,7 +142,9 @@ uint FileVolume::write33file(byte *unixFilePath, byte *fs33leaf)
 /* pre:: fs33leaf != 0, fs33leaf[0] != 0, unixFilePath != 0,
  * unixFilePath[0] != 0;; post:: Create a new file
  * named unixFilePath[], write some number of bytes to it from the
- * file named fs33leaf[], and return that number of bytes  */
+ * file named fs33leaf[], and return that number of bytes (writes
+ * from a file in the Linux current working directory to a file in
+ * the root directory of the current file volume)  */
 
 uint FileVolume::read33file(byte *fs33leaf, byte *unixFilePath)
 {
