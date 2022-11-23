@@ -756,7 +756,7 @@ void doHardLink(Arg * a)
   wd = startDir;
 
   //if (!sourceExists || sourceInvalidPath || destInvalidPath || (destExists && destIsFile)) {
-  if (!sourceExists || sourceInvalidPath || !sourceIsFile || destInvalidPath || destExists) {
+  if (!sourceExists || sourceInvalidPath || !sourceIsFile || destInvalidPath || (destExists && destIsFile)) {
     if (sourceDir != wd) {
       delete(sourceDir);
     }
@@ -766,7 +766,20 @@ void doHardLink(Arg * a)
     printf("Creation of hard link failed.\n");
     return;
   }
+  else if (destVec[0] == "." && destVec.size() == 1) {
+    const char* sourceFile = sourceVec[sourceVec.size() - 1].c_str();
+    // const char* destName = destVec[destVec.size() - 1].c_str();
+    uint iNode = sourceDir->iNumberOf((byte *) sourceFile);
+    if (destDir->iNumberOf((byte *) sourceFile) == 0) {
+      destDir->customCreateFile((byte *) sourceFile, iNode, 0);
+      printf("Hard link created successfully.\n");
+    }
+    else {
+      printf("File with name %s already exists in the current directory", sourceFile);
+    }
+  }
   //else if (!destExists) {
+  else if (!destExists) {
     uint flag;
     const char* sourceFile = sourceVec[sourceVec.size() - 1].c_str();
     const char* destName = destVec[destVec.size() - 1].c_str();
@@ -793,7 +806,10 @@ void doHardLink(Arg * a)
     //   }
     // }
     printf("Hard link created successfully.\n");
-  //}
+  }
+  else {
+    printf("Creation of hard link failed.\n");
+  }
   // else if (destExists) {
   //   uint flag;
   //   const char* sourceFile = sourceVec[sourceVec.size() - 1].c_str();
@@ -844,6 +860,11 @@ void doHardLink(Arg * a)
   if (destDir != wd) {
     delete(destDir);
   }
+}
+
+void doHardLinkCurDir(Arg * a) {
+  a[1].s = ".";
+  doHardLink(a);
 }
 
 void doMountDF(Arg * a)   // arg a ignored
@@ -904,7 +925,8 @@ public:
     {"quit", "", "", doQuit},
     {"umount", "u", "m", doUmount},
     {"wrdisk", "sus", "", doWriteDisk},
-    {"ln", "ss", "v", doHardLink}
+    {"ln", "ss", "v", doHardLink},
+    {"ln", "s", "v", doHardLinkCurDir}
 };
 
 uint ncmds = sizeof(cmdTable) / sizeof(CmdTable);
