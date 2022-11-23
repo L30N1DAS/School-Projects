@@ -715,6 +715,137 @@ void doMv(Arg * a)
   }
 }
 
+void doHardLink(Arg * a)
+{
+  Directory * startDir = wd;
+  bool sourceInvalidPath = false;
+  bool sourceIsFile = false;
+  bool sourceExists = true;
+  bool destInvalidPath = false;
+  bool destIsFile = false;
+  bool destExists = true;
+
+  // if (a[0].s[0] == '.') {
+  //   printf("Cannot move '.' or '..'.\n");
+  //   return;
+  // }
+
+  // https://stackoverflow.com/questions/16515582/how-to-perform-a-deep-copy-of-a-char and 
+  // https://stackoverflow.com/questions/481673/make-a-copy-of-a-char
+  char* destPath = new char[strlen(a[1].s)+1]; // allocate for string and ending \0
+  strcpy(destPath, a[1].s);
+  // end citation
+
+  std::vector<std::string> sourceVec = doMvPath(a[0].s, sourceInvalidPath, sourceIsFile, sourceExists);
+  Directory* sourceDir = wd;
+  wd = startDir;
+  // if (sourceVec.size() == 0) {
+  //   delete(destPath);
+  //   if (sourceDir != wd) {
+  //     delete(sourceDir);
+  //   }
+  //   printf("Cannot move or rename root.\n");
+  //   return;
+  // }
+  std::vector<std::string> destVec = doMvPath(destPath, destInvalidPath, destIsFile, destExists);
+  if (destVec.size() == 0) {
+    destVec.push_back(".");
+  }
+  delete(destPath);
+  Directory* destDir = wd;
+  wd = startDir;
+
+  //if (!sourceExists || sourceInvalidPath || destInvalidPath || (destExists && destIsFile)) {
+  if (!sourceExists || sourceInvalidPath || !sourceIsFile || destInvalidPath || destExists) {
+    if (sourceDir != wd) {
+      delete(sourceDir);
+    }
+    if (destDir != wd) {
+      delete(destDir);
+    }
+    printf("Creation of hard link failed.\n");
+    return;
+  }
+  //else if (!destExists) {
+    uint flag;
+    const char* sourceFile = sourceVec[sourceVec.size() - 1].c_str();
+    const char* destName = destVec[destVec.size() - 1].c_str();
+    uint iNode = sourceDir->iNumberOf((byte *) sourceFile);
+    if (sourceIsFile) {
+      flag = 0;
+    }
+    // else {
+    //   flag = 1;
+    //   if (fileInPath(destVec, iNode)) {
+    //     printf("Cannot move a directory into its own subdirectory.\n");
+    //     return;
+    //   }
+    // }
+    //sourceDir->deleteFile((byte *) sourceFile, 0);
+    destDir->customCreateFile((byte *) destName, iNode, flag);
+    // if (flag == 1) {
+    //   Directory* newDir = new Directory(fv, iNode, 0);
+    //   newDir->customDeleteFile((byte *) "..", 0);
+    //   uint destINode = destDir->iNumberOf((byte *) ".");
+    //   newDir->customCreateFile((byte *) "..", destINode, flag);
+    //   if (newDir != wd) {
+    //     delete(newDir);
+    //   }
+    // }
+    printf("Hard link created successfully.\n");
+  //}
+  // else if (destExists) {
+  //   uint flag;
+  //   const char* sourceFile = sourceVec[sourceVec.size() - 1].c_str();
+  //   const char* destName = destVec[destVec.size() - 1].c_str();
+  //   uint iNode = sourceDir->iNumberOf((byte *) sourceFile);
+  //   uint destINode = destDir->iNumberOf((byte *) destName);
+  //   Directory* tmp = destDir;
+  //   destDir = new Directory(fv, destINode, 0);
+  //   if (tmp != wd) {
+  //     delete(tmp);
+  //   }
+  //   if (destDir->iNumberOf((byte *) sourceFile) != 0) {
+  //     if (destDir != wd) {
+  //       delete(destDir);
+  //     }
+  //     printf("File/Directory already exists.\n");
+  //     return;  
+  //   }
+  //   if (sourceIsFile) {
+  //     flag = 0;
+  //   }
+  //   else {
+  //     flag = 1;
+  //     if (fileInPath(destVec, iNode)) {
+  //       if (destDir != wd) {
+  //         delete(destDir);
+  //       }
+  //       printf("Cannot move a directory into its own subdirectory.\n");
+  //       return;
+  //     }
+  //   }
+  //   sourceDir->deleteFile((byte *) sourceFile, 0);
+  //   destDir->customCreateFile((byte *) sourceFile, iNode, flag);
+  //   if (flag == 1) {
+  //     Directory* newDir = new Directory(fv, iNode, 0);
+  //     newDir->customDeleteFile((byte *) "..", 0);
+  //     newDir->customCreateFile((byte *) "..", destINode, flag);
+  //     if (newDir != wd) {
+  //       delete(newDir);
+  //     }
+  //   }
+  //   printf("Moved successfully.\n");
+  // }
+
+  if (sourceDir != wd) {
+    delete(sourceDir);
+  }
+  if (destDir != wd) {
+    delete(destDir);
+  }
+}
+
 void doMountDF(Arg * a)   // arg a ignored
 {
   TODO("doMountDF");
@@ -772,7 +903,8 @@ public:
     {"q", "", "", doQuit},
     {"quit", "", "", doQuit},
     {"umount", "u", "m", doUmount},
-    {"wrdisk", "sus", "", doWriteDisk}
+    {"wrdisk", "sus", "", doWriteDisk},
+    {"ln", "ss", "v", doHardLink}
 };
 
 uint ncmds = sizeof(cmdTable) / sizeof(CmdTable);
