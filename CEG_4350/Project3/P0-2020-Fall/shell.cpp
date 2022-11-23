@@ -766,16 +766,22 @@ void doHardLink(Arg * a)
     printf("Creation of hard link failed.\n");
     return;
   }
-  else if (destVec[0] == "." && destVec.size() == 1) {
+  else if (destExists && !destIsFile) {
     const char* sourceFile = sourceVec[sourceVec.size() - 1].c_str();
-    // const char* destName = destVec[destVec.size() - 1].c_str();
+    const char* destName = destVec[destVec.size() - 1].c_str();
     uint iNode = sourceDir->iNumberOf((byte *) sourceFile);
+    uint destINode = destDir->iNumberOf((byte *) destName);
+    Directory* tmp = destDir;
+    destDir = new Directory(fv, destINode, 0);
+    if (tmp != wd) {
+      delete(tmp);
+    }
     if (destDir->iNumberOf((byte *) sourceFile) == 0) {
       destDir->customCreateFile((byte *) sourceFile, iNode, 0);
       printf("Hard link created successfully.\n");
     }
     else {
-      printf("File with name %s already exists in the current directory", sourceFile);
+      printf("File with name %s already exists in the current directory.\n", sourceFile);
     }
   }
   //else if (!destExists) {
