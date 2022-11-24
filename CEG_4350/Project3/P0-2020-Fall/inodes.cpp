@@ -293,7 +293,8 @@ uint Inodes::show(uint in)
   for (; x < xFileSize; x++) {
     printf(" %d:%d", x, pin[x]);
   }
-  printf(" size=%d]\n", pin[x]);
+  printf(" size=%d", pin[x]);
+  printf(" links=%d]\n", getLinkCount(in));
   return 1;
 }
 
