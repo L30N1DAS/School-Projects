@@ -33,7 +33,7 @@ uint Inodes::create
   fv->superBlock.nBlocksOfInodes =
       (nInodes * iWidth * iHeight + bsz - 1) / bsz;
   fv->superBlock.inodesPerBlock = bsz / iWidth / iHeight;
-  fv->superBlock.iDirect = iHeight - 1 - 1 - iIndirect;	// see xType, xFileSize
+  fv->superBlock.iDirect = iHeight - 1 - 1 - 1 - iIndirect;	// see xType, xFileSize, xLinkCount
 
   // set all inodes to zero, and mark blocks occupied by inodes as in-use
   uintbuffer = (uint *) new byte[bsz]; // inodes from one block
@@ -144,6 +144,24 @@ uint Inodes::incFileSize(uint in, int inc)
   pin[xFileSize] += inc;
   putInode(in);
   return pin[xFileSize];
+}
+
+uint Inodes::getLinkCount(uint in)
+{
+  return getEntry(in, xLinkCount);
+}
+
+// uint Inodes::setFileSize(uint in, uint sz)
+// {
+//   return setEntry(in, xFileSize, sz);
+// }
+
+uint Inodes::incLinkCount(uint in, int inc)
+{
+  uint *pin = getInode(in, 0);
+  pin[xLinkCount] += inc;
+  putInode(in);
+  return pin[xLinkCount];
 }
 
 uint Inodes::setSingleIndirect(uint * single, uint nu, uint bn)

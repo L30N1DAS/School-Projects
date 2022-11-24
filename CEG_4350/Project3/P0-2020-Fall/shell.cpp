@@ -779,6 +779,8 @@ void doHardLink(Arg * a)
     if (destDir->iNumberOf((byte *) sourceFile) == 0) {
       destDir->customCreateFile((byte *) sourceFile, iNode, 0);
       printf("Hard link created successfully.\n");
+      /*uint count = */fv->inodes.incLinkCount(iNode, 1);
+      // printf("%d", count);
     }
     else {
       printf("File with name %s already exists in the current directory.\n", sourceFile);
@@ -812,6 +814,8 @@ void doHardLink(Arg * a)
     //   }
     // }
     printf("Hard link created successfully.\n");
+    /*uint count = */fv->inodes.incLinkCount(iNode, 1);
+    // printf("%d", count);
   }
   else {
     printf("Creation of hard link failed.\n");
