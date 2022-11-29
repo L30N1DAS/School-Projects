@@ -248,13 +248,13 @@ void doLsNameRecursiveHelper(const char * name) {
 }
 
 void doLsNameRecursive(Arg * a) {
-  if (strcmp(a[0].s, "-lR") != 0 || strcmp(a[0].s, "-Rl") != 0) {
+  if (strcmp(a[0].s, "-lR") == 0 || strcmp(a[0].s, "-Rl") == 0) {
     Directory * curDir = wd;
     doLsNameRecursiveHelper(a[1].s);
     wd = curDir;
     return;
   }
-  printf("Incorrect flag for recursive ls");
+  printf("Incorrect flag for recursive ls.\n");
 }
 
 uint findNumSlashes(char* path) {
@@ -465,7 +465,7 @@ void doRmRecursiveHelper(const char * name) {
 }
 
 void doRmRecursive(Arg * a) {
-  if (strcmp(a[0].s, "-fr") != 0 || strcmp(a[0].s, "-rf") != 0) {
+  if (strcmp(a[0].s, "-fr") == 0 || strcmp(a[0].s, "-rf") == 0) {
     Directory * curDir = wd;
     doRmRecursiveHelper(a[1].s);
     wd = curDir;
@@ -900,6 +900,230 @@ void doHardLinkCurDir(Arg * a) {
   doHardLink(a);
 }
 
+void doSoftLink(Arg * a) {
+  if (strcmp(a[0].s, "-s") != 0) {
+    printf("Incorrect flag for symbolic link creation.\n");
+  }
+  Directory * startDir = wd;
+  bool sourceInvalidPath = false;
+  bool sourceIsFile = false;
+  bool sourceExists = true;
+  bool destInvalidPath = false;
+  bool destIsFile = false;
+  bool destExists = true;
+
+  // if (a[0].s[0] == '.') {
+  //   printf("Cannot move '.' or '..'.\n");
+  //   return;
+  // }
+
+  // https://stackoverflow.com/questions/16515582/how-to-perform-a-deep-copy-of-a-char and 
+  // https://stackoverflow.com/questions/481673/make-a-copy-of-a-char
+  char* destPath = new char[strlen(a[2].s)+1]; // allocate for string and ending \0
+  strcpy(destPath, a[2].s);
+  // end citation
+
+  std::vector<std::string> sourceVec = doMvPath(a[1].s, sourceInvalidPath, sourceIsFile, sourceExists);
+  Directory* sourceDir = wd;
+  wd = startDir;
+  // if (sourceVec.size() == 0) {
+  //   delete(destPath);
+  //   if (sourceDir != wd) {
+  //     delete(sourceDir);
+  //   }
+  //   printf("Cannot move or rename root.\n");
+  //   return;
+  // }
+  std::vector<std::string> destVec = doMvPath(destPath, destInvalidPath, destIsFile, destExists);
+  if (destVec.size() == 0) {
+    destVec.push_back(".");
+  }
+  delete(destPath);
+  Directory* destDir = wd;
+  wd = startDir;
+
+  //if (!sourceExists || sourceInvalidPath || destInvalidPath || (destExists && destIsFile)) {
+  //if (!sourceExists || sourceInvalidPath || !sourceIsFile || destInvalidPath || (destExists && destIsFile)) {
+
+  if (!sourceExists || sourceInvalidPath || destInvalidPath || (destExists && destIsFile)) {
+    if (sourceDir != wd) {
+      delete(sourceDir);
+    }
+    if (destDir != wd) {
+      delete(destDir);
+    }
+    printf("Creation of symbolic link failed.\n");
+    return;
+  }
+  else if (destExists && !destIsFile) {
+    uint flag;
+    uint linkINode;
+    const char* sourceFile = sourceVec[sourceVec.size() - 1].c_str();
+    const char* destName = destVec[destVec.size() - 1].c_str();
+    uint sourceINode = sourceDir->iNumberOf((byte *) sourceFile);
+    uint destINode = destDir->iNumberOf((byte *) destName);
+    Directory* tmp = destDir;
+    destDir = new Directory(fv, destINode, 0);
+    if (tmp != wd) {
+      delete(tmp);
+    }
+    if (sourceIsFile) {
+      flag = 0;
+    }
+    else {
+      flag = 1;
+    }
+    if (destDir->iNumberOf((byte *) sourceFile) == 0) {
+      linkINode = destDir->createFile((byte *) sourceFile, flag);
+      printf("Symbolic link created successfully.\n");
+      // /*uint count = */fv->inodes.incLinkCount(iNode, 1);
+      // printf("%d", count);
+      if (destDir->fv->inodes.getType(linkINode) == iTypeDirectory) {
+        tmp = destDir;
+        destDir = new Directory(fv, linkINode, 0);
+        if (tmp != wd) {
+          delete(tmp);
+        }
+        tmp = sourceDir;
+        sourceDir = new Directory(fv, sourceINode, 0);
+        if (tmp != wd) {
+          delete(tmp);
+        }
+        std::vector<std::string> sourceEntries = sourceDir->getEntries();
+        for (long unsigned int i = 0; i < sourceEntries.size(); i++) {
+          const char* sourceEntry = sourceEntries[i].c_str();
+          uint in = sourceDir->iNumberOf((byte *) sourceEntry);
+          if (sourceDir->fv->inodes.getType(in) == iTypeOrdinary) {
+            flag = 0;
+          }
+          else {
+            flag = 1;
+          }
+          destDir->customCreateFile((byte *) sourceEntry, in, flag);
+        }
+      }
+    }
+    else {
+      printf("File or directory with name %s already exists in the destination directory.\n", sourceFile);
+    }
+  }
+  //else if (!destExists) {
+  else if (!destExists) {
+    uint flag;
+    uint linkINode;
+    Directory* tmp;
+    const char* sourceFile = sourceVec[sourceVec.size() - 1].c_str();
+    const char* destName = destVec[destVec.size() - 1].c_str();
+    uint sourceINode = sourceDir->iNumberOf((byte *) sourceFile);
+    if (sourceIsFile) {
+      flag = 0;
+    }
+    else {
+      flag = 1;
+    }
+    //sourceDir->deleteFile((byte *) sourceFile, 0);
+    //destDir->customCreateFile((byte *) destName, iNode, flag);
+    // if (flag == 1) {
+    //   Directory* newDir = new Directory(fv, iNode, 0);
+    //   newDir->customDeleteFile((byte *) "..", 0);
+    //   uint destINode = destDir->iNumberOf((byte *) ".");
+    //   newDir->customCreateFile((byte *) "..", destINode, flag);
+    //   if (newDir != wd) {
+    //     delete(newDir);
+    //   }
+    // }
+    //printf("Hard link created successfully.\n");
+    ///*uint count = */fv->inodes.incLinkCount(iNode, 1);
+    // printf("%d", count);
+    //if (destDir->iNumberOf((byte *) destName) == 0) {
+    linkINode = destDir->createFile((byte *) destName, flag);
+    printf("Symbolic link created successfully.\n");
+    // /*uint count = */fv->inodes.incLinkCount(iNode, 1);
+    // printf("%d", count);
+    if (destDir->fv->inodes.getType(linkINode) == iTypeDirectory) {
+      tmp = destDir;
+      destDir = new Directory(fv, linkINode, 0);
+      if (tmp != wd) {
+        delete(tmp);
+      }
+      tmp = sourceDir;
+      sourceDir = new Directory(fv, sourceINode, 0);
+      if (tmp != wd) {
+        delete(tmp);
+      }
+      std::vector<std::string> sourceEntries = sourceDir->getEntries();
+      for (long unsigned int i = 0; i < sourceEntries.size(); i++) {
+        const char* sourceEntry = sourceEntries[i].c_str();
+        uint in = sourceDir->iNumberOf((byte *) sourceEntry);
+        if (sourceDir->fv->inodes.getType(in) == iTypeOrdinary) {
+          flag = 0;
+        }
+        else {
+          flag = 1;
+        }
+        destDir->customCreateFile((byte *) sourceEntry, in, flag);
+      }
+    }
+    //}
+    // else {
+    //   printf("File or dirctory with name %s already exists in the destination directory.\n", destName);
+    // }
+  }
+  else {
+    printf("Creation of symbolic link failed.\n");
+  }
+  // else if (destExists) {
+  //   uint flag;
+  //   const char* sourceFile = sourceVec[sourceVec.size() - 1].c_str();
+  //   const char* destName = destVec[destVec.size() - 1].c_str();
+  //   uint iNode = sourceDir->iNumberOf((byte *) sourceFile);
+  //   uint destINode = destDir->iNumberOf((byte *) destName);
+  //   Directory* tmp = destDir;
+  //   destDir = new Directory(fv, destINode, 0);
+  //   if (tmp != wd) {
+  //     delete(tmp);
+  //   }
+  //   if (destDir->iNumberOf((byte *) sourceFile) != 0) {
+  //     if (destDir != wd) {
+  //       delete(destDir);
+  //     }
+  //     printf("File/Directory already exists.\n");
+  //     return;  
+  //   }
+  //   if (sourceIsFile) {
+  //     flag = 0;
+  //   }
+  //   else {
+  //     flag = 1;
+  //     if (fileInPath(destVec, iNode)) {
+  //       if (destDir != wd) {
+  //         delete(destDir);
+  //       }
+  //       printf("Cannot move a directory into its own subdirectory.\n");
+  //       return;
+  //     }
+  //   }
+  //   sourceDir->deleteFile((byte *) sourceFile, 0);
+  //   destDir->customCreateFile((byte *) sourceFile, iNode, flag);
+  //   if (flag == 1) {
+  //     Directory* newDir = new Directory(fv, iNode, 0);
+  //     newDir->customDeleteFile((byte *) "..", 0);
+  //     newDir->customCreateFile((byte *) "..", destINode, flag);
+  //     if (newDir != wd) {
+  //       delete(newDir);
+  //     }
+  //   }
+  //   printf("Moved successfully.\n");
+  // }
+
+  if (sourceDir != wd) {
+    delete(sourceDir);
+  }
+  if (destDir != wd) {
+    delete(destDir);
+  }
+}
+
 void doMountDF(Arg * a)   // arg a ignored
 {
   TODO("doMountDF");
@@ -959,7 +1183,8 @@ public:
     {"umount", "u", "m", doUmount},
     {"wrdisk", "sus", "", doWriteDisk},
     {"ln", "ss", "v", doHardLink},
-    {"ln", "s", "v", doHardLinkCurDir}
+    {"ln", "s", "v", doHardLinkCurDir},
+    {"ln", "sss", "v", doSoftLink}
 };
 
 uint ncmds = sizeof(cmdTable) / sizeof(CmdTable);
