@@ -1127,106 +1127,186 @@ void doSoftLink(Arg * a) {
     }
   }
   //else if (!destExists) {
-  else if (!destExists) {
-    uint flag;
-    uint linkINode;
-    Directory* tmp;
-    // const char* sourceFile = sourceVec[sourceVec.size() - 1].c_str();
-    // const char* destName = destVec[destVec.size() - 1].c_str();
-    // uint sourceINode = sourceDir->iNumberOf((byte *) sourceFile);
-    if (sourceIsFile) {
-      flag = 0;
-    }
-    else {
-      flag = 1;
-    }
-    //sourceDir->deleteFile((byte *) sourceFile, 0);
-    //destDir->customCreateFile((byte *) destName, iNode, flag);
-    // if (flag == 1) {
-    //   Directory* newDir = new Directory(fv, iNode, 0);
-    //   newDir->customDeleteFile((byte *) "..", 0);
-    //   uint destINode = destDir->iNumberOf((byte *) ".");
-    //   newDir->customCreateFile((byte *) "..", destINode, flag);
-    //   if (newDir != wd) {
-    //     delete(newDir);
-    //   }
-    // }
-    //printf("Hard link created successfully.\n");
-    ///*uint count = */fv->inodes.incLinkCount(iNode, 1);
-    // printf("%d", count);
-    //if (destDir->iNumberOf((byte *) destName) == 0) {
-    linkINode = destDir->createFile((byte *) destName, flag);
-    destDir->fv->inodes.setType(linkINode, iTypeSoftLink);
-    // std::string sourceAbsPath = getAbsPath(sourceDir);
+  // else if (!destExists) {
+  //   // uint flag = 0;
+  //   uint linkINode;
+  //   Directory* tmp;
+  //   // const char* sourceFile = sourceVec[sourceVec.size() - 1].c_str();
+  //   // const char* destName = destVec[destVec.size() - 1].c_str();
+  //   // uint sourceINode = sourceDir->iNumberOf((byte *) sourceFile);
+  //   //sourceDir->deleteFile((byte *) sourceFile, 0);
+  //   //destDir->customCreateFile((byte *) destName, iNode, flag);
+  //   // if (flag == 1) {
+  //   //   Directory* newDir = new Directory(fv, iNode, 0);
+  //   //   newDir->customDeleteFile((byte *) "..", 0);
+  //   //   uint destINode = destDir->iNumberOf((byte *) ".");
+  //   //   newDir->customCreateFile((byte *) "..", destINode, flag);
+  //   //   if (newDir != wd) {
+  //   //     delete(newDir);
+  //   //   }
+  //   // }
+  //   //printf("Hard link created successfully.\n");
+  //   ///*uint count = */fv->inodes.incLinkCount(iNode, 1);
+  //   // printf("%d", count);
+  //   //if (destDir->iNumberOf((byte *) destName) == 0) {
+  //   linkINode = destDir->createFile((byte *) destName, 0);
+  //   destDir->fv->inodes.setType(linkINode, iTypeSoftLink);
+  //   // std::string sourceAbsPath = getAbsPath(sourceDir);
+  //   // sourceAbsPath = sourceAbsPath + "/" + sourceVec[sourceVec.size() - 1];
+  //   // const char* sourcePathPointer = sourceAbsPath.c_str();
+  //   File* pathFile = new File(fv, linkINode);
+  //   // tmp = sourceDir;
+  //   sourceDir = new Directory(fv, sourceDir->nInode, 0);
+  //   std::string sourceAbsPath = getAbsPath(sourceDir);
+  //   // sourceDir = tmp;
+  //   // if (tmp != wd) {
+  //   //   delete(tmp);
+  //   // }
+  //   sourceAbsPath = sourceAbsPath + "/" + sourceVec[sourceVec.size() - 1];
+  //   const char* sourcePathPointer = sourceAbsPath.c_str();
+  //   //char* sourcePathPointer = sourceAbsPath.data();
+  //   //pathFile->appendBytes((byte *) sourcePathPointer, strlen(sourcePathPointer) + strlen(destName));
+  //   pathFile->appendOneBlock((byte *) sourcePathPointer, strlen(sourcePathPointer)-1); // only has . here
+  //   // pathFile->appendBytes((byte *) "Questionable", strlen("Questionable")-1);
+  //   // pathFile->appendOneBlock((byte *)sourcePathPointer, sizeof(sourcePathPointer));
+  //   delete pathFile;
+  //   // testing access
+  //   uint testInode = destDir->iNumberOf((byte*)destName);
+  //   uint bn = fv->inodes.getBlockNumber(testInode, 1);
+  //   printf("bn: %d", bn);
+  //   byte * blockData = new byte[fv->superBlock.nBytesPerBlock];
+  //   fv->readBlock(bn, blockData);
+  //   printf("%s\n", (char *)blockData);
+
+
+
+  //   // fv->writeBlock()
+  //   //get free block
+  //   // uint blockNum = fv->getFreeBlock();
+  //   // //creat spaec for block using malloc
+  //   // void* allocatedSpace = malloc(fv->superBlock.nBytesPerBlock);
+  //   // //do memcpy or smth to write data to block area
+  //   // memcpy(allocatedSpace, sourcePathPointer, strlen(sourcePathPointer)+1);
+  //   // // write block in volume.cpp
+  //   // fv->writeBlock(blockNum, allocatedSpace);
+  //   printf("Symbolic link created successfully.\n");
+  //   // /*uint count = */fv->inodes.incLinkCount(iNode, 1);
+  //   // printf("%d", count);
+  //   // if (destDir->fv->inodes.getType(linkINode) == iTypeDirectory) {
+  //   //   tmp = destDir;
+  //   //   destDir = new Directory(fv, linkINode, 0);
+  //   //   if (tmp != wd) {
+  //   //     delete(tmp);
+  //   //   }
+  //   //   tmp = sourceDir;
+  //   //   sourceDir = new Directory(fv, sourceINode, 0);
+  //   //   if (tmp != wd) {
+  //   //     delete(tmp);
+  //   //   }
+  //   //   std::vector<std::string> sourceEntries = sourceDir->getEntries();
+  //   //   for (long unsigned int i = 0; i < sourceEntries.size(); i++) {
+  //   //     const char* sourceEntry = sourceEntries[i].c_str();
+  //   //     uint in = sourceDir->iNumberOf((byte *) sourceEntry);
+  //   //     if (sourceDir->fv->inodes.getType(in) == iTypeOrdinary) {
+  //   //       flag = 0;
+  //   //     }
+  //   //     else {
+  //   //       flag = 1;
+  //   //     }
+  //   //     destDir->customCreateFile((byte *) sourceEntry, in, flag);
+  //   //   }
+  //   // }
+  //   //}
+  //   // else {
+  //   //   printf("File or dirctory with name %s already exists in the destination directory.\n", destName);
+  //   // }
+  // }
+  else if (!destExists)
+  {
+  // else if (!destExists) {
+    //uint flag;
+    Directory *tmp;
+    // uint flag = 0;
+    //   uint linkINode;
+    //   Directory* tmp;
+  
+    // Parse Path
+    std::string sourceAbsPath = getAbsPath(sourceDir);
+    //char *srcAbsolutePath = new char[fv->superBlock.nBytesPerBlock];
+    sourceAbsPath = sourceAbsPath + "/" + sourceVec[sourceVec.size() - 1];
+    const char *sourcePathPointer = sourceAbsPath.c_str();
     // sourceAbsPath = sourceAbsPath + "/" + sourceVec[sourceVec.size() - 1];
     // const char* sourcePathPointer = sourceAbsPath.c_str();
-    File* pathFile = new File(fv, linkINode);
-    tmp = sourceDir;
+    //   sourceAbsPath = sourceAbsPath + "/" + sourceVec[sourceVec.size() - 1];
+    //   const char* sourcePathPointer = sourceAbsPath.c_str();
+    //   char* sourcePathPointer = sourceAbsPath.data();
+
+    // const char* destName = destVec[destVec.size() - 1].c_str();
+
+
+    printf("Path:  %s\n", sourceAbsPath);
+    // if (sourceIsFile)
+    // {
+    //   flag = 0;
+    // }
+    // else
+    // {
+    //   flag = 1;
+    // }
+    printf("dstName:  %s\n", destName);
+    //   linkINode = destDir->createFile((byte *) destName, 0);
+    //   destDir->fv->inodes.setType(linkINode, iTypeSoftLink);
+
+    uint linkINode = destDir->createFile((byte *)destName, 0);
+    fv->inodes.setType(linkINode, iTypeSoftLink);
+    // destDir->fv->inodes.setType(linkINode, iTypeSoftLink);
+    File *pathFile = new File(fv, linkINode);
+    //   File* pathFile = new File(fv, linkINode);
+    //   tmp = sourceDir;
+    //   sourceDir = new Directory(fv, sourceDir->nInode, 0);
+    //   std::string sourceAbsPath = getAbsPath(sourceDir);
+
+    // tmp = sourceDir;
     sourceDir = new Directory(fv, sourceDir->nInode, 0);
-    std::string sourceAbsPath = getAbsPath(sourceDir);
-    sourceDir = tmp;
+    // sourceDir = tmp;
+    // sourceDir = tmp;
     // if (tmp != wd) {
     //   delete(tmp);
     // }
-    sourceAbsPath = sourceAbsPath + "/" + sourceVec[sourceVec.size() - 1];
-    const char* sourcePathPointer = sourceAbsPath.c_str();
-    //char* sourcePathPointer = sourceAbsPath.data();
-    //pathFile->appendBytes((byte *) sourcePathPointer, strlen(sourcePathPointer) + strlen(destName));
-    pathFile->appendOneBlock((byte *) sourcePathPointer, strlen(sourcePathPointer)-1); // only has . here
-    // pathFile->appendBytes((byte *) "Questionable", strlen("Questionable")-1);
-    // pathFile->appendOneBlock((byte *)sourcePathPointer, sizeof(sourcePathPointer));
+    pathFile->appendOneBlock((byte *)sourcePathPointer, strlen(sourcePathPointer) + strlen(destName)); // only has . here
     delete pathFile;
-    // testing access
-    uint testInode = destDir->iNumberOf((byte*)destName);
-    uint bn = fv->inodes.getBlockNumber(testInode, 1);
-    printf("bn: %d", bn);
-    byte * blockData = new byte[fv->superBlock.nBytesPerBlock];
-    fv->readBlock(bn, blockData);
-    printf("%s\n", (char *)blockData);
-    // fv->writeBlock()
-    //get free block
-    // uint blockNum = fv->getFreeBlock();
-    // //creat spaec for block using malloc
-    // void* allocatedSpace = malloc(fv->superBlock.nBytesPerBlock);
-    // //do memcpy or smth to write data to block area
-    // memcpy(allocatedSpace, sourcePathPointer, strlen(sourcePathPointer)+1);
-    // // write block in volume.cpp
-    // fv->writeBlock(blockNum, allocatedSpace);
+    //  pathFile->appendBytes((byte *) sourcePathPointer, strlen(sourcePathPointer) + strlen(destName));
+    //  pathFile->appendOneBlock((byte *) sourcePathPointer, strlen(sourcePathPointer)-1); // only has . here
+    //  pathFile->appendBytes((byte *) "Questionable", strlen("Questionable")-1);
+    //  pathFile->appendOneBlock((byte *)sourcePathPointer, sizeof(sourcePathPointer));
+    //  delete pathFile;
+
     printf("Symbolic link created successfully.\n");
-    // /*uint count = */fv->inodes.incLinkCount(iNode, 1);
-    // printf("%d", count);
-    // if (destDir->fv->inodes.getType(linkINode) == iTypeDirectory) {
-    //   tmp = destDir;
-    //   destDir = new Directory(fv, linkINode, 0);
-    //   if (tmp != wd) {
-    //     delete(tmp);
-    //   }
-    //   tmp = sourceDir;
-    //   sourceDir = new Directory(fv, sourceINode, 0);
-    //   if (tmp != wd) {
-    //     delete(tmp);
-    //   }
-    //   std::vector<std::string> sourceEntries = sourceDir->getEntries();
-    //   for (long unsigned int i = 0; i < sourceEntries.size(); i++) {
-    //     const char* sourceEntry = sourceEntries[i].c_str();
-    //     uint in = sourceDir->iNumberOf((byte *) sourceEntry);
-    //     if (sourceDir->fv->inodes.getType(in) == iTypeOrdinary) {
-    //       flag = 0;
-    //     }
-    //     else {
-    //       flag = 1;
-    //     }
-    //     destDir->customCreateFile((byte *) sourceEntry, in, flag);
-    //   }
-    // }
-    //}
-    // else {
-    //   printf("File or dirctory with name %s already exists in the destination directory.\n", destName);
-    // }
+    // testing access
+    uint testInode = destDir->iNumberOf((byte *)destName);
+    uint bn = fv->inodes.getBlockNumber(testInode, 0);
+    byte *blockData = new byte[fv->superBlock.nBytesPerBlock];
+    fv->readBlock(bn, blockData);
+    if (blockData[1] == '.') {
+      blockData+=2;
+    }
+    printf("Test:  %s\n", (char *)blockData);
+    //   testing access
+    //   uint testInode = destDir->iNumberOf((byte*)destName);
+    //   uint bn = fv->inodes.getBlockNumber(testInode, 1);
+    //   printf("bn: %d", bn);
+    //   byte * blockData = new byte[fv->superBlock.nBytesPerBlock];
+    //   fv->readBlock(bn, blockData);
+    //   printf("%s\n", (char *)blockData);    
+
   }
-  else {
+  else
+  {
     printf("Creation of symbolic link failed.\n");
   }
+  // else {
+  //   printf("Creation of symbolic link failed.\n");
+  // }
   // else if (destExists) {
   //   uint flag;
   //   const char* sourceFile = sourceVec[sourceVec.size() - 1].c_str();
