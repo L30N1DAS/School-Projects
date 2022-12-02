@@ -168,6 +168,9 @@ uint Directory::lsPrivate(uint in, uint printfFlag)
     uint in = iNumber(bp);
     if (printfFlag) {
       byte c = (d->fv->inodes.getType(in) == iTypeDirectory? 'd' : '-');
+      if (d->fv->inodes.getType(in) == iTypeSoftLink) {
+        c = 'l';
+      }
       printf("%7d %crw-rw-rw-    1 yourName yourGroup %7d Jul 15 12:34 %s\n",
 	     in, c, d->fv->inodes.getFileSize(in), bp);
     }
