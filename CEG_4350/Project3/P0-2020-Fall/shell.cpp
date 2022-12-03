@@ -343,11 +343,147 @@ std::vector<std::string> getPathVec(char* path) {
   return pathVec;
 }
 
+std::vector<std::string> doMvPath(char * path, bool& invalidPath, bool& IsFile, bool& exists);
+
+uint getLinkType(std::string path) {
+  Directory * startDir = new Directory(fv, wd->nInode, 0);
+  // char* charPath = path.c_str();
+  //char * charPath = path.data();
+  char charPath[path.length() + 1]; 
+	strcpy(charPath, path.c_str()); 
+  bool tmp; // not needed but must fill method arguments
+  std::vector<std::string> pathVec = doMvPath(charPath, tmp, tmp, tmp); // have this deal with symlinks part way through
+  Directory * pathDir = wd;
+  wd = startDir;
+  const char * lastEntry = pathVec[pathVec.size() - 1].c_str();
+  uint in = pathDir->iNumberOf((byte *) lastEntry);
+  if (pathDir->fv->inodes.getType(in) == iTypeOrdinary) {
+    //printf("type file");
+    return iTypeOrdinary;
+  }
+  else if (pathDir->fv->inodes.getType(in) == iTypeDirectory) {
+    return iTypeDirectory;
+  }
+  else if (pathDir->fv->inodes.getType(in) == iTypeSoftLink) {
+    // get path in file
+    // uint nblock = fv->superBlock.nBlockBeginInodes + in / fv->superBlock.inodesPerBlock;
+    // char * blockData;
+    // fv->readBlock(nblock, blockData);
+    uint bn = fv->inodes.getBlockNumber(in, 0);
+    byte *blockData = new byte[fv->superBlock.nBytesPerBlock];
+    fv->readBlock(bn, blockData);
+    if (blockData[1] == '.') {
+      blockData+=2;
+    }
+    std::string pathStr = (char *) blockData;
+    //uint type = getLinkType(pathStr);
+    return getLinkType(pathStr);
+  }
+}
+
+bool successiveCD(char * path)
+{
+  bool toRoot = false;
+  bool afterRoot = true;
+  Directory* startDir = new Directory(fv, wd->nInode, 0);
+  if (path[0] == '/') {
+    toRoot = true;
+    if (path[1] == 0) {
+      afterRoot = false;
+    }
+    else if (path[1] == '/') {
+      afterRoot = false;
+      for (long unsigned int i = 0; i < strlen(path); i++) {
+        if (path[i] != '/') {
+          toRoot = false;
+          return false;
+        }
+        else {
+          toRoot = true;
+        }
+      }
+    }
+  }
+  if (toRoot) {
+    Directory* childDir = wd;
+    uint rootINode = 0;
+    while (rootINode != 1) {
+      rootINode = childDir->iNumberOf((byte *) "..");
+      wd = new Directory(fv, rootINode, 0);
+      if (childDir != startDir) {
+        delete(childDir);
+      }
+      childDir = wd;
+    }
+  }
+  if (afterRoot) {
+    std::vector<std::string> pathVec = getPathVec(path);
+    uint iNode = 0;
+    const char* pathEntry;
+    for (long unsigned int i = 0; i < pathVec.size(); i++) {
+      pathEntry = pathVec[i].c_str(); // https://stackoverflow.com/questions/347949/how-to-convert-a-stdstring-to-const-char-or-char
+      iNode = wd->iNumberOf((byte *) pathEntry);
+      if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeDirectory) {
+        Directory* tmp = wd;
+        wd = new Directory(fv, iNode, 0);
+        if (tmp != startDir) {
+          delete(tmp);
+        }
+      }
+      // else if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeSoftLink) {
+      //   fv->inodes.getBlockNumber(iNode, 0);
+      //   void* allocatedSpace = malloc(fv->superBlock.nBytesPerBlock);
+      //   //do memcpy or smth to write data to block area
+      //   memcpy(allocatedSpace, sourcePathPointer, strlen(sourcePathPointer)+1);
+      //   // write block in volume.cpp
+      //   fv->writeBlock(blockNum, allocatedSpace);
+      // }
+      else if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeSoftLink) {
+        // uint testInode = destDir->iNumberOf((byte *)destName);
+        uint bn = fv->inodes.getBlockNumber(iNode, 0);
+        byte *blockData = new byte[fv->superBlock.nBytesPerBlock];
+        fv->readBlock(bn, blockData);
+        if (blockData[1] == '.') {
+          blockData+=2;
+        }
+        std::string pathStr = (char *) blockData;
+        uint type = getLinkType(pathStr);
+        if (type == iTypeDirectory) {
+          successiveCD((char *) blockData);
+        }
+        else {
+          return false;
+        }
+      }
+      else {
+        // printf("Changing directory failed.\n");
+        if (wd != startDir) {
+          delete(wd);
+          wd = startDir;
+        }
+        return false;
+      }
+    }
+    if (pathVec.size() == 0) {
+      //printf("Changing directory failed.\n");
+      if (wd != startDir) {
+        delete(wd);
+        wd = startDir;
+      }
+      return false;
+    }
+  }
+  if (wd != startDir) {
+    delete(startDir);
+  }
+  return true;
+}
+
 std::vector<std::string> doMvPath(char * path, bool& invalidPath, bool& IsFile, bool& exists)
 {
   bool toRoot = false;
   bool afterRoot = true;
-  Directory* startDir = wd;
+  Directory* startDir = new Directory(fv, wd->nInode, 0);
   if (path[0] == '/') {
     toRoot = true;
     if (path[1] == 0) {
@@ -399,6 +535,34 @@ std::vector<std::string> doMvPath(char * path, bool& invalidPath, bool& IsFile, 
         IsFile = true;
         break;
       }
+      else if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeSoftLink) {
+        if (i != pathVec.size() - 1) {
+          uint bn = fv->inodes.getBlockNumber(iNode, 0);
+          byte *blockData = new byte[fv->superBlock.nBytesPerBlock];
+          fv->readBlock(bn, blockData);
+          if (blockData[1] == '.') {
+            blockData+=2;
+          }
+          std::string pathStr = (char *) blockData;
+          uint type = getLinkType(pathStr);
+          if (type == iTypeDirectory) {
+            bool success = successiveCD((char *) blockData);
+            if (!success) {
+              // printf("Changing directory failed.\n");
+              // if (wd != startDir) {
+              //   delete(wd);
+              //   wd = startDir;
+              // }
+              invalidPath = true;
+              break;
+            }
+          }
+          else {
+            invalidPath = true;
+            break;
+          }
+        }
+      }
       else if (iNode == 0 && i == pathVec.size() - 1) {
         exists = false;
       }
@@ -412,41 +576,6 @@ std::vector<std::string> doMvPath(char * path, bool& invalidPath, bool& IsFile, 
     }
   }
   return pathVec;
-}
-
-uint getLinkType(std::string path) {
-  Directory * startDir = wd;
-  // char* charPath = path.c_str();
-  //char * charPath = path.data();
-  char charPath[path.length() + 1]; 
-	strcpy(charPath, path.c_str()); 
-  bool tmp; // not needed but must fill method arguments
-  std::vector<std::string> pathVec = doMvPath(charPath, tmp, tmp, tmp); // have this deal with symlinks part way through
-  Directory * pathDir = wd;
-  wd = startDir;
-  const char * lastEntry = pathVec[pathVec.size() - 1].c_str();
-  uint in = pathDir->iNumberOf((byte *) lastEntry);
-  if (pathDir->fv->inodes.getType(in) == iTypeOrdinary) {
-    return iTypeOrdinary;
-  }
-  else if (pathDir->fv->inodes.getType(in) == iTypeDirectory) {
-    return iTypeDirectory;
-  }
-  else if (pathDir->fv->inodes.getType(in) == iTypeSoftLink) {
-    // get path in file
-    // uint nblock = fv->superBlock.nBlockBeginInodes + in / fv->superBlock.inodesPerBlock;
-    // char * blockData;
-    // fv->readBlock(nblock, blockData);
-    uint bn = fv->inodes.getBlockNumber(in, 0);
-    byte *blockData = new byte[fv->superBlock.nBytesPerBlock];
-    fv->readBlock(bn, blockData);
-    if (blockData[1] == '.') {
-      blockData+=2;
-    }
-    std::string pathStr = (char *) blockData;
-    //uint type = getLinkType(pathStr);
-    return getLinkType(pathStr);
-  }
 }
 
 void doRm(Arg * a)
@@ -574,104 +703,6 @@ void doTouch(Arg * a) {
   printf("inode: %d\n", in);
 }
 
-bool successiveCD(char * path)
-{
-  bool toRoot = false;
-  bool afterRoot = true;
-  Directory* startDir = new Directory(fv, wd->nInode, 0);
-  if (path[0] == '/') {
-    toRoot = true;
-    if (path[1] == 0) {
-      afterRoot = false;
-    }
-    else if (path[1] == '/') {
-      afterRoot = false;
-      for (long unsigned int i = 0; i < strlen(path); i++) {
-        if (path[i] != '/') {
-          toRoot = false;
-          return false;
-        }
-        else {
-          toRoot = true;
-        }
-      }
-    }
-  }
-  if (toRoot) {
-    Directory* childDir = wd;
-    uint rootINode = 0;
-    while (rootINode != 1) {
-      rootINode = childDir->iNumberOf((byte *) "..");
-      wd = new Directory(fv, rootINode, 0);
-      if (childDir != startDir) {
-        delete(childDir);
-      }
-      childDir = wd;
-    }
-  }
-  if (afterRoot) {
-    std::vector<std::string> pathVec = getPathVec(path);
-    uint iNode = 0;
-    const char* pathEntry;
-    for (long unsigned int i = 0; i < pathVec.size(); i++) {
-      pathEntry = pathVec[i].c_str(); // https://stackoverflow.com/questions/347949/how-to-convert-a-stdstring-to-const-char-or-char
-      iNode = wd->iNumberOf((byte *) pathEntry);
-      if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeDirectory) {
-        Directory* tmp = wd;
-        wd = new Directory(fv, iNode, 0);
-        if (tmp != startDir) {
-          delete(tmp);
-        }
-      }
-      // else if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeSoftLink) {
-      //   fv->inodes.getBlockNumber(iNode, 0);
-      //   void* allocatedSpace = malloc(fv->superBlock.nBytesPerBlock);
-      //   //do memcpy or smth to write data to block area
-      //   memcpy(allocatedSpace, sourcePathPointer, strlen(sourcePathPointer)+1);
-      //   // write block in volume.cpp
-      //   fv->writeBlock(blockNum, allocatedSpace);
-      // }
-      else if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeSoftLink) {
-        // uint testInode = destDir->iNumberOf((byte *)destName);
-        uint bn = fv->inodes.getBlockNumber(iNode, 0);
-        byte *blockData = new byte[fv->superBlock.nBytesPerBlock];
-        fv->readBlock(bn, blockData);
-        if (blockData[1] == '.') {
-          blockData+=2;
-        }
-        std::string pathStr = (char *) blockData;
-        uint type = getLinkType(pathStr);
-        if (type == iTypeDirectory) {
-          successiveCD((char *) blockData);
-        }
-        else {
-          return false;
-        }
-      }
-      else {
-        // printf("Changing directory failed.\n");
-        if (wd != startDir) {
-          delete(wd);
-          wd = startDir;
-        }
-        return false;
-      }
-    }
-    if (pathVec.size() == 0) {
-      //printf("Changing directory failed.\n");
-      if (wd != startDir) {
-        delete(wd);
-        wd = startDir;
-      }
-      return false;
-    }
-  }
-  if (wd != startDir) {
-    delete(startDir);
-  }
-  return true;
-}
-
 void doChDir(Arg * a)
 {
   bool toRoot;
@@ -757,7 +788,7 @@ void doChDir(Arg * a)
         else {
           printf("Changing directory failed.\n");
           if (wd != startDir) {
-            delete(wd);
+            delete(wd);// here
             wd = startDir;
           }
         }
@@ -810,7 +841,7 @@ bool fileInPath(std::vector<std::string> pathVec, uint iNode) {
 
 void doMv(Arg * a)
 {
-  Directory * startDir = wd;
+  Directory * startDir = new Directory(fv, wd->nInode, 0);
   bool sourceInvalidPath = false;
   bool sourceIsFile = false;
   bool sourceExists = true;
@@ -830,8 +861,10 @@ void doMv(Arg * a)
   // end citation
 
   std::vector<std::string> sourceVec = doMvPath(a[0].s, sourceInvalidPath, sourceIsFile, sourceExists);
-  Directory* sourceDir = wd;
-  wd = startDir;
+  Directory* sourceDir = new Directory(fv, wd->nInode, 0);
+  //wd = startDir;
+  delete(wd);
+  wd = new Directory(fv, startDir->nInode, 0);
   if (sourceVec.size() == 0) {
     delete(destPath);
     if (sourceDir != wd) {
@@ -845,7 +878,8 @@ void doMv(Arg * a)
     destVec.push_back(".");
   }
   delete(destPath);
-  Directory* destDir = wd;
+  Directory* destDir = new Directory(fv, wd->nInode, 0);
+  delete(wd);
   wd = startDir;
 
   if (!sourceExists || sourceInvalidPath || destInvalidPath || (destExists && destIsFile)) {
@@ -863,7 +897,8 @@ void doMv(Arg * a)
     const char* sourceFile = sourceVec[sourceVec.size() - 1].c_str();
     const char* destName = destVec[destVec.size() - 1].c_str();
     uint iNode = sourceDir->iNumberOf((byte *) sourceFile);
-    if (sourceIsFile) {
+    uint sourceType = sourceDir->fv->inodes.getType(iNode);
+    if (sourceIsFile || sourceType == iTypeSoftLink) {
       flag = 0;
     }
     else {
@@ -875,6 +910,9 @@ void doMv(Arg * a)
     }
     sourceDir->deleteFile((byte *) sourceFile, 0);
     destDir->customCreateFile((byte *) destName, iNode, flag);
+    if (sourceType == iTypeSoftLink) {
+      destDir->fv->inodes.setType(iNode, iTypeSoftLink);
+    }
     if (flag == 1) {
       Directory* newDir = new Directory(fv, iNode, 0);
       newDir->customDeleteFile((byte *) "..", 0);
@@ -904,7 +942,8 @@ void doMv(Arg * a)
       printf("File/Directory already exists.\n");
       return;  
     }
-    if (sourceIsFile) {
+    uint sourceType = sourceDir->fv->inodes.getType(iNode);
+    if (sourceIsFile || sourceType == iTypeSoftLink) {
       flag = 0;
     }
     else {
@@ -919,6 +958,9 @@ void doMv(Arg * a)
     }
     sourceDir->deleteFile((byte *) sourceFile, 0);
     destDir->customCreateFile((byte *) sourceFile, iNode, flag);
+    if (sourceType == iTypeSoftLink) {
+      destDir->fv->inodes.setType(iNode, iTypeSoftLink);
+    }
     if (flag == 1) {
       Directory* newDir = new Directory(fv, iNode, 0);
       newDir->customDeleteFile((byte *) "..", 0);
