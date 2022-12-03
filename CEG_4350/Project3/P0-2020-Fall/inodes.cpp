@@ -289,12 +289,26 @@ uint Inodes::setFree(uint in)
 uint Inodes::show(uint in)
 {
   uint *pin = getInode(in, 0), x = 0;
+  char* type;
+  if (fv->inodes.getType(in) == iTypeOrdinary) {
+    type = "iTypeOrdinary";
+  }
+  else if (fv->inodes.getType(in) == iTypeDirectory) {
+    type = "iTypeDirectory";
+  }
+  else if (fv->inodes.getType(in) == iTypeSoftLink) {
+    type = "iTypeSoftLink";
+  }
+  else {
+    type = "None";
+  }
   printf("inode #%d == [", in);
   for (; x < xFileSize; x++) {
-    printf(" %d:%d", x, pin[x]);
+    printf("%d:%d ", x, pin[x]);
   }
-  printf(" size=%d", pin[x]);
-  printf(" links=%d]\n", getLinkCount(in));
+  printf("size=%d ", pin[x]);
+  printf("type=%s ", type);
+  printf("links=%d]\n", getLinkCount(in));
   return 1;
 }
 
