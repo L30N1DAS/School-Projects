@@ -385,6 +385,7 @@ bool successiveCD(char * path)
 {
   bool toRoot = false;
   bool afterRoot = true;
+  printf("abugabuga\n");
   Directory* startDir = new Directory(fv, wd->nInode, 0);
   if (path[0] == '/') {
     toRoot = true;
@@ -982,7 +983,8 @@ void doMv(Arg * a)
 
 void doHardLink(Arg * a)
 {
-  Directory * startDir = wd;
+  //Directory * startDir = wd;
+  Directory * startDir = new Directory(fv, wd->nInode, 0);
   bool sourceInvalidPath = false;
   bool sourceIsFile = false;
   bool sourceExists = true;
@@ -1002,8 +1004,12 @@ void doHardLink(Arg * a)
   // end citation
 
   std::vector<std::string> sourceVec = doMvPath(a[0].s, sourceInvalidPath, sourceIsFile, sourceExists);
-  Directory* sourceDir = wd;
-  wd = startDir;
+  // Directory* sourceDir = wd;
+  // wd = startDir;
+  Directory* sourceDir = new Directory(fv, wd->nInode, 0);
+  //wd = startDir;
+  delete(wd);
+  wd = new Directory(fv, startDir->nInode, 0);
   // if (sourceVec.size() == 0) {
   //   delete(destPath);
   //   if (sourceDir != wd) {
@@ -1017,7 +1023,9 @@ void doHardLink(Arg * a)
     destVec.push_back(".");
   }
   delete(destPath);
-  Directory* destDir = wd;
+  //Directory* destDir = wd;
+  Directory* destDir = new Directory(fv, wd->nInode, 0);
+  delete(wd);
   wd = startDir;
 
   const char* sourceFile = sourceVec[sourceVec.size() - 1].c_str();
@@ -1174,7 +1182,8 @@ void doSoftLink(Arg * a) {
   if (strcmp(a[0].s, "-s") != 0) {
     printf("Incorrect flag for symbolic link creation.\n");
   }
-  Directory * startDir = wd;
+  // Directory * startDir = wd;
+  Directory * startDir = new Directory(fv, wd->nInode, 0);
   bool sourceInvalidPath = false;
   bool sourceIsFile = false;
   bool sourceExists = true;
@@ -1194,8 +1203,11 @@ void doSoftLink(Arg * a) {
   // end citation
 
   std::vector<std::string> sourceVec = doMvPath(a[1].s, sourceInvalidPath, sourceIsFile, sourceExists);
-  Directory* sourceDir = wd;
-  wd = startDir;
+  //Directory* sourceDir = wd;
+  Directory* sourceDir = new Directory(fv, wd->nInode, 0);
+  //wd = startDir;
+  delete(wd);
+  wd = new Directory(fv, startDir->nInode, 0);
   // if (sourceVec.size() == 0) {
   //   delete(destPath);
   //   if (sourceDir != wd) {
@@ -1209,7 +1221,9 @@ void doSoftLink(Arg * a) {
     destVec.push_back(".");
   }
   delete(destPath);
-  Directory* destDir = wd;
+  //Directory* destDir = wd;
+  Directory* destDir = new Directory(fv, wd->nInode, 0);
+  delete(wd);
   wd = startDir;
 
   //if (!sourceExists || sourceInvalidPath || destInvalidPath || (destExists && destIsFile)) {
