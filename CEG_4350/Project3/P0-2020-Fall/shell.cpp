@@ -639,7 +639,7 @@ void doRmRecursiveHelper(const char * name) {
   if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeDirectory) {
     wd = new Directory(fv, iNode, 0);
   }
-  else if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeOrdinary) {
+  else if (iNode != 0 && (wd->fv->inodes.getType(iNode) == iTypeOrdinary || wd->fv->inodes.getType(iNode) == iTypeSoftLink)) {
     return;
   }
   else if (iNode == 0) {
@@ -881,7 +881,7 @@ void doMv(Arg * a)
   delete(destPath);
   Directory* destDir = new Directory(fv, wd->nInode, 0);
   delete(wd);
-  wd = startDir;
+  wd = new Directory(fv, startDir->nInode, 0);
 
   if (!sourceExists || sourceInvalidPath || destInvalidPath || (destExists && destIsFile)) {
     if (sourceDir != wd) {
@@ -931,10 +931,29 @@ void doMv(Arg * a)
     const char* destName = destVec[destVec.size() - 1].c_str();
     uint iNode = sourceDir->iNumberOf((byte *) sourceFile);
     uint destINode = destDir->iNumberOf((byte *) destName);
-    Directory* tmp = destDir;
-    destDir = new Directory(fv, destINode, 0);
-    if (tmp != wd) {
-      delete(tmp);
+    if (destDir->fv->inodes.getType(destINode) == iTypeDirectory) {
+      Directory* tmp = destDir;
+      destDir = new Directory(fv, destINode, 0);
+      if (tmp != wd) {
+        delete(tmp);
+      }
+      delete(startDir);
+    }
+    else if (destDir->fv->inodes.getType(destINode) == iTypeSoftLink) {
+      //uint testInode = destDir->iNumberOf((byte *)sourceFile);
+      uint bn = fv->inodes.getBlockNumber(destINode, 0);
+      byte *blockData = new byte[fv->superBlock.nBytesPerBlock];
+      fv->readBlock(bn, blockData);
+      if (blockData[1] == '.') {
+        blockData+=2;
+      }
+      bool success = successiveCD((char*) blockData);
+      destDir = wd;
+      wd = startDir;
+      if (!success) {
+        printf("Move failed.\n");
+        return;
+      }
     }
     if (destDir->iNumberOf((byte *) sourceFile) != 0) {
       if (destDir != wd) {
@@ -1052,8 +1071,9 @@ void doHardLink(Arg * a)
         delete(tmp);
       }
       if (destDir->iNumberOf((byte *) sourceFile) == 0) {
+        uint type = sourceDir->fv->inodes.getType(iNode);
         uint newINode = destDir->customCreateFile((byte *) sourceFile, iNode, 0);
-        if (sourceDir->fv->inodes.getType(iNode) == iTypeSoftLink) {
+        if (type == iTypeSoftLink) {
           destDir->fv->inodes.setType(newINode, iTypeSoftLink);
           // GET PATH STORED IN SOURCEFILE AND PUT IT IN DESTDIR->SOURCEFILE
           // ACTUALLY DON'T NEED TO DO ^; SAME INODE -> SAME FILE
@@ -1063,19 +1083,19 @@ void doHardLink(Arg * a)
         // printf("%d", count);
       }
     }
-    else if (destDir->fv->inodes.getType(destINode) == iTypeSoftLink) {
-      //! ANMOL STINKY
-      //! I AGREE
-      //? WHY THIS NO WORK
-      // std::string destAbsPath = getAbsPath(destDir);
-      //std::string destAbsPath = // GET PATH STORED IN DESTFILE
-      // want to keep get doing ^ until the type != iTypeSoftLink
+    // else if (destDir->fv->inodes.getType(destINode) == iTypeSoftLink) {
+    //   //! ANMOL STINKY
+    //   //! I AGREE
+    //   //? WHY THIS NO WORK
+    //   // std::string destAbsPath = getAbsPath(destDir);
+    //   //std::string destAbsPath = // GET PATH STORED IN DESTFILE
+    //   // want to keep get doing ^ until the type != iTypeSoftLink
 
 
 
-      // destAbsPath = destAbsPath + "/" + destName;
-      // std::vector<std::string> destAbsPath = getPathVec()
-    }
+    //   // destAbsPath = destAbsPath + "/" + destName;
+    //   // std::vector<std::string> destAbsPath = getPathVec()
+    // }
     // if (destDir->iNumberOf((byte *) sourceFile) == 0) {
     //   destDir->customCreateFile((byte *) sourceFile, iNode, 0);
     //   printf("Hard link created successfully.\n");
@@ -1088,13 +1108,13 @@ void doHardLink(Arg * a)
   }
   //else if (!destExists) {
   else if (!destExists) {
-    uint flag;
+    //int flag;
     // const char* sourceFile = sourceVec[sourceVec.size() - 1].c_str();
     // const char* destName = destVec[destVec.size() - 1].c_str();
     // uint iNode = sourceDir->iNumberOf((byte *) sourceFile);
-    if (sourceIsFile) {
-      flag = 0;
-    }
+    // if (sourceIsFile) {
+    //   flag = 0;
+    // }
     // else {
     //   flag = 1;
     //   if (fileInPath(destVec, iNode)) {
@@ -1103,7 +1123,11 @@ void doHardLink(Arg * a)
     //   }
     // }
     //sourceDir->deleteFile((byte *) sourceFile, 0);
-    destDir->customCreateFile((byte *) destName, iNode, flag);
+    uint type = sourceDir->fv->inodes.getType(iNode);
+    uint newINode = destDir->customCreateFile((byte *) destName, iNode, 0);
+    if (type == iTypeSoftLink) {
+      destDir->fv->inodes.setType(newINode, iTypeSoftLink);
+    }
     // if (flag == 1) {
     //   Directory* newDir = new Directory(fv, iNode, 0);
     //   newDir->customDeleteFile((byte *) "..", 0);

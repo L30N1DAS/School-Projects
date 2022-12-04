@@ -164,15 +164,29 @@ uint Directory::lsPrivate(uint in, uint printfFlag)
 {
   uint nFiles = 0;
   Directory *d = new Directory(fv, in, 0);
+  char * linkPath = "";
   for (byte *bp = 0; (bp = d->nextName()); nFiles++) {
     uint in = iNumber(bp);
     if (printfFlag) {
       byte c = (d->fv->inodes.getType(in) == iTypeDirectory? 'd' : '-');
       if (d->fv->inodes.getType(in) == iTypeSoftLink) {
         c = 'l';
+        uint bn = fv->inodes.getBlockNumber(in, 0);
+        byte *blockData = new byte[fv->superBlock.nBytesPerBlock];
+        fv->readBlock(bn, blockData);
+        if (blockData[1] == '.') {
+          blockData+=2;
+        }
+        linkPath = (char *) blockData;
       }
-      printf("%7d %crw-rw-rw-    1 yourName yourGroup %7d Jul 15 12:34 %s\n",
-	     in, c, d->fv->inodes.getFileSize(in), bp);
+      if (d->fv->inodes.getType(in) != iTypeSoftLink) {
+        printf("%7d %crw-rw-rw-    1 yourName yourGroup %7d Jul 15 12:34 %s\n",
+        in, c, d->fv->inodes.getFileSize(in), bp);
+      }
+      else {
+        printf("%7d %crw-rw-rw-    1 yourName yourGroup %7d Jul 15 12:34 %s -> %s\n",
+        in, c, d->fv->inodes.getFileSize(in), bp, linkPath);
+      }
     }
   }
   delete d;
