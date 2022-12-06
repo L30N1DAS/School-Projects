@@ -1,159 +1,0 @@
-Script started on 2022-11-03 07:11:29-04:00 [TERM="xterm-256color" TTY="/dev/pts/1" COLUMNS="80" LINES="21"]
-[?2004h(base) ]0;anmolsaini@pop-os: ~/git/School-Projects/CEG_4350/Project2/P0-2020-Fall[01;32manmolsaini@pop-os[00m:[01;34m~/git/School-Projects/CEG_4350/Project2/P0-2020-Fall[00m$ c onda deatic[Kvate[K[K[K[K[K[K[K[Keactivate
-[?2004l[?2004h]0;anmolsaini@pop-os: ~/git/School-Projects/CEG_4350/Project2/P0-2020-Fall[01;32manmolsaini@pop-os[00m:[01;34m~/git/School-Projects/CEG_4350/Project2/P0-2020-Fall[00m$ make
-[?2004lg++ -g -Wall -ansi -pedantic -Wno-write-strings -Wno-parentheses -c simdisk.cpp
-g++ -g -Wall -ansi -pedantic -Wno-write-strings -Wno-parentheses -c bitvector.cpp
-g++ -g -Wall -ansi -pedantic -Wno-write-strings -Wno-parentheses -c directory.cpp
-g++ -g -Wall -ansi -pedantic -Wno-write-strings -Wno-parentheses -c file.cpp
-g++ -g -Wall -ansi -pedantic -Wno-write-strings -Wno-parentheses -c inodes.cpp
-g++ -g -Wall -ansi -pedantic -Wno-write-strings -Wno-parentheses -c volume.cpp
-g++ -g -Wall -ansi -pedantic -Wno-write-strings -Wno-parentheses -c mount.cpp
-g++ -g -Wall -ansi -pedantic -Wno-write-strings -Wno-parentheses -c shell.cpp
-g++ -o P0 -g -Wall -ansi -pedantic -Wno-write-strings -Wno-parentheses simdisk.o bitvector.o directory.o file.o inodes.o volume.o mount.o shell.o
-[?2004h]0;anmolsaini@pop-os: ~/git/School-Projects/CEG_4350/Project2/P0-2020-Fall[01;32manmolsaini@pop-os[00m:[01;34m~/git/School-Projects/CEG_4350/Project2/P0-2020-Fall[00m$ gdb P0
-[?2004l[35;1mGNU gdb (Ubuntu 12.0.90-0ubuntu1) 12.0.90[m
-Copyright (C) 2022 Free Software Foundation, Inc.
-License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
-This is free software: you are free to change and redistribute it.
-There is NO WARRANTY, to the extent permitted by law.
-Type "show copying" and "show warranty" for details.
-This GDB was configured as "x86_64-linux-gnu".
-Type "show configuration" for configuration details.
-For bug reporting instructions, please see:
-<https://www.gnu.org/software/gdb/bugs/>.
-Find the GDB manual and other documentation resources online at:
-    <http://www.gnu.org/software/gdb/documentation/>.
-
-For help, type "help".
-Type "apropos word" to search for commands related to "word"...
-Reading symbols from [32mP0[m...
-[?2004h(gdb) break shell.cpp:372
-[?2004lBreakpoint 1 at [34m0x697d[m: file [32mshell.cpp[m, line 372.
-[?2004h(gdb) run P0
-[?2004lStarting program: [32m/home/anmolsaini/git/School-Projects/CEG_4350/Project2/P0-2020-Fall/P0[m P0
-[Thread debugging using libthread_db enabled]
-Using host libthread_db library "[32m/lib/x86_64-linux-gnu/libthread_db.so.1[m".
-The shell has only the following cmds:
-	cd	s
-	cp	ss
-	echo	ssss
-	inode	u
-	ls	
-	lslong	
-	mkdir	s
-	mkdisk	s
-	mkfs	s
-	mount	us
-	mount	
-	mv	ss
-	rddisk	su
-	rmdir	s
-	rm	s
-	pwd	
-	q	
-	quit	
-	umount	u
-	wrdisk	sus
-Start with ! to invoke a Unix shell cmd
-sh33% mkfs D1
-cmd [mkfs D1]
-
-Breakpoint 1, [33mmain[m () at [32mshell.cpp[m:372
-372	      [01msetArgsGiven[m[31m([mbuf[31m,[m arg[31m,[m types[31m,[m nArgsMax[31m);[m
-[?2004h[?2004l[?2004h(gdb) n
-[?2004l373	      [32mint[m k [31m=[m [01mfindCmd[m[31m([mbuf[31m,[m types[31m);[m
-[?2004h[?2004l[?2004h(gdb) p bub[Kf
-[?2004l$1 = "mkfs\000D1\000\000I\342\367\377\177\000\000@\337\377\377\377\177\000\000\070\231\341\367\377\177\000\000\000\000\000\000\000\000\000\000q_\375\367\377\177\000\000\001\000\000\000\000\000\000\000\r\000\000\000\000\000\000\000\240\273\373\367\377\177\000\000\270\221\241\367\377\177\000\000ǨUUUU\000\000\300\354UUUU\000\000@\320\377\367\377\177\000\000q_\375\367\377\177\000\000\001", '\000' <repeats 15 times>, "\b9\374\367\377\177\000\000\200\346\375\367\377\177\000\000\300`\342\367\377\177\000\000\240\336\377\377\377\177\000\000\002\000\000\000\000\000\000\000(\337\377\377\377\177\000\000ǨUUUU\000\000\256\215\375\367\377\177\000\000\000\000\000\000\000\000\000\000\300\354"...
-[?2004h(gdb) p aa[Krg
-[?2004l$2 = {{[36ms[m = [34m0x7fffffffda05[m "D1", [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {
-    [36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {
-    [36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}, {[36ms[m = [34m0x0[m, [36mu[m = 0}}
-[?2004h(gdb) p types
-[?2004l$3 = "s\000\000\000\000\000\000\000\000\000"
-[?2004h(gdb) n
-[?2004l374	      [01;34mif[m [31m([mk [31m>=[m [35m0[m[31m)[m
-[?2004h[?2004l[?2004h(gdb) n
-[?2004l375		[01minvokeCmd[m[31m([mk[31m,[m arg[31m);[m
-[?2004h[?2004l[?2004h(gdb) s
-[?2004l[33minvokeCmd[m ([36mk[m=8, [36marg[m=0x55555555f2e0 <arg>) at [32mshell.cpp[m:282
-282	  uint ok [31m=[m [35m1[m[31m;[m
-[?2004h[?2004l[?2004h(gdb) n
-[?2004l283	  [01;34mif[m [31m([mcmdTable[31m[[mk[31m].[mglobalsNeeded[31m[[m[35m0[m[31m][m [31m==[m [31m'v'[m [31m&&[m cwdVNIN [31m==[m [35m0[m[31m)[m [31m{[m
-[?2004h[?2004l[?2004h(gdb) n
-[?2004l287	  [01;34melse[m [01;34mif[m [31m([mcmdTable[31m[[mk[31m].[mglobalsNeeded[31m[[m[35m0[m[31m][m [31m==[m [31m'm'[m [31m&&[m mtab [31m==[m [35m0[m[31m)[m [31m{[m
-[?2004h[?2004l[?2004h(gdb) n
-[?2004l292	  [32mchar[m [31m*[mreq [31m=[m cmdTable[31m[[mk[31m].[margsRequired[31m;[m
-[?2004h[?2004l[?2004h(gdb) n
-[?2004l293	  uint na [31m=[m [01mstrlen[m[31m([mreq[31m);[m
-[?2004h[?2004l[?2004h(gdb) n
-[?2004l294	  [01;34mfor[m [31m([muint i [31m=[m [35m0[m[31m;[m i [31m<[m na[31m;[m i[31m++)[m [31m{[m
-[?2004h[?2004l[?2004h(gdb) n
-[?2004l295	    [01;34mif[m [31m([mreq[31m[[mi[31m][m [31m==[m [31m's'[m [31m&&[m [31m([marg[31m[[mi[31m].[ms [31m==[m [35m0[m [31m||[m arg[31m[[mi[31m].[ms[31m[[m[35m0[m[31m][m [31m==[m [35m0[m[31m))[m [31m{[m
-[?2004h[?2004l[?2004h(gdb) n
-[?2004l299	    [01;34mif[m [31m(([mreq[31m[[mi[31m][m [31m==[m [31m'u'[m[31m)[m [31m&&[m [31m([marg[31m[[mi[31m].[ms [31m==[m [35m0[m [31m||[m [31m![m[01misDigit[m[31m([marg[31m[[mi[31m].[ms[31m[[m[35m0[m[31m])))[m [31m{[m
-[?2004h[?2004l[?2004h(gdb) n
-[?2004l294	  [01;34mfor[m [31m([muint i [31m=[m [35m0[m[31m;[m i [31m<[m na[31m;[m i[31m++)[m [31m{[m
-[?2004h[?2004l[?2004h(gdb) n
-[?2004l304	  [01;34mif[m [31m([mok[31m)[m
-[?2004h[?2004l[?2004h(gdb) n
-[?2004l305	    [31m(*[mcmdTable[31m[[mk[31m].[mfunc[31m)[m [31m([marg[31m);[m
-[?2004h[?2004l[?2004h(gdb) s
-[?2004l[33mdoMakeFV[m ([36ma[m=0x55555555f2e0 <arg>) at [32mshell.cpp[m:120
-120	  SimDisk [31m*[m simDisk [31m=[m [01mmkSimDisk[m[31m(([mbyte [31m*)[m a[31m[[m[35m0[m[31m].[ms[31m);[m
-[?2004h[?2004l[?2004h(gdb) s
-[?2004l[33mmkSimDisk[m ([36mname[m=0x7fffffffda05 "D1") at [32mshell.cpp[m:58
-58	  SimDisk [31m*[m simDisk [31m=[m [01;34mnew[m [01mSimDisk[m[31m([mname[31m,[m [35m0[m[31m);[m
-[?2004h[?2004l[?2004h(gdb) s
-[?2004l[33mSimDisk::SimDisk[m ([36mthis[m=0x5555555726d0, [36mdiskName[m=0x7fffffffda05 "D1", [36mdiskNumber[m=0) at [32msimdisk.cpp[m:52
-52	SimDisk[31m::[m[01mSimDisk[m[31m([mbyte [31m*[m diskName[31m,[m uint diskNumber[31m)[m
-[?2004h[?2004l[?2004h(gdb) break simDisk.cpp[Kp[K[K[K[K[K[K[K[Kdisk.cpp:102
-[?2004lBreakpoint 2 at [34m0x5555555568df[m: file [32msimdisk.cpp[m, line 102.
-[?2004h(gdb) c
-[?2004lContinuing.
-
-Breakpoint 2, [33mSimDisk::SimDisk[m ([36mthis[m=0x5555555726d0, [36mdiskName[m=0x7fffffffda05 "D1", [36mdiskNumber[m=256) at [32msimdisk.cpp[m:102
-102	[31m}[m
-[?2004h[?2004l[?2004h(gdb) p diskName
-[?2004l$4 = (byte *[36m[m) [34m0x7fffffffda05[m "D1"
-[?2004h(gdb) c
-[?2004lContinuing.
-make33fv() = 0x5555555728e0, Name == D1, Disk# == 2
-sh33% wrdisk D1 10  50 Hello
-cmd [wrdisk D1 50 Hello]
-
-Breakpoint 1, [33mmain[m () at [32mshell.cpp[m:372
-372	      [01msetArgsGiven[m[31m([mbuf[31m,[m arg[31m,[m types[31m,[m nArgsMax[31m);[m
-[?2004h[?2004l[?2004h(gdb) c
-[?2004lContinuing.
-
-Breakpoint 2, [33mSimDisk::SimDisk[m ([36mthis[m=0x555555573630, [36mdiskName[m=0x7fffffffda07 "D1", [36mdiskNumber[m=256) at [32msimdisk.cpp[m:102
-102	[31m}[m
-[?2004h[?2004l[?2004h(gdb) c
-[?2004lContinuing.
-write433disk(50, Hello...) == 512 to Disk D1
-sh33% rddisk D1 50
-cmd [rddisk D1 50]
-
-Breakpoint 1, [33mmain[m () at [32mshell.cpp[m:372
-372	      [01msetArgsGiven[m[31m([mbuf[31m,[m arg[31m,[m types[31m,[m nArgsMax[31m);[m
-[?2004h[?2004l[?2004h(gdb) c
-[?2004lContinuing.
-
-Breakpoint 2, [33mSimDisk::SimDisk[m ([36mthis[m=0x555555573630, [36mdiskName[m=0x7fffffffda07 "D1", [36mdiskNumber[m=256) at [32msimdisk.cpp[m:102
-102	[31m}[m
-[?2004h[?2004l[?2004h(gdb) c
-[?2004lContinuing.
-read433disk(50, HelloHello...) = 512 from Disk D1
-sh33% q
-cmd [q]
-
-Breakpoint 1, [33mmain[m () at [32mshell.cpp[m:372
-372	      [01msetArgsGiven[m[31m([mbuf[31m,[m arg[31m,[m types[31m,[m nArgsMax[31m);[m
-[?2004h[?2004l[?2004h(gdb) c
-[?2004lContinuing.
-[Inferior 1 (process 10424) exited normally]
-[?2004h[?2004l[?2004h(gdb) exit
-[?2004l[?2004h]0;anmolsaini@pop-os: ~/git/School-Projects/CEG_4350/Project2/P0-2020-Fall[01;32manmolsaini@pop-os[00m:[01;34m~/git/School-Projects/CEG_4350/Project2/P0-2020-Fall[00m$ exit
-[?2004lexit
-
-Script done on 2022-11-03 07:56:08-04:00 [COMMAND_EXIT_CODE="0"]
