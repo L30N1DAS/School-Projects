@@ -242,6 +242,30 @@ void doLsName(Arg * a)
     printf("%7d %crw-rw-rw-    1 yourName yourGroup %7d Jul 15 12:34 %s\n",
 	     iNode, '-', wd->fv->inodes.getFileSize(iNode), a[0].s);
   }
+  else if (iNode != 0 && wd->fv->inodes.getType(iNode) == iTypeSoftLink) {
+    uint bn = fv->inodes.getBlockNumber(iNode, 0);
+    byte *blockData = new byte[fv->superBlock.nBytesPerBlock];
+    fv->readBlock(bn, blockData);
+    if (blockData[1] == '.') {
+      blockData+=2;
+    }
+    // std::string pathStr = (char *) blockData;
+    // uint type = getLinkType(pathStr);
+    // if (type == iTypeDirectory) {
+    //   Directory* startDir = new Directory(fv, wd->nInode, 0);
+    //   bool success = successiveCD((char *) blockData);
+    //   if (success) {
+    //     doLsLong(a);
+    //   }
+    //   delete(wd);
+    //   wd = startDir;
+    // }
+    // else {
+
+    // }
+    printf("%7d %crw-rw-rw-    1 yourName yourGroup %7d Jul 15 12:34 %s -> %s\n",
+	     iNode, 'l', wd->fv->inodes.getFileSize(iNode), a[0].s, (char *) blockData);
+  }
 }
 
 void doLsNameRecursiveHelper(const char * name) {
@@ -582,15 +606,16 @@ std::vector<std::string> doMvPath(char * path, bool& invalidPath, bool& IsFile, 
 
 void doRm(Arg * a)
 {
-  Directory * startDir = wd;
-  bool sourceInvalidPath = false;
-  bool sourceIsFile = false;
-  bool sourceExists = true;
-  bool destInvalidPath = false;
-  bool destIsFile = false;
-  bool destExists = true;
+  Directory * startDir = new Directory(fv, wd->nInode, 0);
+  // bool sourceInvalidPath = false;
+  // bool sourceIsFile = false;
+  // bool sourceExists = true;
+  // bool destInvalidPath = false;
+  // bool destIsFile = false;
+  // bool destExists = true;
+  bool tmp;
 
-  std::vector<std::string> pathVec = doMvPath(a[0].s, sourceInvalidPath, sourceIsFile, sourceExists);
+  std::vector<std::string> pathVec = doMvPath(a[0].s, tmp, tmp, tmp);
   Directory* remDirParent = wd;
   wd = startDir;
 
@@ -599,6 +624,7 @@ void doRm(Arg * a)
 
   if (in == 0) {
     printf("File/Directory not found.\n");
+    delete(remDirParent);
     return;
   }
   uint numContents = 0;
@@ -608,11 +634,11 @@ void doRm(Arg * a)
   if (remDirParent->fv->inodes.getType(in) == iTypeDirectory && numContents == 0) {
     in = remDirParent->deleteFile((byte *) deleteEntity, 1);
     printf("Successfully removed directory '%s' with inode %d and %d entries.\n", deleteEntity, in, numContents);
-    return;
+    // return;
   }
   else if (remDirParent->fv->inodes.getType(in) == iTypeDirectory && numContents != 0) {
     printf("Unable to remove directory '%s' with inode %d and %d entries.\n", deleteEntity, in, numContents);
-    return;
+    // return;
   }
   else if (remDirParent->fv->inodes.getType(in) == iTypeOrdinary) {
     int numLinks = fv->inodes.getLinkCount(in);
@@ -627,7 +653,7 @@ void doRm(Arg * a)
     fv->inodes.incLinkCount(in, -1);
     printf("Successfully removed file '%s' with inode %d.\n", deleteEntity, in);
     printf("Resulting link count for inode %d: %d\n", in, fv->inodes.getLinkCount(in));
-    return;
+    // return;
   }
   else if (remDirParent->fv->inodes.getType(in) == iTypeSoftLink) {
     int numLinks = fv->inodes.getLinkCount(in);
@@ -642,8 +668,9 @@ void doRm(Arg * a)
     fv->inodes.incLinkCount(in, -1);
     printf("Successfully removed symbolic link '%s' with inode %d.\n", deleteEntity, in);
     printf("Resulting link count for inode %d: %d\n", in, fv->inodes.getLinkCount(in));
-    return;
+    // return;
   }
+  delete(remDirParent);
 }
 
 void doRmRecursiveHelper(const char * name) {
@@ -1242,6 +1269,14 @@ void doHardLinkCurDir(Arg * a) {
   doHardLink(a);
 }
 
+// std::string pathVecToStr(std::vector<std::string> pathVec) {
+//   std::string pathStr = "";
+//   for (int i = 0; i < pathVec.size(); i++) {
+//     pathStr = pathStr + "/" + pathVec[i];
+//   }
+//   return pathStr;
+// }
+
 void doSoftLink(Arg * a) {
   if (strcmp(a[0].s, "-s") != 0) {
     printf("Incorrect flag for symbolic link creation.\n");
@@ -1311,6 +1346,14 @@ void doSoftLink(Arg * a) {
     printf("Creation of symbolic link failed.\n");
     return;
   }
+  // else if (sourceInvalidPath || !sourceExists) {
+  //   // delete(sourcePath);
+  //   if (sourceVec.size() == 0) {
+  //     printf("Creation of symbolic link failed.\n");
+  //     return;
+  //   }
+  //   std::string pathStr = pathVecToStr(sourceVec);
+  // }
   else if (destExists && !destIsFile) {
   //else if (destExists && destDir->fv->inodes.getType(destINode) == iTypeDirectory) {
     // uint flag;
@@ -1610,9 +1653,6 @@ void doSoftLink(Arg * a) {
     //   printf("%s\n", (char *)blockData);    
 
   }
-  // else if (sourceInvalidPath || !sourceExists) {
-    
-  // }
   else
   {
     printf("Creation of symbolic link failed.\n");
